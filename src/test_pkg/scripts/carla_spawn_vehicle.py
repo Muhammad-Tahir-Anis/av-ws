@@ -17,8 +17,9 @@ def spawn_object_client():
         role_name = KeyValue("role_name", "ego_vehicle")
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
-        point = Point(-68, -28.0, 0.2)
-        quaternion = Quaternion(1.0, 1.0, 0.2, -180)
+        # point = Point(-68, -28.0, 0.2)
+        point = Point(109.68000030517578, 22.549476209362190, 3)
+        quaternion = Quaternion(0, 0, 0, 0)
         pose = Pose(point, quaternion)
         random_pos = False
         attach = 0

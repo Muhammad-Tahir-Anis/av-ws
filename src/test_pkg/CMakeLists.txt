@@ -164,19 +164,7 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/carla_status.py
-  scripts/carla_world_info.py 
-  scripts/ackermann_publisher.py
-  scripts/ackermann_subscriber.py
-  scripts/carla_map.py
-  scripts/carla_spawn_controller.py
-  scripts/carla_spawn_object.py
-  scripts/carla_spawn_sensor.py
-  scripts/debug_marker.py
-  scripts/distroy_object.py
-  scripts/tf_subscriber.py
-  scripts/waypoint.py
-  scripts/xodr_map_to_json.py
+  scripts/carla_map.py scripts/carla_spawn_vehicle.py scripts/carla_spawn_sensor.py scripts/distroy_object.py scripts/xodr_map_to_json.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
