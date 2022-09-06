@@ -1,44 +1,45 @@
 import json
 
-from typing import List
+classes_list = []
 
-class_list_check: List[str] = []
-class_list = []
-
-attribute_list = []
 
 def main():
     with open('json_map.json') as map_data:
-        # carla_map = json.load(map_data, object_hook=lambda d: SimpleNamespace(**d))
         carla_map = json.load(map_data)
         json_iterator(carla_map)
-        for classes in class_list_check:
-            print(classes)
-        for attribute in attribute_list:
+        for attribute in classes_list:
             print(attribute)
 
 
-def attributes(value):
-    print(value)
-    print(list(value))
-    if not str(list(value)) in attribute_list:
-        attribute_list.append(str(list(value)))
+def get_classes(key, value):
+    if isinstance(value, list):
+        for index in value:
+            get_classes(key, index)
+    else:
+        if not str((key, list(value))) in classes_list:
+            classes_list.append(str((key, list(value))))
 
 
-def class_creator(name, value):
+def class_creator(key, value):
     """
     This function creates list of possible classes which is essential to make TOW-MAP model class for creating map
     object for future use
      :param value:
-     :param name: :return:
+     :param key:
+     :return:
     """
-    if not str(name) in class_list_check:
-        class_list_check.append(str(name))
-        attributes(value)
+    get_classes(key, value)
 
-        # class_list.append(type(name, (), attribute_list))
-        # with open("%s.py"%name, "w") as python_file:
-        #     class_temp = "class {name}:\n\tdef __init__(self,{attributes})"
+    for my_class in classes_list:
+        str_to_class(my_class)
+    # class_list.append(type(name, (), attribute_list))
+    # with open("%s.py"%name, "w") as python_file:
+    #     class_temp = "class {name}:\n\tdef __init__(self,{attributes})"
+
+
+def str_to_class(class_string):
+    my_class = list(class_string.split(","))
+    print(my_class)
 
 
 def json_iterator(value):
@@ -58,7 +59,7 @@ def json_iterator(value):
                 # This if condition checks that the key should not have the value of type string or none to make
                 # relevant classes
                 if not isinstance(value[key], (str, type(None))):
-                    class_creator(key, value)
+                    class_creator(key, value[key])
                 json_iterator(value[key])
     elif isinstance(value, list):
         for index in value:
