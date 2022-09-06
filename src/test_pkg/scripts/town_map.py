@@ -1,14 +1,7 @@
 import json
+import pandas as pd
 
 classes_list = []
-
-
-def main():
-    with open('json_map.json') as map_data:
-        carla_map = json.load(map_data)
-        json_iterator(carla_map)
-        for attribute in classes_list:
-            print(attribute)
 
 
 def get_classes(key, value):
@@ -16,13 +9,13 @@ def get_classes(key, value):
         for index in value:
             get_classes(key, index)
     else:
-        if not str((key, list(value))) in classes_list:
-            classes_list.append(str((key, list(value))))
+        if not [key, list(value)] in classes_list:
+            classes_list.append([key, list(value)])
 
 
-def class_creator(key, value):
+def class_extractor(key, value):
     """
-    This function creates list of possible classes which is essential to make TOW-MAP model class for creating map
+    This function creates list of possible classes which is essential to make MAP model class for creating map
     object for future use
      :param value:
      :param key:
@@ -30,16 +23,20 @@ def class_creator(key, value):
     """
     get_classes(key, value)
 
-    for my_class in classes_list:
-        str_to_class(my_class)
-    # class_list.append(type(name, (), attribute_list))
-    # with open("%s.py"%name, "w") as python_file:
-    #     class_temp = "class {name}:\n\tdef __init__(self,{attributes})"
 
-
-def str_to_class(class_string):
-    my_class = list(class_string.split(","))
-    print(my_class)
+def class_creator(class_name: str, class_attributes: list):
+    # print(class_name, class_attributes)
+    # for attribute in class_attributes:
+    #     # print(attribute)
+    attributes = ','.join(class_attributes)
+    attributes = attributes.replace("@", "")
+    print(attributes)
+    # class_temp = "class {name}:\n\tdef __init__(self,{attributes}):\n\tpass\n\n".format(name=class_name,
+    #                                                                                     attributes=attributes)
+    with open("town_map/%s.py" % class_name, "a") as python_file:
+        for x in python_file:
+            print(x)
+    #     python_file.write(class_temp)
 
 
 def json_iterator(value):
@@ -59,7 +56,7 @@ def json_iterator(value):
                 # This if condition checks that the key should not have the value of type string or none to make
                 # relevant classes
                 if not isinstance(value[key], (str, type(None))):
-                    class_creator(key, value[key])
+                    class_extractor(key, value[key])
                 json_iterator(value[key])
     elif isinstance(value, list):
         for index in value:
@@ -67,6 +64,18 @@ def json_iterator(value):
     else:
         pass
         # print(value)
+
+
+def main():
+    # accessing json map data from json file
+    with open('json_map.json') as map_data:
+        carla_map = json.load(map_data)
+        # passing json
+        json_iterator(carla_map)
+        # displaying classes extracted from json. It is list of 2d lists first index of 2d list is class name and 2nd
+        # index is a list of attribute of that class.
+        for map_class in classes_list:
+            class_creator(class_name=map_class[0], class_attributes=map_class[1])
 
 
 if __name__ == '__main__':
