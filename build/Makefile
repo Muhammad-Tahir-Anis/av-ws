@@ -294,7 +294,7 @@ _catkin_empty_exported_target: cmake_check_build_system
 
 # fast build rule for target.
 _catkin_empty_exported_target/fast:
-	$(MAKE) -f test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build
+	$(MAKE) -f map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build
 .PHONY : _catkin_empty_exported_target/fast
 
 # Help Target

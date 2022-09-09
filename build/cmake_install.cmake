@@ -131,6 +131,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/maanz-ai/PycharmProjects/av-ws/build/gtest/cmake_install.cmake")
+  include("/home/maanz-ai/PycharmProjects/av-ws/build/map_parser_pkg/cmake_install.cmake")
   include("/home/maanz-ai/PycharmProjects/av-ws/build/test_pkg/cmake_install.cmake")
 
 endif()

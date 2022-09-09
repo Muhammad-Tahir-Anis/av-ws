@@ -7,6 +7,7 @@ class_list = []
 
 attribute_list = []
 
+
 def main():
     with open('json_map.json') as map_data:
         # carla_map = json.load(map_data, object_hook=lambda d: SimpleNamespace(**d))
@@ -38,7 +39,7 @@ def class_creator(name, value):
 
         # class_list.append(type(name, (), attribute_list))
         # with open("%s.py"%name, "w") as python_file:
-        #     class_temp = "class {name}:\n\tdef __init__(self,{attributes})"
+        #     class_temp = "class {name}:\n\def __init__(self,{attributes})"
 
 
 def json_iterator(value):

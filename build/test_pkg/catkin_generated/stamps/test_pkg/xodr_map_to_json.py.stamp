@@ -16,7 +16,7 @@ def world_info_callback(data):
         dict_map = xmltodict.parse(xml_file.read())
         json_map = json.dumps(dict_map)
 
-        with open("json_map", "w") as json_file:
+        with open("json_map.json", "w") as json_file:
             json_file.write(json_map)
 
     print(data.opendrive)

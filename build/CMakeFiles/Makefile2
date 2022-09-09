@@ -54,12 +54,14 @@ CMAKE_BINARY_DIR = /home/maanz-ai/PycharmProjects/av-ws/build
 
 # The main recursive "all" target.
 all: gtest/all
+all: map_parser_pkg/all
 all: test_pkg/all
 
 .PHONY : all
 
 # The main recursive "preinstall" target.
 preinstall: gtest/preinstall
+preinstall: map_parser_pkg/preinstall
 preinstall: test_pkg/preinstall
 
 .PHONY : preinstall
@@ -71,6 +73,7 @@ clean: CMakeFiles/clean_test_results.dir/clean
 clean: CMakeFiles/tests.dir/clean
 clean: CMakeFiles/download_extra_data.dir/clean
 clean: gtest/clean
+clean: map_parser_pkg/clean
 clean: test_pkg/clean
 
 .PHONY : clean
@@ -133,6 +136,24 @@ gtest/googletest/clean: gtest/googletest/CMakeFiles/gtest.dir/clean
 .PHONY : gtest/googletest/clean
 
 #=============================================================================
+# Directory level rules for directory map_parser_pkg
+
+# Recursive "all" directory target.
+map_parser_pkg/all:
+
+.PHONY : map_parser_pkg/all
+
+# Recursive "preinstall" directory target.
+map_parser_pkg/preinstall:
+
+.PHONY : map_parser_pkg/preinstall
+
+# Recursive "clean" directory target.
+map_parser_pkg/clean: map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
+
+.PHONY : map_parser_pkg/clean
+
+#=============================================================================
 # Directory level rules for directory test_pkg
 
 # Recursive "all" directory target.
@@ -146,7 +167,7 @@ test_pkg/preinstall:
 .PHONY : test_pkg/preinstall
 
 # Recursive "clean" directory target.
-test_pkg/clean: test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
+test_pkg/clean:
 
 .PHONY : test_pkg/clean
 
@@ -395,31 +416,31 @@ gtest/googletest/CMakeFiles/gtest.dir/clean:
 .PHONY : gtest/googletest/CMakeFiles/gtest.dir/clean
 
 #=============================================================================
-# Target rules for target test_pkg/CMakeFiles/_catkin_empty_exported_target.dir
+# Target rules for target map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir
 
 # All Build rule for target.
-test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all:
-	$(MAKE) -f test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/depend
-	$(MAKE) -f test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build
+map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all:
+	$(MAKE) -f map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/depend
+	$(MAKE) -f map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/maanz-ai/PycharmProjects/av-ws/build/CMakeFiles --progress-num= "Built target _catkin_empty_exported_target"
-.PHONY : test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all
+.PHONY : map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all
 
 # Build rule for subdir invocation for target.
-test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule: cmake_check_build_system
+map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/maanz-ai/PycharmProjects/av-ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/maanz-ai/PycharmProjects/av-ws/build/CMakeFiles 0
-.PHONY : test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
+.PHONY : map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
 
 # Convenience name for target.
-_catkin_empty_exported_target: test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
+_catkin_empty_exported_target: map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
 
 .PHONY : _catkin_empty_exported_target
 
 # clean rule for target.
-test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean:
-	$(MAKE) -f test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
-.PHONY : test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
+map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean:
+	$(MAKE) -f map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
+.PHONY : map_parser_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

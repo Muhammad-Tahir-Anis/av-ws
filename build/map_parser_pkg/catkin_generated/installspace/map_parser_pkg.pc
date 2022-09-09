@@ -1,0 +1,8 @@
+prefix=/home/maanz-ai/PycharmProjects/av-ws/install
+
+Name: map_parser_pkg
+Description: Description of map_parser_pkg
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
