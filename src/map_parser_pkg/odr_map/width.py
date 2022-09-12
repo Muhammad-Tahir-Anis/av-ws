@@ -1,9 +1,9 @@
 
 
 class Width:
-	def __init__(self,sOffset=None,a=None,b=None,c=None,d=None):
-		self.sOffset = sOffset
-		self.a = a
+	def __init__(self,b=None,a=None,c=None,d=None,sOffset=None):
 		self.b = b
+		self.a = a
 		self.c = c
 		self.d = d
+		self.soffset = soffset

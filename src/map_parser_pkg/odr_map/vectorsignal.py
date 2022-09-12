@@ -1,7 +1,7 @@
 
 
 class Vectorsignal:
-	def __init__(self,signalId=None,gateId=None,turnRelation=None):
-		self.signalId = signalId
-		self.gateId = gateId
-		self.turnRelation = turnRelation
+	def __init__(self,turnRelation=None,gateId=None,signalId=None):
+		self.turnrelation = turnrelation
+		self.gateid = gateid
+		self.signalid = signalid

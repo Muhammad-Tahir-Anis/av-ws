@@ -1,20 +1,26 @@
 from src.map_parser_pkg.odr_map.junction import Junction
 from src.map_parser_pkg.odr_map.link import Link
-from src.map_parser_pkg.odr_map.planView import Planview
-from src.map_parser_pkg.odr_map.elevationProfile import Elevationprofile
-from src.map_parser_pkg.odr_map.lateralProfile import Lateralprofile
+from src.map_parser_pkg.odr_map.signals import Signals
+from src.map_parser_pkg.odr_map.type import Type
+from src.map_parser_pkg.odr_map.lateralprofile import Lateralprofile
+from src.map_parser_pkg.odr_map.elevationprofile import Elevationprofile
+from src.map_parser_pkg.odr_map.userdata import Userdata
+from src.map_parser_pkg.odr_map.planview import Planview
+from src.map_parser_pkg.odr_map.objects import Objects
 from src.map_parser_pkg.odr_map.lanes import Lanes
-from src.map_parser_pkg.odr_map.userData import Userdata
 
 class Road:
-	def __init__(self,name=None,length=None,id=None,junction=None,link=None,planView=None,elevationProfile=None,lateralProfile=None,lanes=None,userData=None):
-		self.name = name
+	def __init__(self,length=None,junction=None,link=None,name=None,id=None,signals=None,type=None,lateralProfile=None,elevationProfile=None,userData=None,planView=None,objects=None,lanes=None):
 		self.length = length
-		self.id = id
 		self.junction: Junction = junction
 		self.link: Link = link
-		self.planView: Planview = planView
-		self.elevationProfile: Elevationprofile = elevationProfile
-		self.lateralProfile: Lateralprofile = lateralProfile
+		self.name = name
+		self.id = id
+		self.signals: Signals = signals
+		self.type: Type = type
+		self.lateralprofile: Lateralprofile = lateralprofile
+		self.elevationprofile: Elevationprofile = elevationprofile
+		self.userdata: Userdata = userdata
+		self.planview: Planview = planview
+		self.objects: Objects = objects
 		self.lanes: Lanes = lanes
-		self.userData: Userdata = userData

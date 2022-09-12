@@ -1,9 +1,9 @@
-from src.map_parser_pkg.odr_map.userData import Userdata
+from src.map_parser_pkg.odr_map.userdata import Userdata
 
 class Header:
 	def __init__(self,revMajor=None,revMinor=None,name=None,version=None,date=None,north=None,south=None,east=None,west=None,vendor=None,geoReference=None,userData=None):
-		self.revMajor = revMajor
-		self.revMinor = revMinor
+		self.revmajor = revmajor
+		self.revminor = revminor
 		self.name = name
 		self.version = version
 		self.date = date
@@ -12,5 +12,5 @@ class Header:
 		self.east = east
 		self.west = west
 		self.vendor = vendor
-		self.geoReference = geoReference
-		self.userData: Userdata = userData
+		self.georeference = georeference
+		self.userdata: Userdata = userdata

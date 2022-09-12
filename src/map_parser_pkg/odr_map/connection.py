@@ -1,10 +1,12 @@
-from src.map_parser_pkg.odr_map.laneLink import Lanelink
+from src.map_parser_pkg.odr_map.lanelink import Lanelink
+from src.map_parser_pkg.odr_map.lanelink import Lanelink
 from typing import List
 
 class Connection:
-	def __init__(self,id=None,incomingRoad=None,connectingRoad=None,contactPoint=None,laneLink_list=None):
+	def __init__(self,laneLink=None,incomingRoad=None,id=None,contactPoint=None,laneLink_list=None,connectingRoad=None):
+		self.lanelink: Lanelink = lanelink
+		self.incomingroad = incomingroad
 		self.id = id
-		self.incomingRoad = incomingRoad
-		self.connectingRoad = connectingRoad
-		self.contactPoint = contactPoint
-		self.laneLink_list: List[Lanelink] = list()
+		self.contactpoint = contactpoint
+		self.lanelink_list: List[Lanelink] = list()
+		self.connectingroad = connectingroad

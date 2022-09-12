@@ -30,13 +30,13 @@ class ClassWriter:
     def __attribute_template(cls, class_attributes: List[str], classes: List[str]):
         __temp_attributes: list = list()
         for class_attribute in class_attributes:
-            temp_attribute = f"self.{class_attribute} = {class_attribute}"
+            temp_attribute = f"self.{class_attribute.lower()} = {class_attribute.lower()}"
             if class_attribute in classes:
-                temp_attribute = f"self.{class_attribute}: {class_attribute.capitalize()} = {class_attribute}"
+                temp_attribute = f"self.{class_attribute.lower()}: {class_attribute.capitalize()} = {class_attribute.lower()}"
             elif "_list" in class_attribute:
                 expected_class = class_attribute.replace("_list", "")
                 if expected_class in classes:
-                    temp_attribute = f"self.{class_attribute}: List[{expected_class.capitalize()}] = list()"
+                    temp_attribute = f"self.{class_attribute.lower()}: List[{expected_class.capitalize()}] = list()"
             __temp_attributes.append(temp_attribute)
         return __temp_attributes
 

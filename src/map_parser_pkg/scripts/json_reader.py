@@ -8,7 +8,7 @@ from src.map_parser_pkg.scripts.class_writer import ClassWriter
 class JsonReader:
     objects: list = list()
     classes_constructs: list = list()
-    object_constructs: list = list()
+    objects_constructs: list = list()
     classes: list = list()
 
     def __init__(self, json_file_path):
@@ -16,8 +16,8 @@ class JsonReader:
         with open(self.__json_file_path) as self.__json_file:
             self.__json_data = json.load(self.__json_file)
             self.__read_json(self.__json_data)
-            self.__normalize_class_attributes(self.classes_constructs)
-            # self.__normalize_class_attributes(self.object_constructs)
+            self.__normalize_constructs(self.classes_constructs)
+            self.__normalize_constructs(self.objects_constructs)
 
     @classmethod
     def __read_json(cls, json_data):
@@ -59,60 +59,60 @@ class JsonReader:
                     if class_constructs[0] is key:
                         __is_key_exists = True
                         index = cls.classes_constructs.index([key, class_constructs[1]])
-                        cls.classes_constructs[index] = [key, __attributes]
+                        cls.classes_constructs[index] = [class_constructs[0],
+                                                         list(set(class_constructs[1] + __attributes))]
                         cls.classes.append(key)
                 if __is_key_exists is False:
-                    cls.classes_constructs.append([key,__attributes])
+                    cls.classes_constructs.append([key, __attributes])
                     cls.classes.append(key)
             else:
                 cls.classes_constructs.append([key, __attributes])
                 cls.classes.append(key)
 
     @classmethod
-    def __extract_object(cls, key, value):
+    def __extract_object(cls, key, value, index=None):
         parameter: list = list()
         __parameters: list = list()
         if isinstance(value, list):
+            list_parameter: list = list()
             for index in value:
-                cls.__extract_object(key, index)
+                list_parameter.append(f"{key}{value.index(index)}")
+            cls.objects_constructs.insert(0, [f"{key}s", list_parameter])
+            for data in value:
+                cls.__extract_object(key, data, index=value.index(data))
         elif isinstance(value, dict):
             for keys in value:
-                if isinstance(value[keys],list):
+                if isinstance(value[keys], list):
                     parameter = [f"{keys}_list", f"{keys}s"]
-                elif isinstance(value[keys],dict):
-                    for data in value[keys]:
-                        parameter = [keys,data]
-                    print(parameter)
-                elif isinstance(value[keys],(str,type(None))):
-                    parameter = [keys,value[keys]]
+                elif isinstance(value[keys], dict):
+                    # for data in value[keys]:
+                    parameter = [keys, keys]
+                elif isinstance(value[keys], str):
+                    parameter = [keys, value[keys]]
+                elif isinstance(value[keys], type(None)):
+                    parameter = [keys, ""]
                 __parameters.append(parameter)
-            cls.object_constructs.append([key,__parameters])
+            if index is None:
+                cls.objects_constructs.insert(0, [key, key, __parameters])
+            else:
+                cls.objects_constructs.insert(0, [f"{key}{index}", key, __parameters])
 
     @classmethod
-    def __normalize_class_attributes(cls, classes_constructs):
-        if isinstance(classes_constructs,list):
-            for index in classes_constructs:
-                cls.__normalize_class_attributes(index)
-        else:
-            cls.__normalize(classes_constructs)
-        # for class_constructs in classes_constructs:
-        #     # removing @ from attribute names
-        #     for class_construct in class_constructs:
-        #         if isinstance(class_construct,list):
-        #             for attribute in class_construct:
-        #                 index = class_construct.index(attribute)
-        #                 class_construct[index] = cls.__normalize(attribute)
-        #         else:
-        #             index = class_constructs.index(class_construct)
-        #             class_constructs[index] = cls.__normalize(class_construct)
-        cls.classes_constructs = classes_constructs
+    def __normalize_constructs(cls, objects_constructs):
+        if isinstance(objects_constructs, list):
+            for constructs in objects_constructs:
+                if isinstance(constructs, list):
+                    cls.__normalize_constructs(constructs)
+                elif isinstance(constructs, str):
+                    index = objects_constructs.index(constructs)
+                    objects_constructs[index] = cls.__normalize(constructs)
 
     @classmethod
-    def __normalize(cls,word):
+    def __normalize(cls, word):
         if "@" in word:
             word = word.replace("@", "")
         if "{" in word:
-            word = word.replace("{","")
+            word = word.replace("{", "")
         if "}" in word:
             word = word.replace("}", "")
         if keyword.iskeyword(word):

@@ -1,7 +1,7 @@
 
 
 class Cornerlocal:
-	def __init__(self,u=None,v=None,z=None):
-		self.u = u
+	def __init__(self,v=None,z=None,u=None):
 		self.v = v
 		self.z = z
+		self.u = u

@@ -1,11 +1,11 @@
 from src.map_parser_pkg.odr_map.validity import Validity
-from src.map_parser_pkg.odr_map.userData import Userdata
+from src.map_parser_pkg.odr_map.userdata import Userdata
 
 class Signalreference:
-	def __init__(self,id=None,s=None,t=None,orientation=None,validity=None,userData=None):
-		self.id = id
+	def __init__(self,s=None,t=None,id=None,validity=None,orientation=None,userData=None):
 		self.s = s
 		self.t = t
-		self.orientation = orientation
+		self.id = id
 		self.validity: Validity = validity
-		self.userData: Userdata = userData
+		self.orientation = orientation
+		self.userdata: Userdata = userdata
