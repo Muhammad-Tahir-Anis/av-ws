@@ -29,10 +29,11 @@ class ObjectCreator:
         if isinstance(class_parameters, list):
             for parameter in class_parameters:
                 index = class_parameters.index(parameter)
-                if "_list" not in parameter[0]:
-                    if not parameter[1] in classes:
-                        parameter[1] = f"'{parameter[1]}'"
-                class_parameters[index] = "=".join(parameter).lower()
+                if f"'" not in parameter[1]:
+                    print(parameter[1])
+                    parameter[1] = parameter[1].lower()
+                parameter[0] = parameter[0].lower()
+                class_parameters[index] = "=".join(parameter)
         return class_parameters
 
     @classmethod

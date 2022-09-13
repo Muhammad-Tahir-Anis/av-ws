@@ -4,23 +4,23 @@ from src.map_parser_pkg.odr_map.type import Type
 from src.map_parser_pkg.odr_map.validity import Validity
 
 class Signal:
-	def __init__(self,height=None,t=None,pitch=None,dynamic=None,width=None,orientation=None,userData=None,type=None,name=None,zOffset=None,hOffset=None,validity=None,country=None,roll=None,s=None,id=None,subtype=None,value=None,text=None):
+	def __init__(self,height=None,zoffset=None,dynamic=None,pitch=None,width=None,text=None,userdata=None,name=None,id=None,s=None,type=None,subtype=None,validity=None,t=None,country=None,orientation=None,value=None,hoffset=None,roll=None):
 		self.height = height
-		self.t = t
-		self.pitch = pitch
-		self.dynamic = dynamic
-		self.width: Width = width
-		self.orientation = orientation
-		self.userdata: Userdata = userdata
-		self.type: Type = type
-		self.name = name
 		self.zoffset = zoffset
-		self.hoffset = hoffset
-		self.validity: Validity = validity
-		self.country = country
-		self.roll = roll
-		self.s = s
-		self.id = id
-		self.subtype = subtype
-		self.value = value
+		self.dynamic = dynamic
+		self.pitch = pitch
+		self.width: Width = width
 		self.text = text
+		self.userdata = userdata
+		self.name = name
+		self.id = id
+		self.s = s
+		self.type: Type = type
+		self.subtype = subtype
+		self.validity: Validity = validity
+		self.t = t
+		self.country = country
+		self.orientation = orientation
+		self.value = value
+		self.hoffset = hoffset
+		self.roll = roll

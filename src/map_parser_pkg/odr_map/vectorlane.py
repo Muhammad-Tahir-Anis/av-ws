@@ -1,7 +1,7 @@
 
 
 class Vectorlane:
-	def __init__(self,travelDir=None,laneId=None,sOffset=None):
-		self.traveldir = traveldir
+	def __init__(self,laneid=None,traveldir=None,soffset=None):
 		self.laneid = laneid
+		self.traveldir = traveldir
 		self.soffset = soffset
