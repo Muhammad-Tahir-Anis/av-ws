@@ -14,7 +14,7 @@ class ObjectCreator:
             object_name = object_constructors[0]
             class_name = object_constructors[1]
             cls.__imports_template(class_name, classes)
-            class_parameters = cls.__parameters_template(object_constructors[2], classes)
+            class_parameters = cls.__parameters_template(object_constructors[2])
             class_parameters = ",".join(class_parameters)
             __object_temp = f"{object_name.lower()} = {class_name.capitalize()}({class_parameters})"
         elif len(object_constructors) == 2:
@@ -25,7 +25,7 @@ class ObjectCreator:
         cls.class_object = __object_temp
 
     @classmethod
-    def __parameters_template(cls, class_parameters, classes):
+    def __parameters_template(cls, class_parameters):
         if isinstance(class_parameters, list):
             for parameter in class_parameters:
                 index = class_parameters.index(parameter)

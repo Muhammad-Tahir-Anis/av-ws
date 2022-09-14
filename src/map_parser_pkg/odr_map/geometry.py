@@ -1,11 +1,12 @@
 from src.map_parser_pkg.odr_map.arc import Arc
 
+
 class Geometry:
-	def __init__(self,x=None,s=None,length=None,y=None,arc=None,hdg=None,line=None):
-		self.x = x
+	def __init__(self,y=None,line=None,s=None,length=None,hdg=None,arc=None,x=None):
+		self.y = y
+		self.line = line
 		self.s = s
 		self.length = length
-		self.y = y
-		self.arc: Arc = arc
 		self.hdg = hdg
-		self.line = line
+		self.arc: Arc = arc
+		self.x = x

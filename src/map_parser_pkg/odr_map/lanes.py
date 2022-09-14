@@ -1,10 +1,10 @@
 from src.map_parser_pkg.odr_map.laneoffset import Laneoffset
-from src.map_parser_pkg.odr_map.lanesection import Lanesection
-from src.map_parser_pkg.odr_map.laneoffset import Laneoffset
 from typing import List
+from src.map_parser_pkg.odr_map.lanesection import Lanesection
+
 
 class Lanes:
-	def __init__(self,laneoffset=None,lanesection=None,laneoffset_list=None):
-		self.laneoffset = laneoffset
-		self.lanesection = lanesection
-		self.laneoffset_list = laneoffset_list
+	def __init__(self,laneoffset_list=None,laneoffset=None,lanesection=None):
+		self.laneoffset_list: List[Laneoffset] = laneoffset_list
+		self.laneoffset: Laneoffset = laneoffset
+		self.lanesection: Lanesection = lanesection

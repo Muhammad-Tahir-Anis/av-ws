@@ -1,26 +1,27 @@
-from src.map_parser_pkg.odr_map.width import Width
-from src.map_parser_pkg.odr_map.userdata import Userdata
 from src.map_parser_pkg.odr_map.type import Type
+from src.map_parser_pkg.odr_map.width import Width
 from src.map_parser_pkg.odr_map.validity import Validity
+from src.map_parser_pkg.odr_map.userdata import Userdata
+
 
 class Signal:
-	def __init__(self,height=None,zoffset=None,dynamic=None,pitch=None,width=None,text=None,userdata=None,name=None,id=None,s=None,type=None,subtype=None,validity=None,t=None,country=None,orientation=None,value=None,hoffset=None,roll=None):
+	def __init__(self,height=None,hoffset=None,type=None,zoffset=None,pitch=None,width=None,s=None,roll=None,validity=None,userdata=None,t=None,country=None,value=None,id=None,text=None,subtype=None,orientation=None,dynamic=None,name=None):
 		self.height = height
+		self.hoffset = hoffset
+		self.type: Type = type
 		self.zoffset = zoffset
-		self.dynamic = dynamic
 		self.pitch = pitch
 		self.width: Width = width
-		self.text = text
-		self.userdata = userdata
-		self.name = name
-		self.id = id
 		self.s = s
-		self.type: Type = type
-		self.subtype = subtype
+		self.roll = roll
 		self.validity: Validity = validity
+		self.userdata: Userdata = userdata
 		self.t = t
 		self.country = country
-		self.orientation = orientation
 		self.value = value
-		self.hoffset = hoffset
-		self.roll = roll
+		self.id = id
+		self.text = text
+		self.subtype = subtype
+		self.orientation = orientation
+		self.dynamic = dynamic
+		self.name = name

@@ -1,6 +1,7 @@
 
 
+
 class Lanelink:
-	def __init__(self,to=None,from_=None):
-		self.to = to
+	def __init__(self,from_=None,to=None):
 		self.from_ = from_
+		self.to = to

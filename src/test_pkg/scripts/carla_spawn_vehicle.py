@@ -1,8 +1,8 @@
 import rospy
 from geometry_msgs.msg import Pose, Point, Quaternion
 from diagnostic_msgs.msg import KeyValue
-from std_msgs.msg import UInt32, Bool, String
 from carla_msgs.srv import SpawnObject
+from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 
 
 def spawn_object_callback(data):
@@ -17,9 +17,14 @@ def spawn_object_client():
         role_name = KeyValue("role_name", "ego_vehicle")
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
-        # point = Point(-68, -28.0, 0.2)
-        point = Point(109.68000030517578, 22.549476209362190, 3)
-        quaternion = Quaternion(0, 0, 0, 0)
+        carla_map = opendrive
+        x = float(carla_map.road_list[0].planview.geometry_list[0].x)
+        print(x)
+        y = float(carla_map.road_list[0].planview.geometry_list[0].y)
+        print(y)
+        heading = float(carla_map.road_list[0].planview.geometry_list[0].hdg)
+        point = Point(x, y-12, 10)
+        quaternion = Quaternion(0, 0, 1, 1)
         pose = Pose(point, quaternion)
         random_pos = False
         attach = 0

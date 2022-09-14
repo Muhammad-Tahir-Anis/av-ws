@@ -62,7 +62,7 @@ class JsonReader:
                         index = cls.classes_constructs.index([key, class_constructs[1]])
                         cls.classes_constructs[index] = [class_constructs[0],
                                                          list(set(class_constructs[1] + __attributes))]
-                        cls.classes.append(key)
+                        # cls.classes.append(key)
                 if __is_key_exists is False:
                     cls.classes_constructs.append([key, __attributes])
                     cls.classes.append(key)

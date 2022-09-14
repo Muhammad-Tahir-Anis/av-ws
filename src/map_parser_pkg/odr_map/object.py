@@ -1,20 +1,21 @@
-from src.map_parser_pkg.odr_map.width import Width
 from src.map_parser_pkg.odr_map.type import Type
 from src.map_parser_pkg.odr_map.outline import Outline
+from src.map_parser_pkg.odr_map.width import Width
+
 
 class Object:
-	def __init__(self,pitch=None,t=None,height=None,width=None,orientation=None,s=None,length=None,zoffset=None,name=None,type=None,hdg=None,id=None,outline=None,roll=None):
-		self.pitch = pitch
-		self.t = t
-		self.height = height
-		self.width: Width = width
-		self.orientation = orientation
-		self.s = s
-		self.length = length
-		self.zoffset = zoffset
-		self.name = name
+	def __init__(self,type=None,id=None,s=None,zoffset=None,hdg=None,roll=None,length=None,height=None,orientation=None,pitch=None,outline=None,t=None,name=None,width=None):
 		self.type: Type = type
-		self.hdg = hdg
 		self.id = id
-		self.outline: Outline = outline
+		self.s = s
+		self.zoffset = zoffset
+		self.hdg = hdg
 		self.roll = roll
+		self.length = length
+		self.height = height
+		self.orientation = orientation
+		self.pitch = pitch
+		self.outline: Outline = outline
+		self.t = t
+		self.name = name
+		self.width: Width = width
