@@ -12,16 +12,17 @@ class ClassWriter:
 
     @classmethod
     def __class_template(cls, class_name: str, class_attributes: List[str], classes: List[str]):
+        classes = [class_.lower() for class_ in classes]
+        class_attributes = [attribute.lower() for attribute in class_attributes]
         __constructor_parameters: str = ""
         __initialized_attributes: List[str] = list()
         __my_imports: List[str] = list()
-        class_attributes = [attribute.lower() for attribute in class_attributes]
         __constructor_parameters = "=None,".join(class_attributes) + "=None"
         __initialized_attributes = cls.__attribute_template(class_name, class_attributes, classes)
         __my_imports = cls.__imports_template(class_name, class_attributes, classes)
         __attributes = "\n\t\t".join(__initialized_attributes) + "\n"
         __imports = "\n".join(__my_imports) + "\n"
-        __temp_class = f"{__imports}\n" \
+        __temp_class = f"{__imports}\n\n" \
                        f"class {class_name.capitalize()}:\n\t" \
                        f"def __init__(self,{__constructor_parameters}):\n\t\t" \
                        f"{__attributes}"
@@ -31,13 +32,13 @@ class ClassWriter:
     def __attribute_template(cls, class_name, class_attributes: List[str], classes: List[str]):
         __temp_attributes: list = list()
         for class_attribute in class_attributes:
-            temp_attribute = f"self.{class_attribute.lower()} = {class_attribute.lower()}"
+            temp_attribute = f"self.{class_attribute} = {class_attribute}"
             if class_attribute in classes and class_attribute != class_name.lower():
-                temp_attribute = f"self.{class_attribute.lower()}: {class_attribute.capitalize()} = {class_attribute.lower()}"
+                temp_attribute = f"self.{class_attribute}: {class_attribute.capitalize()} = {class_attribute}"
             elif "_list" in class_attribute:
                 expected_class = class_attribute.replace("_list", "")
                 if expected_class in classes:
-                    temp_attribute = f"self.{class_attribute.lower()}: List[{expected_class.capitalize()}] = list()"
+                    temp_attribute = f"self.{class_attribute}: List[{expected_class.capitalize()}] = {class_attribute}"
             __temp_attributes.append(temp_attribute)
         return __temp_attributes
 
@@ -45,16 +46,17 @@ class ClassWriter:
     def __imports_template(cls,class_name, class_attributes: List[str], classes: List[str]):
         __temp_imports: list = list()
         list_import = f"from typing import List"
-        classes = [class_.lower() for class_ in classes]
         for class_attribute in class_attributes:
             if class_attribute in classes and class_attribute != class_name.lower():
-                __temp_imports.append(
-                    f"from src.map_parser_pkg.odr_map.{class_attribute.lower()} import {class_attribute.capitalize()}")
+                class_import = f"from src.map_parser_pkg.odr_map.{class_attribute} import {class_attribute.capitalize()}"
+                if class_import not in __temp_imports:
+                    __temp_imports.append(class_import)
             if "_list" in class_attribute:
                 expected_class = class_attribute.replace("_list", "")
                 if expected_class in classes and expected_class != class_name.lower():
-                    __temp_imports.append(
-                        f"from src.map_parser_pkg.odr_map.{expected_class.lower()} import {expected_class.capitalize()}")
+                    class_import = f"from src.map_parser_pkg.odr_map.{expected_class} import {expected_class.capitalize()}"
+                    if class_import not in __temp_imports:
+                        __temp_imports.append(class_import)
                 if list_import not in __temp_imports:
                     __temp_imports.append(list_import)
         return __temp_imports

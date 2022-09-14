@@ -20,11 +20,11 @@ def main():
         with open(json_file_path, 'w') as json_file:
             json_file.write(opendirve_json)
 
-    # if not os.path.exists("odr_map_obj.py"):
-    json_reader = JsonReader(json_file_path)
-    for class_constructs in json_reader.classes_constructs:
-        ClassWriter(class_constructs, json_reader.classes)
-    ObjectWriter(json_reader.objects_constructs,json_reader.classes)
+    if not os.path.exists("odr_map_obj.py"):
+        json_reader = JsonReader(json_file_path)
+        for class_constructs in json_reader.classes_constructs:
+            ClassWriter(class_constructs, json_reader.classes)
+        ObjectWriter(json_reader.objects_constructs,json_reader.classes)
 
 
 if __name__ == '__main__':

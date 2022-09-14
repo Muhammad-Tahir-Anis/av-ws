@@ -23,9 +23,9 @@ class ObjectWriter:
     def write_object(cls):
         imports = "\n".join(cls.__imports)
         objects = "\n".join(cls.__objects)
-        khichry = f"{imports}\n{objects}"
+        combine = f"{imports}\n{objects}"
         with open("odr_map_obj.py", "w") as python_file:
-            python_file.write(khichry)
+            python_file.write(combine)
 
 
 def main():

@@ -1,8 +1,9 @@
 
 
+
 class Predecessor:
-	def __init__(self,id=None,contactpoint=None,elementid=None,elementtype=None):
-		self.id = id
-		self.contactpoint = contactpoint
+	def __init__(self,elementid=None,contactpoint=None,id=None,elementtype=None):
 		self.elementid = elementid
+		self.contactpoint = contactpoint
+		self.id = id
 		self.elementtype = elementtype
