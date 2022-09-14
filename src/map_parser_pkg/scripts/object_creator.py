@@ -30,7 +30,6 @@ class ObjectCreator:
             for parameter in class_parameters:
                 index = class_parameters.index(parameter)
                 if f"'" not in parameter[1]:
-                    print(parameter[1])
                     parameter[1] = parameter[1].lower()
                 parameter[0] = parameter[0].lower()
                 class_parameters[index] = "=".join(parameter)
