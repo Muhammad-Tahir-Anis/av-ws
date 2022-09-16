@@ -3,6 +3,7 @@ from geometry_msgs.msg import Pose, Point, Quaternion
 from diagnostic_msgs.msg import KeyValue
 from carla_msgs.srv import SpawnObject
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
+from src.map_parser_pkg.scripts.odr_map import OdrMap
 
 
 def spawn_object_callback(data):
@@ -18,13 +19,17 @@ def spawn_object_client():
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
         carla_map = opendrive
-        x = float(carla_map.road_list[0].planview.geometry_list[0].x)
+        # x = float(carla_map.road_list[11].planview.geometry.x)
+
+        # y = float(carla_map.road_list[11].planview.geometry.y)
+
+        odr = OdrMap()
+        x, y, heading, w = odr.spawn_at_road(12,"right")
         print(x)
-        y = float(carla_map.road_list[0].planview.geometry_list[0].y)
         print(y)
-        heading = float(carla_map.road_list[0].planview.geometry_list[0].hdg)
-        point = Point(x, y-12, 10)
-        quaternion = Quaternion(0, 0, 1, 1)
+        # heading = float(carla_map.road_list[11].planview.geometry.hdg)
+        point = Point(x, y, 10)
+        quaternion = Quaternion(0, 0, heading, w)
         pose = Pose(point, quaternion)
         random_pos = False
         attach = 0
