@@ -3,7 +3,7 @@ from typing import List
 
 
 class ClassWriter:
-    def __init__(self, class_constructs, classes):
+    def __init__(cls, class_constructs, classes):
         self.__class_name = class_constructs[0]
         self.__class_attributes = class_constructs[1]
         self.__classes = classes
@@ -24,7 +24,7 @@ class ClassWriter:
         __imports = "\n".join(__my_imports) + "\n"
         __temp_class = f"{__imports}\n\n" \
                        f"class {class_name.capitalize()}:\n\t" \
-                       f"def __init__(self,{__constructor_parameters}):\n\t\t" \
+                       f"def __init__(cls,{__constructor_parameters}):\n\t\t" \
                        f"{__attributes}"
         return __temp_class
 
@@ -32,13 +32,13 @@ class ClassWriter:
     def __attribute_template(cls, class_name, class_attributes: List[str], classes: List[str]):
         __temp_attributes: list = list()
         for class_attribute in class_attributes:
-            temp_attribute = f"self.{class_attribute} = {class_attribute}"
+            temp_attribute = f"cls.{class_attribute} = {class_attribute}"
             if class_attribute in classes and class_attribute != class_name.lower():
-                temp_attribute = f"self.{class_attribute}: {class_attribute.capitalize()} = {class_attribute}"
+                temp_attribute = f"cls.{class_attribute}: {class_attribute.capitalize()} = {class_attribute}"
             elif "_list" in class_attribute:
                 expected_class = class_attribute.replace("_list", "")
                 if expected_class in classes:
-                    temp_attribute = f"self.{class_attribute}: List[{expected_class.capitalize()}] = {class_attribute}"
+                    temp_attribute = f"cls.{class_attribute}: List[{expected_class.capitalize()}] = {class_attribute}"
             __temp_attributes.append(temp_attribute)
         return __temp_attributes
 

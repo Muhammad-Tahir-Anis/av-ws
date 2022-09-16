@@ -39,7 +39,7 @@ def class_creator(name, value):
 
         # class_list.append(type(name, (), attribute_list))
         # with open("%s.py"%name, "w") as python_file:
-        #     class_temp = "class {name}:\n\def __init__(self,{attributes})"
+        #     class_temp = "class {name}:\n\def __init__(cls,{attributes})"
 
 
 def json_iterator(value):

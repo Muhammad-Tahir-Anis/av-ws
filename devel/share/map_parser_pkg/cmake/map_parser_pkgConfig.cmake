@@ -2,7 +2,7 @@
 
 # append elements to a list and remove existing duplicates from the list
 # copied from catkin/cmake/list_append_deduplicate.cmake to keep pkgConfig
-# self contained
+# cls contained
 macro(_list_append_deduplicate listname)
   if(NOT "${ARGN}" STREQUAL "")
     if(${listname})
@@ -14,7 +14,7 @@ endmacro()
 
 # append elements to a list if they are not already in the list
 # copied from catkin/cmake/list_append_unique.cmake to keep pkgConfig
-# self contained
+# cls contained
 macro(_list_append_unique listname)
   foreach(_item ${ARGN})
     list(FIND ${listname} ${_item} _index)
@@ -26,7 +26,7 @@ endmacro()
 
 # pack a list of libraries with optional build configuration keywords
 # copied from catkin/cmake/catkin_libraries.cmake to keep pkgConfig
-# self contained
+# cls contained
 macro(_pack_libraries_with_build_configuration VAR)
   set(${VAR} "")
   set(_argn ${ARGN})
@@ -50,7 +50,7 @@ endmacro()
 
 # unpack a list of libraries with optional build configuration keyword prefixes
 # copied from catkin/cmake/catkin_libraries.cmake to keep pkgConfig
-# self contained
+# cls contained
 macro(_unpack_libraries_with_build_configuration VAR)
   set(${VAR} "")
   foreach(lib ${ARGN})
