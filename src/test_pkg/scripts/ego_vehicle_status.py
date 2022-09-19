@@ -1,11 +1,16 @@
 import rospy
 from carla_msgs.msg import CarlaEgoVehicleStatus
 from ego_vehicle_control import EgoController
+from gnss_status import GnssData
 
 
 def callback(data):
     print(data)
-    EgoController(data.header, 0, 0, 1, 0, 0, 0, 0)
+    gnss = GnssData()
+    if gnss.y <= 30:
+        EgoController(data.header, 0.2, -0.2, 0, 0, 0, 0, 0)
+    else:
+        EgoController(data.header, 0, 0, 1, 0, 0, 0, 0)
     # rospy.spin()
 
 

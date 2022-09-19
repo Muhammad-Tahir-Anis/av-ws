@@ -31,24 +31,39 @@ class OdrMap:
                     self.y = float(road.planview.geometry.y)
                     self.heading = float(road.planview.geometry.hdg)
                 if lane_section == "left":
-                    lane_section_list = road.lanes.lanesection.left.lane_list
+                    if road.lanes.lanesection.left.lane_list:
+                        lane_section_list = road.lanes.lanesection.left.lane_list
+                    else:
+                        lane_section_list = road.lanes.lanesection.left.lane
                     self.lane_offset = self.select_lane(lane_section_list)
                     return self.adjust_spawn_point(self.x, self.y, lane_section, self.heading, self.lane_offset)
                 if lane_section == "right":
-                    lane_section_list = road.lanes.lanesection.right.lane_list
+                    if road.lanes.lanesection.right.lane_list:
+                        lane_section_list = road.lanes.lanesection.right.lane_list
+                    else:
+                        lane_section_list = road.lanes.lanesection.right.lane
                     self.lane_offset = self.select_lane(lane_section_list)
                     return self.adjust_spawn_point(self.x, self.y, lane_section, self.heading, self.lane_offset)
+            else:
+                print("Junction")
 
     @classmethod
     def select_lane(cls, lane_section_list):
-        if lane_section_list:
+        if isinstance(lane_section_list, list):
             for lane in lane_section_list:
                 if lane.type == "driving":
-                    cls.driving_lanes.append(int(lane.id))
-            cls.driving_lane = max(cls.driving_lanes)
+                    cls.driving_lanes.append(lane.id)
+            cls.driving_lane = int(max(cls.driving_lanes))
+            print(cls.driving_lanes)
+            print(cls.driving_lane)
             for lane in lane_section_list:
                 if lane.id == str(cls.driving_lane):
                     cls.lane_offset = float(lane.width.a)
+        else:
+            if lane_section_list.type == "driving":
+                cls.driving_lanes.append(int(lane_section_list.id))
+            if lane_section_list.id == str(cls.driving_lane):
+                cls.lane_offset = float(lane_section_list.width.a)
         return cls.lane_offset
 
     @classmethod
@@ -112,10 +127,42 @@ class OdrMap:
     @classmethod
     def center_lane(cls, no_of_lanes, lane_offset):
         point = ((2 * no_of_lanes - 1) / 2) * lane_offset
+        print(point)
         return point
 
-    def what_s(self, x, y):
-        pass
+    def normalize_s(self, last_s, next_road, s_list):
+        for road in opendrive.road_list:
+            if float(road.id) == next_road:
+                if road.planview.geometry_list:
+                    for geometry in road.planview.geometry_list:
+                        s_list.append([float(geometry.s)+last_s, road.id])
+                    last_s = float(road.planview.geometry_list[len(road.planview.geometry_list)-1].s)
+                else:
+                    s_list.append([float(road.planview.geometry.s)+last_s, road.id])
+                    last_s = float(road.planview.geometry.s)
+                next_road = float(self.what_next(next_road)[0])
+                self.normalize_s(last_s,next_road,s_list)
+
+    def what_s(self):
+        s_list = []
+        last_s = 0
+        next_road = 0
+        self.normalize_s(last_s, next_road, s_list)
+        [print(s) for s in s_list]
 
     def what_next(self, road_id):
-        pass
+        roads = opendrive.road_list
+        for road in roads:
+            if road_id == float(road.id):
+                next_road = road.link.successor.elementid
+                previous_road = road.link.predecessor.elementid
+                return next_road, previous_road
+
+
+def main():
+    odr_map = OdrMap()
+    odr_map.what_s()
+
+
+if __name__ == '__main__':
+    main()
