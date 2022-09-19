@@ -3,7 +3,7 @@ from typing import List
 
 
 class ClassWriter:
-    def __init__(cls, class_constructs, classes):
+    def __init__(self, class_constructs, classes):
         self.__class_name = class_constructs[0]
         self.__class_attributes = class_constructs[1]
         self.__classes = classes

@@ -19,10 +19,20 @@ def spawn_object_client():
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
         odr = OdrMap()
-        x, y, heading, w = odr.spawn_at_road(12,"left")
+        x,y = 0,0
+        for road in opendrive.road_list:
+            if road.id == "21":
+                x = float(road.planview.geometry.x)
+                y = float(road.planview.geometry.y)
+
+        heading = 0
+        w = 0
+        next_point, previous_point = odr.what_next(843)
+        print(next_point)
+        x, y, heading, w = odr.spawn_at_road(10,"left")
         print(x)
         print(y)
-        point = Point(x, y, 13)
+        point = Point(x, y, 10)
         quaternion = Quaternion(0, 0, heading, w)
         pose = Pose(point, quaternion)
         random_pos = False
