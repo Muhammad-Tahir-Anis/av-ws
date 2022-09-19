@@ -4,8 +4,10 @@ from sensor_msgs.msg import NavSatFix
 
 def callback(data: NavSatFix):
     gnss_const = 0.000009
-    print(data.latitude / gnss_const)
-    print(data.longitude / gnss_const)
+    y = data.latitude / gnss_const
+    x = data.longitude / gnss_const
+    print(y,x)
+
 
 
 def main():

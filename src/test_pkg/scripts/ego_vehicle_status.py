@@ -5,7 +5,7 @@ from ego_vehicle_control import EgoController
 
 def callback(data):
     print(data)
-    EgoController(data.header, 0, 0, 0, 0, 1, 0, 0)
+    EgoController(data.header, 0, 0, 1, 0, 0, 0, 0)
     # rospy.spin()
 
 

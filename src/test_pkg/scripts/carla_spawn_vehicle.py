@@ -18,17 +18,11 @@ def spawn_object_client():
         role_name = KeyValue("role_name", "ego_vehicle")
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
-        carla_map = opendrive
-        # x = float(carla_map.road_list[11].planview.geometry.x)
-
-        # y = float(carla_map.road_list[11].planview.geometry.y)
-
         odr = OdrMap()
-        x, y, heading, w = odr.spawn_at_road(12,"right")
+        x, y, heading, w = odr.spawn_at_road(12,"left")
         print(x)
         print(y)
-        # heading = float(carla_map.road_list[11].planview.geometry.hdg)
-        point = Point(x, y, 10)
+        point = Point(x, y, 13)
         quaternion = Quaternion(0, 0, heading, w)
         pose = Pose(point, quaternion)
         random_pos = False
