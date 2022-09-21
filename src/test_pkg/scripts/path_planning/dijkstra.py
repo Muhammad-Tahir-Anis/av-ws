@@ -32,9 +32,13 @@ class MapTree:
         if len(cls.map_tree) >= 2:
             if road_id == cls.map_tree[len(cls.map_tree) - 2]:
                 road_id = cls.previse_road(cls.map_tree[len(cls.map_tree) -1])
-            # else:
-            #     print(road_id)
-        cls.traverse_map_flow(road_id)
+                cls.traverse_map_flow(road_id)
+            elif road_id == "0":
+                pass
+            else:
+                cls.traverse_map_flow(road_id)
+        else:
+            cls.traverse_map_flow(road_id)
 
     @classmethod
     def next_road(cls, id):
