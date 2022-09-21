@@ -21,29 +21,28 @@ class MapTree:
         if not is_road:
             for junction in cls.junctions:
                 if id == junction.id:
+                    print("junction" + id)
                     # junction_roads: list = list()
                     for connection in junction.connection_list:
                         # if len(cls.map_tree) >= 1:
-                        if connection.incomingroad == cls.map_tree.index(len(cls.map_tree) - 1):
+                        if connection.incomingroad == cls.map_tree[len(cls.map_tree) - 1]:
                             cls.traverse_map_flow(connection.connectingroad)
-                                # road_id = junction_roads.append(connection.connectingroad)
-                        # else:
-                        #     cls.traverse_map_flow(connection.connectingroad)
 
         road_id = cls.next_road(id)
         if len(cls.map_tree) >= 2:
-            if road_id == cls.map_tree.index(len(cls.map_tree) - 2):
-                print(road_id)
-                road_id = cls.previse_road(road_id)
-            else:
-                print(road_id)
+            if road_id == cls.map_tree[len(cls.map_tree) - 2]:
+                road_id = cls.previse_road(cls.map_tree[len(cls.map_tree) -1])
+            # else:
+            #     print(road_id)
         cls.traverse_map_flow(road_id)
 
     @classmethod
-    def next_road(cls, road_id):
+    def next_road(cls, id):
         for road in cls.roads:
-            if road.id == road_id:
+            if road.id == id:
                 if road.link.successor.elementtype == "road":
+                    return road.link.successor.elementid
+                elif road.link.successor.elementtype == "junction":
                     return road.link.successor.elementid
 
     @classmethod
@@ -51,6 +50,8 @@ class MapTree:
         for road in cls.roads:
             if road.id == road_id:
                 if road.link.successor.elementtype == "road":
+                    return road.link.predecessor.elementid
+                elif road.link.predecessor.elementtype == "junction":
                     return road.link.predecessor.elementid
 
 
