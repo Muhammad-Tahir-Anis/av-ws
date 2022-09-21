@@ -29,7 +29,7 @@ def spawn_object_client():
         w = 0
         next_point, previous_point = odr.what_next(843)
         print(next_point)
-        x, y, heading, w = odr.spawn_at_road(10,"left")
+        x, y, heading, w = odr.spawn_at_road(0,"left")
         print(x)
         print(y)
         point = Point(x, y, 10)
