@@ -80,13 +80,28 @@ class MapTree:
                     # return JunctionNode(junction_id, roads)
                     # cls.map_tree.append(JunctionNode(junction_id, roads))
 
+    route = list()
+    next_mode: bool = True
+
     @classmethod
     def find_rout(cls, to, from_):
         if not to == from_:
             for roads in cls.map_tree:
-                if to == roads.road_id:
+                if to == roads.road_id and cls.next_mode == True:
                     print(roads.road_id)
+                    cls.route.append(roads.road_id)
                     to = roads.next_road
+                    if to == cls.route[len(cls.route) - 2]:
+                        cls.next_mode = False
+                        cls.find_rout(to, from_)
+                    cls.find_rout(to, from_)
+                if to == roads.road_id and cls.next_mode == False:
+                    print(roads.road_id)
+                    cls.route.append(roads.road_id)
+                    to = roads.previous_road
+                    if to == cls.route[len(cls.route) - 2]:
+                        cls.next_mode = True
+                        cls.find_rout(to, from_)
                     cls.find_rout(to, from_)
 
 
@@ -96,6 +111,7 @@ def main():
     # for tree in tree.map_tree:
     #     print(tree.previous_road, tree.road_id, tree.next_road)
     tree.find_rout("0", "3")
+    print(tree.route)
 
 
 if __name__ == '__main__':
