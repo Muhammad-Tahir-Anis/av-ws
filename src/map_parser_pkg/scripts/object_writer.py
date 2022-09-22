@@ -29,7 +29,7 @@ class ObjectWriter:
 
 
 def main():
-    json_reader = JsonReader("/home/maanz-ai/PycharmProjects/av-ws/src/test_pkg/scripts/json_map.json")
+    json_reader = JsonReader("../json_files/opendrive.json")
     ObjectWriter(json_reader.objects_constructs, json_reader.classes)
 
 

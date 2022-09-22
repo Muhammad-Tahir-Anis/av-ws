@@ -71,12 +71,12 @@ class MapTree:
                     # return RoadNode(previous_road, road_id, next_road)
             for junction in cls.junctions:
                 if junction.id == id:
-                    roads: list = list()
-                    junction_id = id
+                    # roads: list = list()
+                    # junction_id = id
                     # cls.map_tree.pop()
                     for connection in junction.connection_list:
-                        # roads.append(connection.connectingroad)
                         cls.road_node(connection.connectingroad)
+                        # roads.append(connection.connectingroad)
                     # return JunctionNode(junction_id, roads)
                     # cls.map_tree.append(JunctionNode(junction_id, roads))
 
@@ -108,10 +108,10 @@ class MapTree:
 def main():
     tree = MapTree()
     tree.road_node("0")
-    # for tree in tree.map_tree:
-    #     print(tree.previous_road, tree.road_id, tree.next_road)
-    tree.find_rout("0", "3")
-    print(tree.route)
+    for tree in tree.map_tree:
+        print(tree.previous_road, tree.road_id, tree.next_road)
+    # tree.find_rout("0", "3")
+    # print(tree.route)
 
 
 if __name__ == '__main__':
