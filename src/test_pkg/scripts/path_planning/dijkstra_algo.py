@@ -46,7 +46,7 @@ for roads in opendrive.road_list:
                         for road in opendrive.road_list:
                             if connections.connectingroad == road.id:
                                 if check_driving_lanes(roads) and check_driving_lanes(road):
-                                    map_graph.append(list((roads.id, connections.connectingroad, False)))
+                                    map_graph.append(list((roads.id, road.id, False)))
     if roads.link.predecessor.elementtype == "road":
         for road in opendrive.road_list:
             if roads.link.predecessor.elementid == road.id:
@@ -60,9 +60,9 @@ for roads in opendrive.road_list:
                         for road in opendrive.road_list:
                             if connections.connectingroad == road.id:
                                 if check_driving_lanes(roads) and check_driving_lanes(road):
-                                    map_graph.append(list((roads.id, connections.connectingroad, False)))
+                                    map_graph.append(list((roads.id, road.id, False)))
 
-map_graph_2 = []
+map_graph_2 = {}
 for data in map_graph:
     my_list = []
     if data[0] not in [graph[0] for graph in map_graph_2]:
@@ -74,36 +74,32 @@ for data in map_graph:
             if data[0] == graph_data[1]:
                 if graph_data[0] not in my_list:
                     my_list.append(graph_data[0])
-        map_graph_2.append([data[0], my_list])
+        map_graph_2[data[0]] = my_list
 
 new_list = []
 
 
 # for data in map_graph_2:
-#     print(data)
+print(map_graph_2)
 # print("___________________________")
 
 
 def find_all_paths(graph, start, end, path=[]):
     path = path + [start]
-    print(path)
     if start == end:
         return [path]
-    if not start in [data[0] for data in graph]:
+    if not start in graph:
         return []
     paths = []
-    for data in graph:
-        if start == data[0]:
-            for node in data[1]:
-                if node not in path:
-                    newpaths = find_all_paths(graph, node, end, path)
-                    if newpaths: return newpaths
-                    # for newpath in newpaths:
-                    #     paths.append(newpath)
+    for node in graph[start]:
+        if node not in path:
+            newpaths = find_all_paths(graph, node, end, path)
+            for newpath in newpaths:
+                paths.append(newpath)
     return paths
 
 
-print(find_all_paths(map_graph_2, "0", "3"))
+# print(find_all_paths(map_graph_2, "0", "3"))
 # find_all_paths(my_graph,0,3)
-# for node in map_graph:
-#     print(node)
+for node in map_graph_2:
+    print(node)
