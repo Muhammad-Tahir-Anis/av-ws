@@ -78,28 +78,31 @@ for data in map_graph:
 
 new_list = []
 
-
 # for data in map_graph_2:
-print(map_graph_2)
+# print(map_graph_2)
 # print("___________________________")
 
 
-def find_all_paths(graph, start, end, path=[]):
-    path = path + [start]
-    if start == end:
-        return [path]
-    if not start in graph:
-        return []
-    paths = []
-    for node in graph[start]:
-        if node not in path:
-            newpaths = find_all_paths(graph, node, end, path)
-            for newpath in newpaths:
-                paths.append(newpath)
-    return paths
+path = []
+completed = []
 
 
-# print(find_all_paths(map_graph_2, "0", "3"))
+def find_all_paths(graph, start, end):
+    path = []
+    q = []
+    l = []
+    for data in graph:
+        if start == data[0]:
+            l.append(data[1])
+    q.insert(0,start)
+    for i in l:
+
+        find_all_paths(graph,i,end)
+    return path
+
+
+print(find_all_paths(map_graph, "0", "3"))
+print(path)
 # find_all_paths(my_graph,0,3)
-for node in map_graph_2:
+for node in map_graph:
     print(node)
