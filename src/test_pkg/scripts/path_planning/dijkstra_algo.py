@@ -96,10 +96,10 @@ def find_all_paths(graph, start, end, path=[]):
         if start == data[0]:
             for node in data[1]:
                 if node not in path:
-                    newpath = find_all_paths(graph, node, end, path)
-                    if newpath:
-                        if not paths or len(newpath) < len(paths):
-                            shortest = newpath
+                    newpaths = find_all_paths(graph, node, end, path)
+                    if newpaths: return newpaths
+                    # for newpath in newpaths:
+                    #     paths.append(newpath)
     return paths
 
 
