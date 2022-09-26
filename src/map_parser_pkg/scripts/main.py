@@ -10,6 +10,13 @@ from src.map_parser_pkg.scripts.object_writer import ObjectWriter
 
 
 def main():
+    xml_file_path = "../xml_files/town_map.xml"
+    if not os.path.exists(xml_file_path):
+        os.mkdir("../xml_files")
+        carla_world = WorldInfoSubscriber()
+        opendrive_xml = carla_world.opendrive_map
+        with open(xml_file_path, 'w') as xml_file:
+            xml_file.write(opendrive_xml)
     json_file_path = "../json_files/opendrive.json"
     if not os.path.exists(json_file_path):
         os.mkdir("../json_files")

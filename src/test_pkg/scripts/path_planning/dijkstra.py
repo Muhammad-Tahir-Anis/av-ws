@@ -82,27 +82,73 @@ class MapTree:
 
     route = list()
     next_mode: bool = True
+    is_junction: bool = True
 
     @classmethod
-    def find_rout(cls, to, from_):
+    def find_rout(cls, from_, to):
+        cls.is_junction = True
         if not to == from_:
             for roads in cls.map_tree:
-                if to == roads.road_id and cls.next_mode == True:
-                    print(roads.road_id)
-                    cls.route.append(roads.road_id)
-                    to = roads.next_road
-                    if to == cls.route[len(cls.route) - 2]:
+                if from_ == roads.road_id and cls.next_mode == True:
+                    print(from_)
+                    cls.route.append(from_)
+                    if roads.next_road == cls.route[len(cls.route) - 2]:
                         cls.next_mode = False
-                        cls.find_rout(to, from_)
-                    cls.find_rout(to, from_)
-                if to == roads.road_id and cls.next_mode == False:
-                    print(roads.road_id)
-                    cls.route.append(roads.road_id)
-                    to = roads.previous_road
-                    if to == cls.route[len(cls.route) - 2]:
+                        cls.route.pop()
+                        cls.find_rout(from_, to)
+                    else:
+                        from_ = roads.next_road
+                        cls.find_rout(from_, to)
+                    cls.is_junction = False
+                    break
+                if from_ == roads.road_id and cls.next_mode == False:
+                    print(from_)
+                    cls.route.append(from_)
+                    if roads.previous_road == cls.route[len(cls.route) - 2]:
                         cls.next_mode = True
-                        cls.find_rout(to, from_)
-                    cls.find_rout(to, from_)
+                        cls.route.pop()
+                        cls.find_rout(from_, to)
+                    else:
+                        from_ = roads.previous_road
+                        cls.find_rout(from_, to)
+                    cls.is_junction = False
+                    break
+            if cls.is_junction:
+                for roads in cls.map_tree:
+                    if cls.route[len(cls.route) - 1] == roads.next_road:
+                        print(cls.route)
+                        from_ = roads.road_id
+                        # cls.route.append(from_)
+                        cls.find_rout(from_, to)
+                        break
+                    if cls.route[len(cls.route) - 1] == roads.previous_road:
+                        print(cls.route)
+                        from_ = roads.road_id
+                        # cls.route.append(from_)
+                        cls.find_rout(from_, to)
+                        break
+                print("Junction")
+            else:
+                pass
+
+    routes_list: list = list()
+
+    @classmethod
+    def create_root(cls, from_, to):
+        for roads in cls.map_tree:
+            if from_ == roads.road_id:
+                cls.routes_list.append(list((from_, roads.next_road)))
+                cls.routes_list.append(list((from_, roads.previous_road)))
+
+    @classmethod
+    def possible_routes(cls, from_, to):
+        for roads in cls.map_tree:
+            if from_ == roads.road_id:
+                cls.create_root(from_, to)
+                cls.possible_routes(roads.next_road, to)
+                cls.possible_routes(roads.previous_road, to)
+
+
 
 
 def main():
@@ -110,8 +156,10 @@ def main():
     tree.road_node("0")
     # for tree in tree.map_tree:
     #     print(tree.previous_road, tree.road_id, tree.next_road)
-    tree.find_rout("0", "3")
-    print(tree.route)
+    # tree.find_rout("0", "3")
+    # print(tree.route)
+    tree.possible_routes("0", 3)
+    print(tree.routes_list)
 
 
 if __name__ == '__main__':

@@ -15,7 +15,7 @@ class GnssData:
         gnss_const = 0.000009
         cls.y = data.latitude / gnss_const
         cls.x = data.longitude / gnss_const
-        print(cls.y, cls.x)
+        # print(cls.x, cls.y)
 
 
 # def main():

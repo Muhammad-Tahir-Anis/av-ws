@@ -10,6 +10,9 @@ def spawn_object_callback(data):
     print(data)
     rospy.spin()
 
+# def xytheta_to_stalpha(x,y,theta):
+    # s =
+
 
 def spawn_object_client():
     rospy.wait_for_service('/carla/spawn_object')
@@ -19,16 +22,6 @@ def spawn_object_client():
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
         odr = OdrMap()
-        x,y = 0,0
-        for road in opendrive.road_list:
-            if road.id == "21":
-                x = float(road.planview.geometry.x)
-                y = float(road.planview.geometry.y)
-
-        heading = 0
-        w = 0
-        next_point, previous_point = odr.what_next(843)
-        print(next_point)
         x, y, heading, w = odr.spawn_at_road(0,"left")
         print(x)
         print(y)
