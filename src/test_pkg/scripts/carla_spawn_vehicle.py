@@ -10,8 +10,9 @@ def spawn_object_callback(data):
     print(data)
     rospy.spin()
 
+
 # def xytheta_to_stalpha(x,y,theta):
-    # s =
+# s =
 
 
 def spawn_object_client():
@@ -22,7 +23,7 @@ def spawn_object_client():
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
         odr = OdrMap()
-        x, y, heading, w = odr.spawn_at_road(0,"left")
+        x, y, heading, w = odr.spawn_at_road(0, "right")
         print(x)
         print(y)
         point = Point(x, y, 10)

@@ -83,14 +83,19 @@ class OdrMap:
         return cls.lane_width
 
     @classmethod
+    def rad_to_degree(cls, radian):
+        degree = (radian / math.pi) * 180
+        return degree
+
+    @classmethod
     def adjust_spawn_point(cls, x, y, lane_section, heading, lane_width, lane_offset):
+        degree = cls.rad_to_degree(heading)
         w = 0
-        print(x)
-        print(y)
+        print(x, y)
         s_translation = x - x
         t_translation = y - y
-        s = (s_translation * math.cos(heading)) - (t_translation * math.sin(heading))
-        t = (t_translation * math.cos(heading)) - (s_translation * math.sin(heading))
+        s = (s_translation * math.cos(degree)) - (t_translation * math.sin(heading))
+        t = (t_translation * math.cos(degree)) - (s_translation * math.sin(heading))
         print(s, t)
         # s = (x*math.cos(heading)) - (y*math.sin(heading))
         # t = (y*math.cos(heading)) - (x*math.sin(heading))
@@ -151,7 +156,7 @@ class OdrMap:
         #         y = y
 
         if lane_section == "left":
-            t = t + lane_offset + cls.center_lane(len(cls.driving_lanes),lane_width)
+            t = t + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
             w = heading
         if lane_section == "right":
             t = t - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
@@ -160,9 +165,9 @@ class OdrMap:
         y = y + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
         x_translation = t_translation + y
         y_translation = s_translation + x
-        x = (x_translation * math.cos(-heading) - y_translation * math.sin(-heading))
-        y = (y_translation * math.cos(-heading) - x_translation * math.sin(-heading))
-        print(x,y)
+        x = (x_translation * math.cos(-degree) - y_translation * math.sin(-degree))
+        y = (y_translation * math.cos(-degree) - x_translation * math.sin(-degree))
+        print(x, y)
 
         return x, y, heading, w
 

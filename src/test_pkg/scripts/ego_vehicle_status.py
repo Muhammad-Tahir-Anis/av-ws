@@ -20,7 +20,7 @@ def callback(data):
     print(gnss.x, gnss.y)
     print(s, t)
     if s <= 90:
-        EgoController(data.header, 0.1, -0.0, 0.0, 0, 0, 0, 0)
+        EgoController(data.header, 0.1, 0.0, 0.0, 0, 0, 0, 0)
     else:
         EgoController(data.header, 0, 0, 1, 0, 0, 0, 0)
     # rospy.spin()
