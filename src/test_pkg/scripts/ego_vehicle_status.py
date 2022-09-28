@@ -8,8 +8,10 @@ from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 def xy_to_st(x, y, road_id):
     for road in opendrive.road_list:
         if road_id == road.id:
-            s = abs(float(road.planview.geometry_list[0].x) - x)
-            t = abs(float(road.planview.geometry_list[0].y) - y)
+            # s = abs(float(road.planview.geometry_list[0].x) - x)
+            # t = abs(float(road.planview.geometry_list[0].y) - y)
+            s = abs(x - float(road.planview.geometry_list[0].x))
+            t = abs(y - float(road.planview.geometry_list[0].y))
             return s, t
 
 

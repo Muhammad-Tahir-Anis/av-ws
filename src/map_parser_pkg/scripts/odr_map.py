@@ -1,4 +1,4 @@
-import math
+from math import sin, cos, pi
 
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 
@@ -84,131 +84,103 @@ class OdrMap:
 
     @classmethod
     def rad_to_degree(cls, radian):
-        degree = (radian / math.pi) * 180
+        degree = (radian / pi) * 180
+        return degree
+
+    @classmethod
+    def anticlockwise_degree_to_clockwise(cls, degree):
+        if degree < 0:
+            degree = 360 + degree
         return degree
 
     @classmethod
     def adjust_spawn_point(cls, x, y, lane_section, heading, lane_width, lane_offset):
-        degree = cls.rad_to_degree(heading)
+        global z
+        print(heading)
+        angle = cls.rad_to_degree(heading)
+        print(angle)
+        degree = cls.anticlockwise_degree_to_clockwise(angle)
+        print(degree)
         w = 0
-        print(x, y)
-        s_translation = x - x
-        t_translation = y - y
-        s = (s_translation * math.cos(degree)) - (t_translation * math.sin(heading))
-        t = (t_translation * math.cos(degree)) - (s_translation * math.sin(heading))
-        print(s, t)
-        # s = (x*math.cos(heading)) - (y*math.sin(heading))
-        # t = (y*math.cos(heading)) - (x*math.sin(heading))
-        # heading_range_0 = [0 + 1, 0 - 1]
-        # heading_range_90 = [(math.pi / 2) + 1, (math.pi / 2) - 1]
-        # heading_range_180 = [math.pi + 1, math.pi - 1]
-        # heading_range_270 = [(3 * math.pi / 2) + 1, (3 * math.pi / 2) - 1]
-        # heading_range_360 = [(2 * math.pi) + 1, (2 * math.pi) - 1]
-        # if lane_section == "left":
-        #     if heading_range_0[0] >= heading >= heading_range_0[1]:
-        #         heading = 0
-        #         w = 0
-        #         y = y + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_90[0] >= heading >= heading_range_90[1]:
-        #         heading = heading
-        #         w = heading
-        #         x = x + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_180[0] >= heading >= heading_range_180[1]:
-        #         heading = 1
-        #         w = 0
-        #         y = y + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_270[0] >= heading >= heading_range_270[1]:
-        #         heading = heading
-        #         w = - heading
-        #         x = x + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_360[0] >= heading >= heading_range_360[1]:
-        #         heading = 0
-        #         w = 0
-        #         y = y + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     else:
-        #         w = 0
-        #         x = x
-        #         y = y
-        # if lane_section == "right":
-        #     if heading_range_0[0] >= heading >= heading_range_0[1]:
-        #         heading = 1
-        #         w = 0
-        #         y = y - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_90[0] >= heading >= heading_range_90[1]:
-        #         heading = heading
-        #         w = -heading
-        #         x = x - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_180[0] >= heading >= heading_range_180[1]:
-        #         heading = 0
-        #         w = 0
-        #         y = y - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_270[0] >= heading >= heading_range_270[1]:
-        #         heading = heading
-        #         w = heading
-        #         x = x - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     elif heading_range_360[0] >= heading >= heading_range_360[1]:
-        #         heading = 1
-        #         w = 0
-        #         y = y - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-        #     else:
-        #         w = 0
-        #         x = x
-        #         y = y
+        x_origin = x
+        y_origin = y
+        print(x_origin, y_origin)
+        x_point = x
+        y_point = y
+        print(x_point, y_point)
 
+        # Axis Translation from Inertial XY to Reference Line ST
+        s_translated = x_point - x_origin
+        t_translated = y_point - y_origin
+        print(s_translated, t_translated)
+
+        # Axis Rotation from Reference Line ST to local UV
+        u_rotated = s_translated * cos(degree) + t_translated * sin(degree)
+        v_rotated = t_translated * cos(degree) - s_translated * sin(degree)
+        print(u_rotated, v_rotated)
+
+        # Setting Direction of vehicle on road while spawning
         if lane_section == "left":
-            t = t + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-            w = heading
-        if lane_section == "right":
-            t = t - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-            w = 0
-        print(s, t)
-        y = y + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
-        x_translation = t_translation + y
-        y_translation = s_translation + x
-        x = (x_translation * math.cos(-degree) - y_translation * math.sin(-degree))
-        y = (y_translation * math.cos(-degree) - x_translation * math.sin(-degree))
+            w = cos(degree / 2)
+            z = -(sin(degree / 2))
+            v_rotated = v_rotated + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
+        elif lane_section == "right":
+            w = cos(degree / 2)
+            z = sin(degree / 2)
+            v_rotated = v_rotated - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
+        print(u_rotated, v_rotated)
+
+        # Reverse Rotation from Local UV to Reference Line ST
+        print(degree)
+        s_translated = u_rotated * cos(-degree) + v_rotated * sin(-degree)
+        t_translated = v_rotated * cos(-degree) - u_rotated * sin(-degree)
+        print(s_translated, t_translated)
+
+        # Reverse Translation from Reference Line ST to Inertial XY
+        x = s_translated + x_origin
+        y = t_translated + y_origin
         print(x, y)
 
-        return x, y, heading, w
+        return x, y, z, w
 
     @classmethod
     def center_lane(cls, no_of_lanes, lane_width):
         point = ((2 * no_of_lanes - 1) / 2) * lane_width
-        print(point)
+        # print(point)
         return point
 
-    def normalize_s(self, last_s, next_road, s_list):
-        for road in opendrive.road_list:
-            if float(road.id) == next_road:
-                if road.planview.geometry_list:
-                    for geometry in road.planview.geometry_list:
-                        s_list.append([float(geometry.s) + last_s, road.id])
-                    last_s = float(road.planview.geometry_list[len(road.planview.geometry_list) - 1].s)
-                else:
-                    s_list.append([float(road.planview.geometry.s) + last_s, road.id])
-                    last_s = float(road.planview.geometry.s)
-                next_road = float(self.what_next(next_road)[0])
-                self.normalize_s(last_s, next_road, s_list)
+    # def normalize_s(self, last_s, next_road, s_list):
+    #     for road in opendrive.road_list:
+    #         if float(road.id) == next_road:
+    #             if road.planview.geometry_list:
+    #                 for geometry in road.planview.geometry_list:
+    #                     s_list.append([float(geometry.s) + last_s, road.id])
+    #                 last_s = float(road.planview.geometry_list[len(road.planview.geometry_list) - 1].s)
+    #             else:
+    #                 s_list.append([float(road.planview.geometry.s) + last_s, road.id])
+    #                 last_s = float(road.planview.geometry.s)
+    #             next_road = float(self.what_next(next_road)[0])
+    #             self.normalize_s(last_s, next_road, s_list)
 
-    def what_s(self):
-        s_list = []
-        last_s = 0
-        next_road = 0
-        self.normalize_s(last_s, next_road, s_list)
-        [print(s) for s in s_list]
+    # def what_s(self):
+    #     s_list = []
+    #     last_s = 0
+    #     next_road = 0
+    #     self.normalize_s(last_s, next_road, s_list)
+    #     [print(s) for s in s_list]
 
-    def what_next(self, road_id):
-        roads = opendrive.road_list
-        for road in roads:
-            if road_id == float(road.id):
-                next_road = road.link.successor.elementid
-                previous_road = road.link.predecessor.elementid
-                return next_road, previous_road
+    # def what_next(self, road_id):
+    #     roads = opendrive.road_list
+    #     for road in roads:
+    #         if road_id == float(road.id):
+    #             next_road = road.link.successor.elementid
+    #             previous_road = road.link.predecessor.elementid
+    #             return next_road, previous_road
 
 
 def main():
     odr_map = OdrMap()
-    odr_map.spawn_at_road(0, "right")
+    odr_map.spawn_at_road(0, "left")
 
 
 if __name__ == '__main__':
