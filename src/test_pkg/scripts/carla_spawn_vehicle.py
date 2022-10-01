@@ -23,9 +23,9 @@ def spawn_object_client():
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
         odr = OdrMap()
-        x, y, z, w = odr.spawn_at_road(3, "right")
-        print(x)
-        print(y)
+        x, y, z, w = odr.spawn_at_road(17, "left")
+        print(x,y)
+        print(z,w)
         point = Point(x, y, 10)
         quaternion = Quaternion(0, 0, z, w)
         pose = Pose(point, quaternion)

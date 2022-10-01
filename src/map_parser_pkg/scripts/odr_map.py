@@ -1,5 +1,7 @@
 from math import sin, cos, pi
 
+import numpy as np
+
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 
 
@@ -89,8 +91,8 @@ class OdrMap:
 
     @classmethod
     def anticlockwise_degree_to_clockwise(cls, degree):
-        if degree < 0:
-            degree = 360 + degree
+        # if degree < 0:
+        #     degree = 360 + degree
         return degree
 
     @classmethod
@@ -121,12 +123,12 @@ class OdrMap:
 
         # Setting Direction of vehicle on road while spawning
         if lane_section == "left":
-            w = cos(degree / 2)
-            z = -(sin(degree / 2))
+            w = cos((heading+pi)/2)
+            z = sin((heading+pi)/2)
             v_rotated = v_rotated + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
         elif lane_section == "right":
-            w = cos(degree / 2)
-            z = sin(degree / 2)
+            w = cos(heading / 2)
+            z = sin(heading / 2)
             v_rotated = v_rotated - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
         print(u_rotated, v_rotated)
 
@@ -140,7 +142,6 @@ class OdrMap:
         x = s_translated + x_origin
         y = t_translated + y_origin
         print(x, y)
-
         return x, y, z, w
 
     @classmethod
