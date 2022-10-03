@@ -1,3 +1,4 @@
+import math
 from math import cos, sin
 
 import rospy
@@ -44,7 +45,7 @@ class EgoVehicle:
                         if s == road_s:
                             cls.heading = float(geometry.hdg)
                             if geometry.arc:
-                                cls.curvature = -float(geometry.arc.curvature)*2.25
+                                cls.curvature = float(geometry.arc.curvature)
                             else:
                                 cls.curvature = 0
                 else:
@@ -62,12 +63,19 @@ class EgoVehicle:
         # route = iter(route)
         road = cls.route[cls.index]
         road_id, heading, road_length, curvature = cls.update_route(road, cls.s)
+        if curvature != 0:
+            radius_of_curvature = 1 / curvature
+            angle = cls.s / radius_of_curvature
+            # angle = float(math.radians(angle))
+            print(angle)
+            heading = angle
+
         print(heading)
         cls.s, t = cls.xy_to_st(gnss.x, gnss.y, road_id, heading)
         print(gnss.x, gnss.y)
         print(cls.s, t, curvature)
         if cls.s <= road_length:
-            EgoController(data.header, 0.15, curvature, 0.0, 0, 0, 0, 0)
+            EgoController(data.header, 0.15, -curvature*2.25, 0.0, 0, 0, 0, 0)
         else:
             cls.index += 1
             cls.s = 0
