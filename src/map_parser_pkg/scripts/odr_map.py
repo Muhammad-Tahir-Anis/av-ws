@@ -1,3 +1,4 @@
+import math
 from math import sin, cos, pi
 
 import numpy as np
@@ -117,8 +118,8 @@ class OdrMap:
         print(s_translated, t_translated)
 
         # Axis Rotation from Reference Line ST to local UV
-        u_rotated = s_translated * cos(degree) + t_translated * sin(degree)
-        v_rotated = t_translated * cos(degree) - s_translated * sin(degree)
+        u_rotated = s_translated * cos(heading) + t_translated * sin(heading)
+        v_rotated = t_translated * cos(heading) - s_translated * sin(heading)
         print(u_rotated, v_rotated)
 
         # Setting Direction of vehicle on road while spawning
@@ -134,8 +135,10 @@ class OdrMap:
 
         # Reverse Rotation from Local UV to Reference Line ST
         print(degree)
-        s_translated = u_rotated * cos(-degree) + v_rotated * sin(-degree)
-        t_translated = v_rotated * cos(-degree) - u_rotated * sin(-degree)
+        print(cos(heading))
+        print(sin(-heading))
+        s_translated = (u_rotated * np.cos(-heading)) + (v_rotated * np.sin(-heading))
+        t_translated = (v_rotated * np.cos(-heading)) - (u_rotated * np.sin(-heading))
         print(s_translated, t_translated)
 
         # Reverse Translation from Reference Line ST to Inertial XY
@@ -181,7 +184,7 @@ class OdrMap:
 
 def main():
     odr_map = OdrMap()
-    odr_map.spawn_at_road(0, "left")
+    odr_map.spawn_at_road(10, "left")
 
 
 if __name__ == '__main__':

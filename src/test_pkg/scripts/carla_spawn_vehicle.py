@@ -11,10 +11,6 @@ def spawn_object_callback(data):
     rospy.spin()
 
 
-# def xytheta_to_stalpha(x,y,theta):
-# s =
-
-
 def spawn_object_client():
     rospy.wait_for_service('/carla/spawn_object')
     try:
@@ -23,7 +19,7 @@ def spawn_object_client():
         color = KeyValue("color", "255,255,255")
         key_value = [role_name, color]
         odr = OdrMap()
-        x, y, z, w = odr.spawn_at_road(17, "left")
+        x, y, z, w = odr.spawn_at_road(3, "right")
         print(x,y)
         print(z,w)
         point = Point(x, y, 10)
