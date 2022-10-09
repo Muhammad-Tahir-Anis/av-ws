@@ -125,6 +125,7 @@ def main():
     spawn_vehicle = SpawnEgoVehicle(3, "right")
     spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id)
     ego_vehicle.ego_vehicle_status_subscriber()
+    # ego_vehicle.curvature_points(0.025372645725697789, 62.506300531593439, 1.5560509823599684)
 
 
 if __name__ == '__main__':
