@@ -87,8 +87,8 @@ class EgoVehicle:
                 if cls.curvature != 0:
                     radius_of_curvature = 1 / cls.curvature
                     angle = cls.s / radius_of_curvature
-                    cls.heading = heading + angle
-                    print("CLS Heading: ", cls.heading, " heading: ", heading)
+                    # cls.heading = heading + angle
+                    # print("CLS Heading: ", cls.heading, " heading: ", heading)
                 else:
                     cls.heading = heading
                 road_length = float(road.length)
