@@ -5,27 +5,35 @@ from carla_msgs.msg import CarlaEgoVehicleStatus
 from ego_vehicle_control import EgoController
 from gnss_status import GnssData
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
+from src.test_pkg.scripts.carla_spawn_sensor import SpawnSensor
+from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 
 
 class EgoVehicle:
     # route = ["3", "0", "10", "17", "7", "90", "6", "735", "5", "516", "4", "8", "1", "675", "2", "566", "3"]
-    route = ["3", "0", "10"]
+    route = ["3","0","10"]
+    # route = ["10"]
     index = 0
     s = 0
     heading = 0
     curvature = 0
 
     @classmethod
-    def curvature_points(cls, curvature, curvature_length):
+    def curvature_points(cls, curvature, curvature_length, heading):
         curvature_radius = 1 / curvature
         curvature_angle = float(curvature_length) / curvature_radius
-        one_degree = math.radians(0.99981135250576669282)
+        total_slices = 100
+        one_angle_slice = curvature_angle / total_slices
         s_list = []
-        for x in range(round(math.degrees(curvature_angle))):
-            if (x * one_degree) <= curvature_angle:
-                s_list.append((x * one_degree)*curvature_radius)
-        for s in s_list:
-            print(s)
+        for x in range(total_slices + 1):
+            theta = x * one_angle_slice
+            if theta <= curvature_angle:
+                print(theta, curvature_angle)
+                road_heading = theta + heading
+                # S = r*theta
+                s_list.append([theta * curvature_radius, road_heading])
+        # for s in s_list:
+        #     print(s)
 
     @classmethod
     def xy_to_st(cls, x, y, road_id):
@@ -61,11 +69,18 @@ class EgoVehicle:
                                 heading = float(geometry.hdg)
                                 if geometry.arc:
                                     cls.curvature = float(geometry.arc.curvature)
-                                    cls.curvature_points(cls.curvature,road.length)
+                                    # cls.curvature_points(cls.curvature, road.length, )
                                 else:
                                     cls.curvature = 0
-                            # else:
-                            #     cls.curvature = 0
+
+                        elif road.planview.geometry_list[len(road.planview.geometry_list)-1]:
+                            if road_s <= s:
+                                heading = float(geometry.hdg)
+                                if geometry.arc:
+                                    cls.curvature = float(geometry.arc.curvature)
+                                    # cls.curvature_points(cls.curvature, road.length, )
+                                else:
+                                    cls.curvature = 0
                 else:
                     heading = float(road.planview.geometry.hdg)
                     cls.curvature = 0
@@ -73,6 +88,7 @@ class EgoVehicle:
                     radius_of_curvature = 1 / cls.curvature
                     angle = cls.s / radius_of_curvature
                     cls.heading = heading + angle
+                    print("CLS Heading: ", cls.heading, " heading: ", heading)
                 else:
                     cls.heading = heading
                 road_length = float(road.length)
@@ -88,8 +104,8 @@ class EgoVehicle:
         cls.s, t = cls.xy_to_st(gnss.x, gnss.y, road_id)
         print("X: ", gnss.x, "Y: ", gnss.y)
         print("S: ", cls.s, "T: ", t, "Curvature: ", cls.curvature)
-        if cls.s <= road_length:
-            EgoController(data.header, 0.11, -cls.curvature * 2.25, 0.0, 0, 0, 0, 0)
+        if cls.s <= road_length and cls.s <= 60:
+            EgoController(data.header, 0.12, -cls.curvature * 2.23, 0.0, 0, 0, 0, 0)
             # EgoController(data.header, 0.15, 0, 0.0, 0, 0, 0, 0)
         else:
             cls.index += 1
@@ -106,8 +122,11 @@ class EgoVehicle:
 def main():
     ego_vehicle = EgoVehicle
     rospy.init_node('av_ego_status')
+    spawn_vehicle = SpawnEgoVehicle(3, "right")
+    spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id)
     ego_vehicle.ego_vehicle_status_subscriber()
 
 
 if __name__ == '__main__':
     main()
+
