@@ -7,35 +7,6 @@ from src.test_pkg.scripts.ego_vehicle_control import EgoController
 from src.test_pkg.scripts.run_ego_vehicle.path_planning import PathPlanning
 from src.test_pkg.scripts.run_ego_vehicle.trajectory import Trajectory
 
-import matplotlib.pyplot as plt
-import numpy
-
-class ArcHandler:
-    __geometry_length: float
-    __curvature: float
-    __geometry_heading: float
-    s_values_list: list
-
-    def __init__(self, road_length, curvature, road_heading):
-        self.__geometry_length = float(road_length)
-        self.__curvature = float(curvature)
-        self.__geometry_heading = float(road_heading)
-
-    @classmethod
-    def handle_arc(cls):
-        # S = r * angle (in radian)
-        total_angle_slices = 100
-        radius = 1 / cls.__curvature
-        curvature_angle = cls.__geometry_length / radius
-        one_angle_slice = curvature_angle / total_angle_slices
-        for multiplier in range(total_angle_slices + 1):
-            angle = multiplier * one_angle_slice
-            if angle <= cls.__curvature:
-                geometry_heading = cls.__geometry_heading + angle
-                s_axis_value = radius * angle
-                cls.s_values_list.append([s_axis_value, geometry_heading])
-        return cls.s_values_list
-
 
 class AVEgoVehicleStatus:
     ego_vehicle_status: CarlaEgoVehicleStatus = CarlaEgoVehicleStatus()
@@ -81,11 +52,6 @@ class AVGnssStatus:
         throttle, steer, brake = cls.trajectory.update_trajectory(cls.x, cls.y)
         print(throttle, steer, brake)
         AVEgoVehicleControl(throttle, steer, brake)
-
-        # cls.xp.append(cls.x)
-        # cls.yp.append(cls.y)
-        # print(cls.yp)
-        # print(cls.xp)
 
 
 def main():

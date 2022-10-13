@@ -1,4 +1,5 @@
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
+from src.test_pkg.scripts.run_ego_vehicle.logs import Log
 
 
 class MapAnalysis:
@@ -16,20 +17,19 @@ class MapAnalysis:
         self.curvature: float = 0
         self.s_value: float = 0
 
-    def road_info(self, road_id, s_axis):
+    def road_info(self, road_id, s_axis, log: Log):
         roads = opendrive.road_list
         for road in roads:
             if road_id == road.id:
                 if s_axis > float(road.length):
-                    print("S: road info : ", s_axis)
-                    # AVEgoVehicleControl(0, 0, 1)
-                    # self.path_index += 1
-                    # self._s_axis = 0
+                    # print("S: road info : ", s_axis)
+                    log.s_axis = s_axis
                     self.road_ended = True
                     self.s_value = 0
                 else:
                     self.road_ended = False
-                    print("Road_id:", road_id)
+                    # print("Road_id:", road_id)
+                    log.road_id = road_id
                 if road.planview.geometry_list:
                     geometries = road.planview.geometry_list
                     for geometry in geometries:
@@ -40,19 +40,14 @@ class MapAnalysis:
                             if geometry.s <= s_axis < next_geometry.s:
                                 if geometry.arc:
                                     self.curvature = float(geometry.arc.curvature)
-                                # else:
-                                #     self.curvature = 0
                                 self.heading = float(geometry.hdg)
                                 self.x_origin = float(geometry.x)
                                 self.y_origin = float(geometry.y)
-                                print("OK")
                                 self.s_value = float(geometry.s)
                         elif geometries[len(geometries) - 1]:
                             if geometry.s <= s_axis:
                                 if geometry.arc:
                                     self.curvature = float(geometry.arc.curvature)
-                                # else:
-                                #     self.curvature = 0
                                 self.heading = float(geometry.hdg)
                                 self.x_origin = float(geometry.x)
                                 self.y_origin = float(geometry.y)
@@ -60,9 +55,7 @@ class MapAnalysis:
                 else:
                     geometry = road.planview.geometry
                     self.heading = float(geometry.hdg)
-                    # s_value = float(geometry.s)
                     self.x_origin = float(geometry.x)
                     self.y_origin = float(geometry.y)
-                    # self._s_axis, self._t_axis = AxisTransformation(x, y, x_origin, y_origin, heading)
 
         return self.x_origin, self.y_origin, self.heading, self.curvature, self.s_value, self.road_ended
