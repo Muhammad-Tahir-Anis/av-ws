@@ -10,8 +10,8 @@ from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 
 
 class EgoVehicle:
-    # route = ["3", "0", "10", "17", "7", "90", "6", "735", "5", "516", "4", "8", "1", "675", "2", "566", "3"]
-    route = ["3","0","10"]
+    route = ['0', '10', '17', '7', '24', '22', '16', '15', '375', '20', '875', '21', '630', '3']
+    # route = ["3","0","10"]
     # route = ["10"]
     index = 0
     s = 0
@@ -105,7 +105,7 @@ class EgoVehicle:
         print("X: ", gnss.x, "Y: ", gnss.y)
         print("S: ", cls.s, "T: ", t, "Curvature: ", cls.curvature)
         if cls.s <= road_length and cls.s <= 60:
-            EgoController(data.header, 0.12, -cls.curvature * 2.23, 0.0, 0, 0, 0, 0)
+            EgoController(data.header, 0.2, -cls.curvature * 2.23, 0.0, 0, 0, 0, 0)
             # EgoController(data.header, 0.15, 0, 0.0, 0, 0, 0, 0)
         else:
             cls.index += 1
