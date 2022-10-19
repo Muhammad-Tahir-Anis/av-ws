@@ -1,24 +1,24 @@
 import math
 from math import atan, sin, cos
-from logs import Log
+# from logs import Log
 
 
 class AxisTransformation:
-    def __init__(self, x, y, x_origin, y_origin, heading, curvature, s_value, log:Log):
+    def __init__(self, x, y, x_origin, y_origin, heading, curvature, s_value):
         if curvature != 0:
             radius_of_curvature = 1 / curvature
-            # print("Radius: ", radius_of_curvature)
-            log.radius_of_curvature = radius_of_curvature
+            print("Radius: ", radius_of_curvature)
+            # log.radius_of_curvature = radius_of_curvature
 
             # Translating Origin of axis to the starting point on road where s is initially 0
             self.x_prime, self.y_prime = self.__axis_translation(x, y, x_origin, y_origin)
-            # print("Translating to Curvature road: ", self.x_prime, self.y_prime)
-            log.translated_axis = [self.x_prime,self.y_prime]
+            print("Translating to Curvature road: ", self.x_prime, self.y_prime)
+            # log.translated_axis = [self.x_prime,self.y_prime]
 
             # Rotating axis along the direction of the road.
             self.x_double_prime, self.y_double_prime = self.__axis_rotation(self.x_prime, self.y_prime, heading)
-            # print("Rotating up to Curvature road heading / angle: ", self.x_double_prime, self.y_double_prime)
-            log.rotated_axis = [self.x_double_prime, self.y_double_prime]
+            print("Rotating up to Curvature road heading / angle: ", self.x_double_prime, self.y_double_prime)
+            # log.rotated_axis = [self.x_double_prime, self.y_double_prime]
 
             # Translating axis to the center of curvature
             curvature_x_origin = 0
@@ -31,21 +31,21 @@ class AxisTransformation:
             self.x_curvature, self.y_curvature = self.__axis_translation(self.x_double_prime, self.y_double_prime,
                                                                          curvature_x_origin, curvature_y_origin)
 
-            # print("Translating to Curvature Origin: ", self.x_curvature, self.y_curvature)
-            log.translated_axis_to_curvature_origin = [self.x_curvature,self.y_curvature]
+            print("Translating to Curvature Origin: ", self.x_curvature, self.y_curvature)
+            # log.translated_axis_to_curvature_origin = [self.x_curvature,self.y_curvature]
 
             # Again Rotating the axis as the starting of curvature becomes in First Quadrant
             self.x_prime_curvature, self.y_prime_curvature = self.__axis_rotation(self.x_curvature, self.y_curvature,
                                                                                   math.radians(-90))
-            # print("Rotating axis to normal: ", self.x_prime_curvature, self.y_prime_curvature)
-            log.rotated_axis_toward_curvature = [self.x_prime_curvature, self.y_prime_curvature]
+            print("Rotating axis to normal: ", self.x_prime_curvature, self.y_prime_curvature)
+            # log.rotated_axis_toward_curvature = [self.x_prime_curvature, self.y_prime_curvature]
 
             # Define the adjacent and opposite of triangle to find angle and hypotenuses.
             self.adjacent = self.y_prime_curvature
             self.opposite = self.x_prime_curvature
-            # print("Adjacent & Opposite: ", self.adjacent, self.opposite)
-            log.adjacent = self.adjacent
-            log.opposite = self.opposite
+            print("Adjacent & Opposite: ", self.adjacent, self.opposite)
+            # log.adjacent = self.adjacent
+            # log.opposite = self.opposite
 
             # To calculate the angle values we use
             # tan(theta) = adjacent / opposite
@@ -54,19 +54,19 @@ class AxisTransformation:
                 angle_in_radian = 0
             else:
                 angle_in_radian = atan(self.adjacent / self.opposite)
-                # print("Pre_angle: ", angle_in_radian)
-                log.angle_before_normalization = angle_in_radian
+                print("Pre_angle: ", angle_in_radian)
+                # log.angle_before_normalization = angle_in_radian
 
                 # Finding total angle
                 angle_in_radian = self.normalize_angle(self.adjacent, self.opposite, angle_in_radian)
 
-            # print("Angle: ", angle_in_radian)
-            log.angle_in_radian = angle_in_radian
+            print("Angle: ", angle_in_radian)
+            # log.angle_in_radian = angle_in_radian
 
             # To calculate S and T we use S = r*angle
             # For this purpose we use radius of curvature of the road.
             # print("Radius of curva: ", radius_of_curvature, " s_value: ", s_value)
-            log.radius_of_curvature = radius_of_curvature
+            # log.radius_of_curvature = radius_of_curvature
             self.s: float = abs(radius_of_curvature * angle_in_radian) + s_value
 
             # To get displacement of vehicle from origin which would be hypotenuse
