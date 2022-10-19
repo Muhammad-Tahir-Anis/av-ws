@@ -1,7 +1,7 @@
 from math import cos, sin
 
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
-# from src.test_pkg.scripts.run_ego_vehicle.logs import Log
+from src.test_pkg.scripts.run_ego_vehicle.logs import Log
 
 
 class MapAnalysis:
@@ -41,19 +41,22 @@ class MapAnalysis:
     #     # point a
     #     rec_point_a = y_rotated +
 
-    def road_info(self, road_id, s_axis):
+    def road_info(self, road_id, s_axis, log:Log):
+        # Getting all roads data from map
         roads = opendrive.road_list
         for road in roads:
+            # checking if road id matches
             if road_id == road.id:
                 if s_axis > float(road.length):
-                    print("S: road info : ", s_axis)
-                    # log.s_axis = s_axis
+                    # print("S: road info : ", s_axis)
+                    log.s_axis = s_axis
                     self.road_ended = True
                     self.s_value = 0
                 else:
                     self.road_ended = False
-                    print("Road_id:", road_id)
+                    # print("Road_id:", road_id)
                     # log.road_id = road_id
+                # Checking road geometries
                 if road.planview.geometry_list:
                     geometries = road.planview.geometry_list
                     for geometry in geometries:
