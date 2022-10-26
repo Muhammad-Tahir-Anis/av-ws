@@ -5,6 +5,14 @@ from logs import Log
 
 class AxisTransformation:
     def __init__(self, x, y, x_origin, y_origin, heading, curvature, s_value, log: Log):
+        self.x = x
+        self.y = y
+        self.x_origin = x_origin
+        self.y_origin = y_origin
+        self.heading = heading
+        self.curvature = curvature
+        self.s_value = s_value
+
         if curvature != 0:
             self.s, self.t = self.handle_curvature(x, y, x_origin, y_origin, heading, curvature, s_value, log)
         else:
@@ -116,6 +124,23 @@ class AxisTransformation:
             # here in 4th quadrant angle is in negative, so we will use + sign to subtract from 360
             angle_in_radian = math.radians(360) + angle_in_radian
         return angle_in_radian
+
+    # def get_boundaries(cls, x, y, x_origin, y_origin, heading, curvature, geometry_length, max_t, min_t):
+    def get_boundaries(self, max_t, min_t, geometry_length):
+        x_prime, y_prime = self.__axis_translation(self.x, self.y, self.x_origin, self.y_origin)
+        s, t = self.__axis_rotation(x_prime, y_prime, self.heading)
+
+        # There are total 4 sides of rectangle
+        # i.e A,B,C,D
+        rect_side_a = s, t + max_t
+        rect_side_b = s, t + min_t
+
+        # length of rectangle is defied by value of s
+        s = geometry_length
+        rect_side_c = s, t + max_t
+        rect_side_d = s, t + min_t
+
+        return rect_side_a, rect_side_b, rect_side_c, rect_side_d
 
     @property
     def s_t_axis(self):

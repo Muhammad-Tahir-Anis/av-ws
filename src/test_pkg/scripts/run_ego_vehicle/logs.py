@@ -32,9 +32,11 @@ class Log:
         #                                             self.hypotenuse, self.s, self.t)
 
     def set_log(self):
-        data = [[self.x, self.y, self.path_index, self.road_id, self.s_axis, self.heading, self.radius_of_curvature, self.is_curvature, self.translated_axis,
-                self.rotated_axis, self.translated_axis_to_curvature_origin, self.rotated_axis_toward_curvature, self.adjacent, self.opposite,
-                self.angle_before_normalization, self.angle_in_radian, self.hypotenuse, self.s, self.t]]
+        data = [[self.x, self.y, self.path_index, self.road_id, self.s_axis, self.heading, self.radius_of_curvature,
+                 self.is_curvature, self.translated_axis,
+                 self.rotated_axis, self.translated_axis_to_curvature_origin, self.rotated_axis_toward_curvature,
+                 self.adjacent, self.opposite,
+                 self.angle_before_normalization, self.angle_in_radian, self.hypotenuse, self.s, self.t]]
 
         column_names = ["x", "y", "path_index", "road_id", "s_axis", "heading", "radius_of_curvature", "is_curvature",
                         "translated_axis", "rotated_axis", "translated_axis_to_curvature_origin",
@@ -50,3 +52,20 @@ class Log:
 
     # def print_log(self):
     #     pass
+
+
+class abc:
+    x = 0
+    y = 0
+    z = 0
+
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    @classmethod
+    def pk(cls):
+        print(cls.x)
+        print(cls.y)
+        print(cls.z)

@@ -41,21 +41,31 @@ class MapAnalysis:
     #     # point a
     #     rec_point_a = y_rotated +
 
-    def road_info(self, road_id, s_axis, log:Log):
+    def road_info(self, road_id, s_axis, t_axis, log:Log):
         # Getting all roads data from map
         roads = opendrive.road_list
         for road in roads:
             # checking if road id matches
+            # t_axis > 0 => left lanes => opposite to road direction
+            # t_axis < 0 => right lanes => parallel to road direction
+            # For right lanes
             if road_id == road.id:
-                if s_axis > float(road.length):
-                    # print("S: road info : ", s_axis)
-                    log.s_axis = s_axis
-                    self.road_ended = True
-                    self.s_value = 0
-                else:
-                    self.road_ended = False
-                    # print("Road_id:", road_id)
-                    # log.road_id = road_id
+                if t_axis < 0:
+                    if s_axis > float(road.length):
+                        # print("S: road info : ", s_axis)
+                        log.s_axis = s_axis
+                        self.road_ended = True
+                        self.s_value = 0
+                    else:
+                        self.road_ended = False
+                        # print("Road_id:", road_id)
+                        log.road_id = road_id
+                elif t_axis >= 0:
+                    if s_axis <= 0:
+                        log.s_axis = s_axis
+                        self.road_ended = True
+                        self.s_value = 0
+
                 # Checking road geometries
                 if road.planview.geometry_list:
                     geometries = road.planview.geometry_list

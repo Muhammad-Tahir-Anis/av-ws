@@ -22,10 +22,10 @@ class Trajectory:
         self.log = Log()
 
     def update_trajectory(self, x, y):
-        print("X: ", x, "Y: ", y)
+        # print("X: ", x, "Y: ", y)
         self.log.x = x
         self.log.y = y
-        print("S: ", self._s_axis, "T: ", self._t_axis)
+        # print("S: ", self._s_axis, "T: ", self._t_axis)
         self.log.t = self._t_axis
         self.log.s = self._s_axis
         print(self.path_index)
@@ -36,7 +36,7 @@ class Trajectory:
 
     def follow_trajectory(self, x, y, road_id):
         map_analysis = MapAnalysis()
-        x_origin, y_origin, heading, curvature, s_value, road_ended = map_analysis.road_info(road_id, self._s_axis, self.log)
+        x_origin, y_origin, heading, curvature, s_value, road_ended = map_analysis.road_info(road_id, self._s_axis, self._t_axis, self.log)
         # print(x_origin, y_origin, heading, curvature, road_ended)
         self.log.heading = heading
         axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, self.log)
