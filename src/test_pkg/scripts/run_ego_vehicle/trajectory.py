@@ -41,7 +41,7 @@ class Trajectory:
         self.log.heading = heading
         axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, self.log)
         self._s_axis, self._t_axis = axis_transformation.s_t_axis
-        print(self._s_axis, self._t_axis)
+        print("S,T: ",self._s_axis, self._t_axis)
         # print("Path Index: ", self.path_index)
         self.log.path_index = self.path_index
         if road_ended:

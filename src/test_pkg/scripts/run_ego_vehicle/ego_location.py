@@ -1,3 +1,5 @@
+import math
+
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
 from src.test_pkg.scripts.run_ego_vehicle.logs import Log
@@ -10,11 +12,16 @@ class EgoLocation:
 
     @classmethod
     def get_ego_road(cls, x, y, log: Log):
+        global axis
         x_origin = 0
         y_origin = 0
         curvature = 0
         s_value = 0
+        max_t = 0
+        min_t = 0
         geometry_length = 0
+        # A point P is a point on coordinates where vehicle is located
+        point_p = (x, y)
         roads = opendrive.road_list
         for road in roads:
             if road.planview.geometry_list:
@@ -31,7 +38,23 @@ class EgoLocation:
                         curvature = 0
                         axis = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, log)
                         max_t, min_t = cls.get_t_values(road)
-                        # print(axis.get_boundaries(max_t, min_t, geometry_length))
+
+                        # Rectangle points A,B,C,D
+                        rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
+                                                                                                 geometry_length)
+
+                        triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
+                        if triangle_abc:
+                            print(road.id)
+                            print(point_p)
+                        else:
+                            print(point_p, "\n", road.id)
+                        triangle_adc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_d, rect_side_c)
+                        if triangle_adc:
+                            print(road.id)
+                            print(point_p)
+                        else:
+                            print(point_p, "\n", road.id)
 
             elif road.planview.geometry:
                 geometry = road.planview.geometry
@@ -39,15 +62,68 @@ class EgoLocation:
                 y_origin = float(geometry.y)
                 heading = float(geometry.hdg)
                 s_value = float(geometry.s)
+                geometry_length = float(geometry.length)
                 if geometry.arc:
                     curvature = float(geometry.arc.curvature)
                 else:
                     curvature = 0
                     axis = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, log)
                     max_t, min_t = cls.get_t_values(road)
-                    # print(axis.get_boundaries(max_t, min_t, geometry_length))
 
-            # s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, log)
+                    # Rectangle points A,B,C,D
+                    rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
+                                                                                             geometry_length)
+                    # Let's make two triangles ABC and ADC
+                    triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
+                    if triangle_abc:
+                        print(road.id)
+                        print(point_p)
+                    else:
+                        print(point_p,"\n", road.id)
+                    triangle_abd = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_d)
+                    if triangle_abd:
+                        print(road.id)
+                        print(point_p)
+                    else:
+                        print(point_p,"\n", road.id)
+
+            print("rect ", axis.get_boundaries(max_t, min_t, geometry_length))
+
+    @classmethod
+    def is_point_lies_in_triangle(cls, point_p, point_a, point_b, point_c):
+        is_point_lies_in = False
+        # Triangle ABC
+        area_of_tri_abd = cls.area_of_rectangle(point_a, point_b, point_c)
+
+        # creating 3 more triangles with point P that are PAB PAD PBD
+
+        # Triangle PAB
+        area_of_tri_pab = cls.area_of_rectangle(point_p, point_a, point_b)
+
+        # Triangle PAC
+        area_of_tri_pac = cls.area_of_rectangle(point_p, point_a, point_c)
+
+        # Triangle PBC
+        area_of_tri_pbc = cls.area_of_rectangle(point_p, point_b, point_c)
+
+        # Check if point P lies in Triangle ABD
+        # If yes than sum of the areas of Triangle PAB PAC PBC are equal to area of Triangle ABC
+        sum_of_p_triangles = area_of_tri_pab + area_of_tri_pac + area_of_tri_pbc
+        if area_of_tri_abd != sum_of_p_triangles:
+            is_point_lies_in = False
+            print(sum_of_p_triangles, area_of_tri_abd)
+        else:
+            is_point_lies_in = True
+            print(sum_of_p_triangles, area_of_tri_abd)
+        return is_point_lies_in
+
+    @classmethod
+    def area_of_rectangle(cls, point_a, point_b, point_c):
+        side_a = point_a[0]*(point_b[1] - point_c[1])
+        side_b = point_b[0]*(point_c[1] - point_a[1])
+        side_c = point_c[0]*(point_a[1] - point_b[1])
+        area_of_triangle = (side_a + side_b + side_c) / 2
+        return area_of_triangle
 
     @classmethod
     def get_t_values(cls, road):
@@ -68,9 +144,13 @@ class EgoLocation:
                 lane_list = left_lane_section.lane_list
                 # take id of driving lanes only
                 left_driving_lanes = [float(lane.id) for lane in lane_list if lane.type == "driving"]
-                max_lane = max(left_driving_lanes)
-                min_lane = min(left_driving_lanes)
-                print(max_lane, min_lane)
+                if not left_driving_lanes:
+                    max_lane = 0
+                    min_lane = 0
+                else:
+                    max_lane = max(left_driving_lanes)
+                    min_lane = min(left_driving_lanes)
+                # print(max_lane, min_lane)
 
                 # left lanes list is like [3,2,1] so we need to reverse it to get correct t axis values
                 lane_list.reverse()
@@ -78,19 +158,22 @@ class EgoLocation:
                 left_min_t = cls.get_min_t(min_lane, lane_list)
 
                 if road.lanes.laneoffset_list:
-                    lane_offset = 0
+                    lane_offset = float(road.lanes.laneoffset_list[0].a)
                 elif road.lanes.laneoffset:
                     lane_offset = float(road.lanes.laneoffset.a)
-                print(lane_offset)
+                # print(lane_offset)
                 left_max_t = left_max_t + lane_offset
                 left_min_t = left_min_t + lane_offset
 
-                print(left_max_t, left_min_t)
+                # print(left_max_t, left_min_t)
 
             elif left_lane_section.lane:
                 left_lane = left_lane_section.lane
-                max_t = float(left_lane.width.a)
-                min_t = 0  # Add lane offset
+                if left_lane.width_list:
+                    left_max_t = float(left_lane.width_list[0].a)
+                elif left_lane.width:
+                    left_max_t = float(left_lane.width.a)
+                left_min_t = 0  # Add lane offset
 
         right_lane_section = road.lanes.lanesection.right
         if right_lane_section:
@@ -98,9 +181,13 @@ class EgoLocation:
                 lane_list = right_lane_section.lane_list
                 # take id of driving lanes only
                 right_driving_lanes = [float(lane.id) for lane in lane_list if lane.type == "driving"]
-                max_lane = min(right_driving_lanes)
-                min_lane = max(right_driving_lanes)
-                print(max_lane, min_lane)
+                if not right_driving_lanes:
+                    max_lane = 0
+                    min_lane = 0
+                else:
+                    max_lane = min(right_driving_lanes)
+                    min_lane = max(right_driving_lanes)
+                # print(max_lane, min_lane)
 
                 right_max_t = cls.get_max_t(max_lane, lane_list)
                 right_min_t = cls.get_min_t(min_lane, lane_list)
@@ -110,37 +197,65 @@ class EgoLocation:
                 elif road.lanes.laneoffset:
                     lane_offset = float(road.lanes.laneoffset.a)
 
-                print(lane_offset)
+                # print(lane_offset)
                 right_max_t = right_max_t - lane_offset
                 right_min_t = right_min_t - lane_offset
-                print(right_max_t, right_min_t)
+            elif right_lane_section.lane:
+                right_lane = right_lane_section.lane
+                if right_lane.width_list:
+                    right_max_t = float(right_lane.width_list[0].a)
+                elif right_lane.width:
+                    right_max_t = float(right_lane.width.a)
+                right_min_t = 0  # Add lane offset
 
-        return left_max_t, right_max_t
+            # print(right_max_t, right_min_t)
+
+        return left_max_t, -right_max_t
 
     @classmethod
     def get_max_t(cls, max_lane, lanes):
         # t is an axis along the width of a road
+        global max_t
         t = 0
+        lane_width = 0
         for lane in lanes:
-            print("max: ", t)
-            t = t + float(lane.width.a)
+            # print("max: ", t)
+            if lane.width_list:
+                lane_width = float(lane.width_list[0].a)
+            elif lane.width:
+                lane_width = float(lane.width.a)
+            t = t + lane_width
             if max_lane == float(lane.id):
                 max_t = t
                 return max_t
+            else:
+                max_t = 0
+        return max_t
 
     @classmethod
     def get_min_t(cls, min_lane, lanes):
         # t is an axis along the width of a road
+        global min_t
         t = 0
+        lane_width = 0
         for lane in lanes:
-            print("min: ", t)
-            t = t + float(lane.width.a)
+            # print("min: ", t)
+            if lane.width_list:
+                lane_width = float(lane.width_list[0].a)
+            elif lane.width:
+                lane_width = float(lane.width.a)
+            t = t + lane_width
             if min_lane == float(lane.id):
-                min_t = t - float(lane.width.a)
+                min_t = t - lane_width
                 return min_t
+            else:
+                min_t = 0
+        return min_t
 
 
 eg = EgoLocation()
-for road in opendrive.road_list:
-    if road.id == "20":
-        print(eg.get_t_values(road))
+log = Log()
+# for road in opendrive.road_list:
+#     if road.id == "21":
+#         print(eg.get_t_values(road))
+print(eg.get_ego_road(float(-5.721255), float(67.764599), log))
