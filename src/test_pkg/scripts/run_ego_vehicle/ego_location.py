@@ -29,6 +29,11 @@ class EgoLocation:
                     heading = float(geometry.hdg)
                     s_value = float(geometry.s)
                     geometry_length = float(geometry.length)
+
+                    s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
+                                              log).s_t_axis
+                    lane_id = cls.get_lane_id(road.id, t)
+
                     if geometry.arc:
                         curvature = float(geometry.arc.curvature)
                     else:
@@ -43,13 +48,11 @@ class EgoLocation:
 
                         triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
 
-                        s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
-                                                  log).s_t_axis
                         if triangle_abc:
-                            print(road.id, t)
+                            print(road.id, lane_id)
                         triangle_adc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_d, rect_side_c)
                         if triangle_adc:
-                            print(road.id, t)
+                            print(road.id, lane_id)
             elif road.planview.geometry:
                 geometry = road.planview.geometry
                 x_origin = float(geometry.x)
@@ -70,54 +73,92 @@ class EgoLocation:
                     # Let's make two triangles ABC and ADC
                     triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
 
-                    s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
-                                              log).s_t_axis
                     if triangle_abc:
-                        print(road.id, t)
+                        print(road.id, lane_id)
                     triangle_abd = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_d)
                     if triangle_abd:
-                        print(road.id, t)
+                        print(road.id, lane_id)
 
     @classmethod
     def get_lane_id(cls, road_id, t):
         left_lanes_list = []
         right_lanes_list = []
+        lane_offset = 0
         roads = opendrive.road_list
         for road in roads:
             if road.id == road_id:
-                left_lane_section = road.lanes.lanesection.left
                 lane_offsets = road.lanes.laneoffset_list
                 if lane_offsets:
                     lane_offset = float(lane_offsets[0].a)
                 else:
                     lane_offset = float(road.lanes.laneoffset.a)
+
+                left_lane_section = road.lanes.lanesection.left
                 if left_lane_section:
-                    left_lanes_list = cls.get_lane_list_with_t(left_lane_section)
+                    left_lanes_list = cls.get_lane_list_with_t(left_lane_section, lane_offset)
+
                 right_lane_section = road.lanes.lanesection.right
                 if right_lane_section:
-                    right_lanes_list = cls.get_lane_list_with_t(right_lane_section)
+                    right_lanes_list = cls.get_lane_list_with_t(right_lane_section, lane_offset)
 
+                lanes_list = left_lanes_list + right_lanes_list
+                return cls.get_t_range(lanes_list, t)
 
     @classmethod
-    def get_lane_list_with_t(cls, lane_section):
+    def get_t_range(cls, lanes_list, t):
+        for lane in lanes_list:
+            if t > 0:
+                if lane[1] < t <= lane[2]:
+                    return lane[0]
+            if t < 0:
+                if lane[1] > t >= lane[2]:
+                    return lane[0]
+
+    @classmethod
+    def get_lane_list_with_t(cls, lane_section, lane_offset):
         lanes_list = []
-        t = 0
+        t = lane_offset
         if lane_section.lane_list:
             lane_list = lane_section.lane_list
-            for lane in lane_list:
-                if lane.width_list:
-                    lanes_list.append((float(lane.id), t, lane.width_list[0].a))
-                    t = t + float(lane.width_list[0].a)
-                else:
-                    lanes_list.append((float(lane.id), t, float(lane.width.a)))
-                    t = t + float(lane.width.a)
+            lane_id = float(lane_list[0].id)
+            # for left lanes
+            if lane_id > 0:
+                lane_list.reverse()
+                for lane in lane_list:
+                    if lane.width_list:
+                        lanes_list.append((float(lane.id), t, t + float(lane.width_list[0].a)))
+                        t = t + float(lane.width_list[0].a)
+                    else:
+                        lanes_list.append((float(lane.id), t, t + float(lane.width.a)))
+                        t = t + float(lane.width.a)
+            # for right lanes
+            elif lane_id < 0:
+                for lane in lane_list:
+                    if lane.width_list:
+                        lanes_list.append((float(lane.id), t, t - float(lane.width_list[0].a)))
+                        t = t - float(lane.width_list[0].a)
+                    else:
+                        lanes_list.append((float(lane.id), t, t - float(lane.width.a)))
+                        t = t - float(lane.width.a)
+
         else:
-            if lane_section.lane.width_list:
-                lanes_list.append((float(lane_section.lane.id), t, float(lane_section.lane.width_list[0].a)))
-                t = t + float(lane_section.lane.width_list[0].a)
-            else:
-                lanes_list.append((float(lane_section.lane.id), t, float(lane_section.lane.width.a)))
-                t = t + float(lane_section.lane.width.a)
+            lane_id = float(lane_section.lane.id)
+            # for left lane
+            if lane_id > 0:
+                if lane_section.lane.width_list:
+                    lanes_list.append((float(lane_section.lane.id), t, t + float(lane_section.lane.width_list[0].a)))
+                    t = t + float(lane_section.lane.width_list[0].a)
+                else:
+                    lanes_list.append((float(lane_section.lane.id), t, t + float(lane_section.lane.width.a)))
+                    t = t + float(lane_section.lane.width.a)
+            # for right lane
+            elif lane_id < 0:
+                if lane_section.lane.width_list:
+                    lanes_list.append((float(lane_section.lane.id), t, t - float(lane_section.lane.width_list[0].a)))
+                    t = t - float(lane_section.lane.width_list[0].a)
+                else:
+                    lanes_list.append((float(lane_section.lane.id), t, t - float(lane_section.lane.width.a)))
+                    t = t - float(lane_section.lane.width.a)
         return lanes_list
 
     @classmethod
@@ -281,20 +322,6 @@ class EgoLocation:
                 min_t = 0
         return min_t
 
-    @classmethod
-    def get_t_range(cls, lane_list, lane_id):
-        max_t = 0
-        min_t = 0
-        t = 0
-
-        for lane in lane_list:
-            min_t = t
-            if lane.id == lane_id:
-                t = t + float(lane.width.a)
-                max_t = t
-            else:
-                t = t + float(lane.width.a)
-
 
 eg = EgoLocation()
 log = Log()
@@ -302,3 +329,5 @@ log = Log()
 #     if road.id == "0":
 #         print(eg.get_t_values(road))
 print(eg.get_ego_road(float(1.0464652330011117e+2), float(4.4613107285925366e+0), log))
+
+eg.get_lane_id("20", 4)
