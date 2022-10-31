@@ -60,6 +60,9 @@ class EgoLocation:
                 heading = float(geometry.hdg)
                 s_value = float(geometry.s)
                 geometry_length = float(geometry.length)
+                s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
+                                          log).s_t_axis
+                lane_id = cls.get_lane_id(road.id, t)
                 if geometry.arc:
                     curvature = float(geometry.arc.curvature)
                 else:
