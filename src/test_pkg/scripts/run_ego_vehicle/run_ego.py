@@ -4,6 +4,7 @@ from sensor_msgs.msg import NavSatFix
 from src.test_pkg.scripts.carla_spawn_sensor import SpawnSensor
 from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 from src.test_pkg.scripts.ego_vehicle_control import EgoController
+from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 from src.test_pkg.scripts.run_ego_vehicle.path_planning import PathPlanning
 from src.test_pkg.scripts.run_ego_vehicle.trajectory import Trajectory
 
@@ -50,8 +51,11 @@ class AVGnssStatus:
 
         # --------------------------------------------
         throttle, steer, brake = cls.trajectory.update_trajectory(cls.x, cls.y)
-        print(throttle, steer, brake)
+        # print(throttle, steer, brake)
         AVEgoVehicleControl(throttle, steer, brake)
+
+        # ego_location = EgoLocation(cls.x,cls.y)
+        # print(ego_location.get_location)
 
 
 def main():

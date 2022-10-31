@@ -1,3 +1,4 @@
+from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 from src.test_pkg.scripts.run_ego_vehicle.map_analysis import MapAnalysis
 
 from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
@@ -28,10 +29,10 @@ class Trajectory:
         # print("S: ", self._s_axis, "T: ", self._t_axis)
         self.log.t = self._t_axis
         self.log.s = self._s_axis
-        print(self.path_index)
+        # print(self.path_index)
         road_id = self.route[self.path_index]
         self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id)
-        print(self.throttle, self.steering, self.brake)
+        # print(self.throttle, self.steering, self.brake)
         return self.throttle, self.steering, self.brake
 
     def follow_trajectory(self, x, y, road_id):
@@ -41,9 +42,12 @@ class Trajectory:
         self.log.heading = heading
         axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, self.log)
         self._s_axis, self._t_axis = axis_transformation.s_t_axis
-        print("S,T: ",self._s_axis, self._t_axis)
+        # print("S,T: ",self._s_axis, self._t_axis)
         # print("Path Index: ", self.path_index)
         self.log.path_index = self.path_index
+        ego_location = EgoLocation(x, y)
+        print(ego_location.get_t_range(road_id, ego_location.get_location[1]))
+        print(ego_location.get_location)
         if road_ended:
             self._s_axis = 0
             self.path_index += 1

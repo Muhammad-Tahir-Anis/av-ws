@@ -47,7 +47,7 @@ class Log:
             df = pd.DataFrame(data, columns=column_names)
             df.fillna(0)
             df.columns = column_names
-            print(df)
+            # print(df)
         return data, column_names
 
     # def print_log(self):
