@@ -1,5 +1,3 @@
-import math
-
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
 from src.test_pkg.scripts.run_ego_vehicle.logs import Log
@@ -17,9 +15,8 @@ class EgoLocation:
         y_origin = 0
         curvature = 0
         s_value = 0
-        max_t = 0
-        min_t = 0
         geometry_length = 0
+
         # A point P is a point on coordinates where vehicle is located
         point_p = (x, y)
         roads = opendrive.road_list
@@ -36,7 +33,8 @@ class EgoLocation:
                         curvature = float(geometry.arc.curvature)
                     else:
                         curvature = 0
-                        axis = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, log)
+                        axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value,
+                                                  log)
                         max_t, min_t = cls.get_t_values(road)
 
                         # Rectangle points A,B,C,D
@@ -44,18 +42,14 @@ class EgoLocation:
                                                                                                  geometry_length)
 
                         triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
+
+                        s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
+                                                  log).s_t_axis
                         if triangle_abc:
-                            print(road.id)
-                            print(point_p)
-                        else:
-                            print(point_p, "\n", road.id)
+                            print(road.id, t)
                         triangle_adc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_d, rect_side_c)
                         if triangle_adc:
-                            print(road.id)
-                            print(point_p)
-                        else:
-                            print(point_p, "\n", road.id)
-
+                            print(road.id, t)
             elif road.planview.geometry:
                 geometry = road.planview.geometry
                 x_origin = float(geometry.x)
@@ -67,7 +61,7 @@ class EgoLocation:
                     curvature = float(geometry.arc.curvature)
                 else:
                     curvature = 0
-                    axis = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, log)
+                    axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value, log)
                     max_t, min_t = cls.get_t_values(road)
 
                     # Rectangle points A,B,C,D
@@ -75,25 +69,62 @@ class EgoLocation:
                                                                                              geometry_length)
                     # Let's make two triangles ABC and ADC
                     triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
+
+                    s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
+                                              log).s_t_axis
                     if triangle_abc:
-                        print(road.id)
-                        print(point_p)
-                    else:
-                        print(point_p,"\n", road.id)
+                        print(road.id, t)
                     triangle_abd = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_d)
                     if triangle_abd:
-                        print(road.id)
-                        print(point_p)
-                    else:
-                        print(point_p,"\n", road.id)
+                        print(road.id, t)
 
-            print("rect ", axis.get_boundaries(max_t, min_t, geometry_length))
+    @classmethod
+    def get_lane_id(cls, road_id, t):
+        left_lanes_list = []
+        right_lanes_list = []
+        roads = opendrive.road_list
+        for road in roads:
+            if road.id == road_id:
+                left_lane_section = road.lanes.lanesection.left
+                lane_offsets = road.lanes.laneoffset_list
+                if lane_offsets:
+                    lane_offset = float(lane_offsets[0].a)
+                else:
+                    lane_offset = float(road.lanes.laneoffset.a)
+                if left_lane_section:
+                    left_lanes_list = cls.get_lane_list_with_t(left_lane_section)
+                right_lane_section = road.lanes.lanesection.right
+                if right_lane_section:
+                    right_lanes_list = cls.get_lane_list_with_t(right_lane_section)
+
+
+    @classmethod
+    def get_lane_list_with_t(cls, lane_section):
+        lanes_list = []
+        t = 0
+        if lane_section.lane_list:
+            lane_list = lane_section.lane_list
+            for lane in lane_list:
+                if lane.width_list:
+                    lanes_list.append((float(lane.id), t, lane.width_list[0].a))
+                    t = t + float(lane.width_list[0].a)
+                else:
+                    lanes_list.append((float(lane.id), t, float(lane.width.a)))
+                    t = t + float(lane.width.a)
+        else:
+            if lane_section.lane.width_list:
+                lanes_list.append((float(lane_section.lane.id), t, float(lane_section.lane.width_list[0].a)))
+                t = t + float(lane_section.lane.width_list[0].a)
+            else:
+                lanes_list.append((float(lane_section.lane.id), t, float(lane_section.lane.width.a)))
+                t = t + float(lane_section.lane.width.a)
+        return lanes_list
 
     @classmethod
     def is_point_lies_in_triangle(cls, point_p, point_a, point_b, point_c):
         is_point_lies_in = False
         # Triangle ABC
-        area_of_tri_abd = cls.area_of_rectangle(point_a, point_b, point_c)
+        area_of_tri_abc = cls.area_of_rectangle(point_a, point_b, point_c)
 
         # creating 3 more triangles with point P that are PAB PAD PBD
 
@@ -109,20 +140,18 @@ class EgoLocation:
         # Check if point P lies in Triangle ABD
         # If yes than sum of the areas of Triangle PAB PAC PBC are equal to area of Triangle ABC
         sum_of_p_triangles = area_of_tri_pab + area_of_tri_pac + area_of_tri_pbc
-        if area_of_tri_abd != sum_of_p_triangles:
+        if area_of_tri_abc != sum_of_p_triangles:
             is_point_lies_in = False
-            print(sum_of_p_triangles, area_of_tri_abd)
         else:
             is_point_lies_in = True
-            print(sum_of_p_triangles, area_of_tri_abd)
         return is_point_lies_in
 
     @classmethod
     def area_of_rectangle(cls, point_a, point_b, point_c):
-        side_a = point_a[0]*(point_b[1] - point_c[1])
-        side_b = point_b[0]*(point_c[1] - point_a[1])
-        side_c = point_c[0]*(point_a[1] - point_b[1])
-        area_of_triangle = (side_a + side_b + side_c) / 2
+        side_a = point_a[0] * (point_b[1] - point_c[1])
+        side_b = point_b[0] * (point_c[1] - point_a[1])
+        side_c = point_c[0] * (point_a[1] - point_b[1])
+        area_of_triangle = abs((side_a + side_b + side_c) / 2)
         return area_of_triangle
 
     @classmethod
@@ -252,10 +281,24 @@ class EgoLocation:
                 min_t = 0
         return min_t
 
+    @classmethod
+    def get_t_range(cls, lane_list, lane_id):
+        max_t = 0
+        min_t = 0
+        t = 0
+
+        for lane in lane_list:
+            min_t = t
+            if lane.id == lane_id:
+                t = t + float(lane.width.a)
+                max_t = t
+            else:
+                t = t + float(lane.width.a)
+
 
 eg = EgoLocation()
 log = Log()
 # for road in opendrive.road_list:
-#     if road.id == "21":
+#     if road.id == "0":
 #         print(eg.get_t_values(road))
-print(eg.get_ego_road(float(-5.721255), float(67.764599), log))
+print(eg.get_ego_road(float(1.0464652330011117e+2), float(4.4613107285925366e+0), log))

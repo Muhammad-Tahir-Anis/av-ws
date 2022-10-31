@@ -126,9 +126,21 @@ class AxisTransformation:
         return angle_in_radian
 
     # def get_boundaries(cls, x, y, x_origin, y_origin, heading, curvature, geometry_length, max_t, min_t):
+
+    @classmethod
+    def forward_transformation(cls, x, y, x_origin, y_origin, heading):
+        x_prime, y_prime = cls.__axis_translation(x, y, x_origin, y_origin)
+        s, t = cls.__axis_rotation(x_prime, y_prime, heading)
+        return s, t
+
+    @classmethod
+    def reverse_transformation(cls, s, t, x_origin, y_origin, heading):
+        x_prime, y_prime = cls.__axis_rotation(s, t, -heading)
+        x, y = cls.__axis_translation(x_prime, y_prime, -x_origin, -y_origin)
+        return x, y
+
     def get_boundaries(self, max_t, min_t, geometry_length):
-        x_prime, y_prime = self.__axis_translation(self.x, self.y, self.x_origin, self.y_origin)
-        s, t = self.__axis_rotation(x_prime, y_prime, self.heading)
+        s, t = self.forward_transformation(self.x, self.y, self.x_origin, self.y_origin, self.heading)
 
         # There are total 4 sides of rectangle
         # i.e A,B,C,D
@@ -136,12 +148,24 @@ class AxisTransformation:
         rect_side_b = s, t + min_t
 
         # length of rectangle is defied by value of s
-        s = geometry_length
-        rect_side_c = s, t + max_t
-        rect_side_d = s, t + min_t
+        s = s + geometry_length
+        rect_side_c = s, t + min_t
+        rect_side_d = s, t + max_t
+
+        rect_side_a = self.reverse_transformation(rect_side_a[0], rect_side_a[1], self.x_origin, self.y_origin, self.heading)
+        rect_side_b = self.reverse_transformation(rect_side_b[0], rect_side_b[1], self.x_origin, self.y_origin, self.heading)
+        rect_side_c = self.reverse_transformation(rect_side_c[0], rect_side_c[1], self.x_origin, self.y_origin, self.heading)
+        rect_side_d = self.reverse_transformation(rect_side_d[0], rect_side_d[1], self.x_origin, self.y_origin, self.heading)
 
         return rect_side_a, rect_side_b, rect_side_c, rect_side_d
 
     @property
     def s_t_axis(self):
         return self.s, self.t
+
+
+# log = Log()
+# axis = AxisTransformation(0, 0, float("1.0468000030517578e+2"), float("9.3699998855590820e+0"), float("1.5639764844735413e+0"), 0, 0, log)
+# print(axis.s_t_axis)
+# print(axis.forward_transformation(0, 0, float("1.0468000030517578e+2"), float("9.3699998855590820e+0"), float("1.5639764844735413e+0")))
+# print(axis.reverse_transformation(0, 0, float("1.0468000030517578e+2"), float("9.3699998855590820e+0")))
