@@ -43,6 +43,16 @@ class EgoLocation:
 
                     if geometry.arc:
                         curvature = float(geometry.arc.curvature)
+                        axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value,
+                                                  log)
+                        max_t, min_t = cls.get_t_values(road)
+
+                        curvature_origin_x, curvature_origin_y, min_radius, max_radius = axis.get_boundaries(max_t, min_t, geometry_length, curvature)
+
+                        s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
+                                                  log).s_t_axis
+
+                        print("S: , t: ", s, t)
                     else:
                         curvature = 0
 
@@ -56,7 +66,7 @@ class EgoLocation:
 
                         # Rectangle points A,B,C,D
                         rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
-                                                                                                 geometry_length)
+                                                                                                 geometry_length, curvature)
                         # print("Rect: ", rect_side_a, rect_side_b, rect_side_c, rect_side_d)  # //
 
                         triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
@@ -90,7 +100,7 @@ class EgoLocation:
 
                     # Rectangle points A,B,C,D
                     rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
-                                                                                             geometry_length)
+                                                                                             geometry_length, curvature)
                     # print("Rect: ",rect_side_a, rect_side_b, rect_side_c, rect_side_d)  # //
                     # Let's make two triangles ABC and ADC
                     # print("ID: ",road.id)  # //
@@ -157,7 +167,7 @@ class EgoLocation:
             # lane_id = float(lane_list[0].id)
             # for left lanes
             if lane_id > 0:
-                # lane_list.reverse()
+                lane_list.reverse()
                 for lane in lane_list:
                     if lane.width_list:
                         lanes_list.append((float(lane.id), t, t + float(lane.width_list[0].a)))
@@ -165,6 +175,7 @@ class EgoLocation:
                     else:
                         lanes_list.append((float(lane.id), t, t + float(lane.width.a)))
                         t = t + float(lane.width.a)
+                lane_list.reverse()
             # for right lanes
             elif lane_id < 0:
                 for lane in lane_list:
@@ -192,7 +203,7 @@ class EgoLocation:
                 else:
                     lanes_list.append((float(lane_section.lane.id), t, t - float(lane_section.lane.width.a)))
                     t = t - float(lane_section.lane.width.a)
-        print(lanes_list)
+        # print(lanes_list)
         return lanes_list
 
     @classmethod
@@ -269,7 +280,8 @@ class EgoLocation:
                 lane_list.reverse()
                 left_max_t = cls.get_max_t(max_lane, lane_list)
                 left_min_t = cls.get_min_t(min_lane, lane_list)
-
+                # get lanes list back to its original form
+                lane_list.reverse()
                 if road.lanes.laneoffset_list:
                     lane_offset = float(road.lanes.laneoffset_list[0].a)
                 elif road.lanes.laneoffset:
@@ -366,16 +378,7 @@ class EgoLocation:
         return min_t
 
 
-# #
-# eg = EgoLocation(-2.6782101881329197e+1, 5.8033950375907366e+1)
-# print(eg.get_location)
-# log = Log()
-
-# for x in range(-26, -1):
-eg = EgoLocation(-5, 5.8033950375907366e+1)
-print(eg.get_location)
-# del eg
-eg = EgoLocation(-6, 5.8033950375907366e+1)
-print(eg.get_location)
-log = Log()
-#     print(x)
+eg = EgoLocation(1.0472999572753906e+2,2.2680000305175781e+1)
+# for road in opendrive.road_list:
+#     if road.id == "10":
+#         eg.get_t_values(road)

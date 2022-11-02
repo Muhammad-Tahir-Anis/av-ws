@@ -46,8 +46,10 @@ class Trajectory:
         # print("Path Index: ", self.path_index)
         self.log.path_index = self.path_index
         ego_location = EgoLocation(x, y)
-        print(ego_location.get_t_range(road_id, ego_location.get_location[1]))
-        print(ego_location.get_location)
+        t_range = ego_location.get_t_range(road_id, ego_location.get_location[1])
+        # print(ego_location.get_location)
+        # self.steering = self.keep_in_lane(t_range, self._t_axis)
+        print(road_id, self._s_axis, self._t_axis)
         if road_ended:
             self._s_axis = 0
             self.path_index += 1
@@ -61,7 +63,17 @@ class Trajectory:
         else:
             self.throttle = 0.2
             self.brake = 0
-            self.steering = 0
+            # self.steering = 0
         self.log.set_log()
-        # print(self.throttle, self.steering, self.brake)
+        print(self.throttle, self.steering, self.brake)
         return self.throttle, self.steering, self.brake
+
+    @classmethod
+    def keep_in_lane(cls, t_range, t_axis):
+        print(t_range, t_axis)
+        if (t_range[0] - 1) < t_axis:
+            return 1
+        elif (t_range[1]+2) > t_axis:
+            return -1
+
+
