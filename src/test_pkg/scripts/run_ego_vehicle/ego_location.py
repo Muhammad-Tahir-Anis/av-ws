@@ -439,7 +439,7 @@ class EgoLocation:
         return min_t
 
 
-eg = EgoLocation(-4.6862553453518757e+1, 4.7342586419713072e+1)
+eg = EgoLocation(-4.6878638388384353e+1, 4.5210915308927490e+1)
 print(eg.get_location)
 # for road in opendrive.road_list:
 #     if road.id == "10":

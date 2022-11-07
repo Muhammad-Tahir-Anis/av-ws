@@ -83,6 +83,7 @@ class AxisTransformation:
         # # For this purpose we use radius of curvature of the road.
         # # print("Radius of curva: ", radius_of_curvature, " s_value: ", s_value)
         # # log.radius_of_curvature = radius_of_curvature
+        print(x_curvature, y_curvature)
         adjacent, opposite, angle_in_radian = cls.get_triangle_data(x_curvature, y_curvature, heading)
         radius_of_curvature = 1 / curvature
         s: float = abs(radius_of_curvature * angle_in_radian) + s_value
@@ -103,7 +104,11 @@ class AxisTransformation:
     def __axis_rotation(cls, x, y, heading):
         s = x * cos(heading) + y * sin(heading)
         t = y * cos(heading) - x * sin(heading)
-        # print(s, t)
+        if t == -0.0:
+            t = 0
+        if s == -0.0:
+            s = 0
+        print("st: ",s, t)
         return s, t
 
     @classmethod
@@ -176,6 +181,7 @@ class AxisTransformation:
             # When Curvature is negative
             else:
                 curvature_y_origin = -radius_of_curvature
+
             x_curvature, y_curvature = cls.__axis_translation(x_double_prime, y_double_prime,
                                                               curvature_x_origin, curvature_y_origin)
             adjacent, opposite, angle_in_radian = cls.get_triangle_data(x_curvature, y_curvature, heading)
@@ -196,6 +202,7 @@ class AxisTransformation:
             return s, t
         else:
             x_prime, y_prime = cls.__axis_translation(x, y, x_origin, y_origin)
+            print("txty : ", x_prime, y_prime)
             s, t = cls.__axis_rotation(x_prime, y_prime, heading)
             return s, t
 
@@ -224,7 +231,7 @@ class AxisTransformation:
             x, y = cls.__axis_translation(x_rotated, y_rotated, -x_origin, -y_origin)
             return x, y
         else:
-            x_prime, y_prime = cls.__axis_rotation(s, t, heading)
+            x_prime, y_prime = cls.__axis_rotation(s, t, -heading)
             x, y = cls.__axis_translation(x_prime, y_prime, -x_origin, -y_origin)
             return x, y
 
@@ -232,6 +239,8 @@ class AxisTransformation:
         if curvature != 0:
             s, t = self.forward_transformation(self.x, self.y, self.x_origin, self.y_origin, self.heading,
                                                self.curvature)
+            print("gl : ", geometry_length)
+            print("st : ", s, t)
             print("mtmt: ",max_t, min_t)
             if curvature > 0:
                 min_radius = t - min_t
@@ -254,7 +263,9 @@ class AxisTransformation:
         else:
             s, t = self.forward_transformation(self.x, self.y, self.x_origin, self.y_origin, self.heading,
                                                self.curvature)
-
+            print("gl : ", geometry_length)
+            print("st : ", s, t)
+            print("mtmt: ", max_t, min_t)
             # There are total 4 sides of rectangle
             # i.e A,B,C,D
             rect_side_a = s, t + max_t
