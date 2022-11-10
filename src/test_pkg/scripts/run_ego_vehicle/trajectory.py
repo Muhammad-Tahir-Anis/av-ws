@@ -1,3 +1,5 @@
+from fontTools.ttLib.tables.F__e_a_t import table_F__e_a_t
+
 from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 from src.test_pkg.scripts.run_ego_vehicle.map_analysis import MapAnalysis
 
@@ -30,25 +32,26 @@ class Trajectory:
         self.log.t = self._t_axis
         self.log.s = self._s_axis
         # print(self.path_index)
-        road_id = self.route[self.path_index]
-        self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id)
+        road_id, lane_id = self.route[self.path_index]
+        self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id, lane_id)
         # print(self.throttle, self.steering, self.brake)
         return self.throttle, self.steering, self.brake
 
-    def follow_trajectory(self, x, y, road_id):
+    def follow_trajectory(self, x, y, road_id, lane_id):
         map_analysis = MapAnalysis()
         print("rid: ", road_id)
-        x_origin, y_origin, heading, curvature, s_value, road_ended = map_analysis.road_info(road_id, self._s_axis, self._t_axis, self.log)
-        print("map anal: ",road_id, x_origin, y_origin, heading, curvature, road_ended)
+        x_origin, y_origin, heading, curvature, s_value, road_ended = map_analysis.road_info(road_id, self._s_axis,
+                                                                                             self._t_axis, self.log)
+        print("map anal: ", road_id, x_origin, y_origin, heading, curvature, road_ended)
         self.log.heading = heading
         axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, self.log)
         self._s_axis, self._t_axis = axis_transformation.s_t_axis
-        print("S,T: ",self._s_axis, self._t_axis)
+        print("S,T: ", self._s_axis, self._t_axis)
         # print("Path Index: ", self.path_index)
         self.log.path_index = self.path_index
         ego_location = EgoLocation(x, y)
         print("el: ", ego_location.get_location)
-        t_range = ego_location.get_t_range(road_id, ego_location.get_location[1])
+        t_range = list(ego_location.get_t_range(road_id, float(lane_id)))
         print(ego_location.get_location)
         self.steering = self.keep_in_lane(t_range, self._t_axis)
         print(road_id, self._s_axis, self._t_axis)
@@ -59,7 +62,7 @@ class Trajectory:
             self.steering = 0
             self.throttle = 0
         elif curvature != 0 and not road_ended:
-            self.throttle = 0.1
+            self.throttle = 0.2
             self.brake = 0
             # self.steering = -curvature * 2.23
         else:
@@ -73,16 +76,15 @@ class Trajectory:
     @classmethod
     def keep_in_lane(cls, t_range, t_axis):
         print("k : ", t_range, t_axis)
-
-        print(t_range[0]-1, t_range[1]+2)
-
+        if t_axis > 0:
+            t_range.reverse()
+        print(t_range[0] - 1, t_range[1] + 2)
         if (t_range[0] - 1) < t_axis:
             return 1
-        elif (t_range[1]+2) > t_axis:
+        elif (t_range[1] + 2) > t_axis:
             return -1
         else:
             return 0
-
 
 # traj = Trajectory(["3", "0", "10"])
 # x = 109.6906770464934

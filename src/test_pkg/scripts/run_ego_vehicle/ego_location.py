@@ -62,7 +62,6 @@ class EgoLocation:
                                 s, t = axis.s_t_axis
                                 lane_id = cls.get_lane_id(road_id, t)
 
-
                             # if is_point_in_sector:
                             #     print("in sector : ",curvature_origin_x, curvature_origin_y, min_radius, max_radius)
                             #     if cls.is_point_lies_in_circle(x, y, curvature_origin_x, curvature_origin_y, min_radius,
@@ -74,7 +73,8 @@ class EgoLocation:
                             # print("ID: ", road.id)  # //
                             curvature = 0
 
-                            axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value,
+                            axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature,
+                                                      s_value,
                                                       log)
                             # max_t, min_t = cls.get_t_values(road)
 
@@ -130,7 +130,8 @@ class EgoLocation:
                         # print("ID: ", road.id)  # //
                         curvature = 0
 
-                        axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value, log)
+                        axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value,
+                                                  log)
                         # max_t, min_t = cls.get_t_values(road)
 
                         s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value,
@@ -140,7 +141,8 @@ class EgoLocation:
 
                         # Rectangle points A,B,C,D
                         rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
-                                                                                                 geometry_length, curvature)
+                                                                                                 geometry_length,
+                                                                                                 curvature)
                         # print("Rect: ",rect_side_a, rect_side_b, rect_side_c, rect_side_d)  # //
                         # Let's make two triangles ABC and ADC
                         # print("ID: ",road.id)  # //
@@ -414,6 +416,7 @@ class EgoLocation:
                 if left_lane_section.lane.type == "driving":
                     is_driving_lane = True
         return is_driving_lane
+
     @classmethod
     def get_max_t(cls, max_lane, lanes):
         # t is an axis along the width of a road
@@ -453,7 +456,6 @@ class EgoLocation:
             else:
                 min_t = 0
         return min_t
-
 
 # eg = EgoLocation(109.6906770464934, 11)
 # print(eg.get_location)
