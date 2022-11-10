@@ -37,18 +37,19 @@ class Trajectory:
 
     def follow_trajectory(self, x, y, road_id):
         map_analysis = MapAnalysis()
+        print("rid: ", road_id)
         x_origin, y_origin, heading, curvature, s_value, road_ended = map_analysis.road_info(road_id, self._s_axis, self._t_axis, self.log)
-        # print(x_origin, y_origin, heading, curvature, road_ended)
+        print("map anal: ",road_id, x_origin, y_origin, heading, curvature, road_ended)
         self.log.heading = heading
         axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value, self.log)
         self._s_axis, self._t_axis = axis_transformation.s_t_axis
-        # print("S,T: ",self._s_axis, self._t_axis)
+        print("S,T: ",self._s_axis, self._t_axis)
         # print("Path Index: ", self.path_index)
         self.log.path_index = self.path_index
         ego_location = EgoLocation(x, y)
         print("el: ", ego_location.get_location)
         t_range = ego_location.get_t_range(road_id, ego_location.get_location[1])
-        # print(ego_location.get_location)
+        print(ego_location.get_location)
         self.steering = self.keep_in_lane(t_range, self._t_axis)
         print(road_id, self._s_axis, self._t_axis)
         if road_ended:
@@ -60,7 +61,7 @@ class Trajectory:
         elif curvature != 0 and not road_ended:
             self.throttle = 0.1
             self.brake = 0
-            self.steering = -curvature * 2.23
+            # self.steering = -curvature * 2.23
         else:
             self.throttle = 0.2
             self.brake = 0
@@ -72,9 +73,19 @@ class Trajectory:
     @classmethod
     def keep_in_lane(cls, t_range, t_axis):
         print("k : ", t_range, t_axis)
+
+        print(t_range[0]-1, t_range[1]+2)
+
         if (t_range[0] - 1) < t_axis:
             return 1
         elif (t_range[1]+2) > t_axis:
             return -1
+        else:
+            return 0
 
 
+# traj = Trajectory(["3", "0", "10"])
+# x = 109.6906770464934
+# for y in range(5, 10):
+#     print("xy: ",x,y)
+#     traj.update_trajectory(x, y)
