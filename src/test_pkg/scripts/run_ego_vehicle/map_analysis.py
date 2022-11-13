@@ -28,6 +28,7 @@ class MapAnalysis:
             # t_axis < 0 => right lanes => parallel to road direction
             # For right lanes
             if road_id == road.id:
+                print("ST: road info : ", s_axis, t_axis)
                 if t_axis < 0:
                     if s_axis > float(road.length):
                         # print("S: road info : ", s_axis)
@@ -43,6 +44,12 @@ class MapAnalysis:
                         log.s_axis = s_axis
                         self.road_ended = True
                         self.s_value = 0
+                    #     if road.planview.geometry_list:
+                    #         self.s_value = float(road.planview.geometry_list[0].length)
+                    #     else:
+                    #         self.s_value = float(road.planview.geometry.length)
+                    # else:
+                    #     self.road_ended = False
 
                 # Checking road geometries
                 if road.planview.geometry_list:
@@ -72,5 +79,9 @@ class MapAnalysis:
                     self.heading = float(geometry.hdg)
                     self.x_origin = float(geometry.x)
                     self.y_origin = float(geometry.y)
+                    self.s_value = float(geometry.s)
+                    if geometry.arc:
+                        self.curvature = float(geometry.arc.curvature)
 
         return self.x_origin, self.y_origin, self.heading, self.curvature, self.s_value, self.road_ended
+

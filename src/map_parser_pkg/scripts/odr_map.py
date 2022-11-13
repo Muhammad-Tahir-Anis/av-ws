@@ -4,6 +4,7 @@ from math import sin, cos, pi
 import numpy as np
 
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
+from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
 
 
 class OdrMap:
@@ -112,38 +113,47 @@ class OdrMap:
         y_point = y
         print(x_point, y_point)
 
-        # Axis Translation from Inertial XY to Reference Line ST
-        s_translated = x_point - x_origin
-        t_translated = y_point - y_origin
-        print(s_translated, t_translated)
+        # New Added Axis Transformation Testing
+        axis_transformation = AxisTransformation(x_point, y_point, x_origin, y_origin, heading, 0, 0)
+        s_transformed, t_transformed = axis_transformation.s_t_axis
+        s_transformed = s_transformed + 1
+        # s_transformed = s_transformed
 
-        # Axis Rotation from Reference Line ST to local UV
-        u_rotated = s_translated * cos(heading) + t_translated * sin(heading)
-        v_rotated = t_translated * cos(heading) - s_translated * sin(heading)
-        print(u_rotated, v_rotated)
+        # # Axis Translation from Inertial XY to Reference Line ST
+        # s_translated = x_point - x_origin
+        # t_translated = y_point - y_origin
+        # print(s_translated, t_translated)
+        #
+        # # Axis Rotation from Reference Line ST to local UV
+        # u_rotated = s_translated * cos(heading) + t_translated * sin(heading) + 1
+        # v_rotated = t_translated * cos(heading) - s_translated * sin(heading)
+        # print(u_rotated, v_rotated)
 
         # Setting Direction of vehicle on road while spawning
         if lane_section == "left":
             w = cos((heading+pi)/2)
             z = sin((heading+pi)/2)
-            v_rotated = v_rotated + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
+            # v_rotated = v_rotated + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
+            t_transformed = t_transformed + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
         elif lane_section == "right":
             w = cos(heading / 2)
             z = sin(heading / 2)
-            v_rotated = v_rotated - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
-        print(u_rotated, v_rotated)
+            # v_rotated = v_rotated - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
+            t_transformed = t_transformed - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
+        # print(u_rotated, v_rotated)
 
         # Reverse Rotation from Local UV to Reference Line ST
         print(degree)
         print(cos(heading))
         print(sin(-heading))
-        s_translated = (u_rotated * np.cos(-heading)) + (v_rotated * np.sin(-heading))
-        t_translated = (v_rotated * np.cos(-heading)) - (u_rotated * np.sin(-heading))
-        print(s_translated, t_translated)
+        # s_translated = (u_rotated * np.cos(-heading)) + (v_rotated * np.sin(-heading))
+        # t_translated = (v_rotated * np.cos(-heading)) - (u_rotated * np.sin(-heading))
+        x, y = axis_transformation.reverse_transformation(s_transformed,t_transformed,x_origin,y_origin,heading,0)
+        # print(s_translated, t_translated)
 
         # Reverse Translation from Reference Line ST to Inertial XY
-        x = s_translated + x_origin
-        y = t_translated + y_origin
+        # x = s_translated + x_origin
+        # y = t_translated + y_origin
         print(x, y)
         return x, y, z, w
 
@@ -182,10 +192,10 @@ class OdrMap:
     #             return next_road, previous_road
 
 
-def main():
-    odr_map = OdrMap()
-    odr_map.spawn_at_road(10, "left")
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     odr_map = OdrMap()
+#     odr_map.spawn_at_road(10, "left")
+#
+#
+# if __name__ == '__main__':
+#     main()

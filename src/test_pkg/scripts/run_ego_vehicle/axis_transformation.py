@@ -4,7 +4,7 @@ from logs import Log
 
 
 class AxisTransformation:
-    def __init__(self, x, y, x_origin, y_origin, heading, curvature, s_value, log: Log):
+    def __init__(self, x, y, x_origin, y_origin, heading, curvature, s_value):
         self.x = x
         self.y = y
         self.x_origin = x_origin
@@ -14,7 +14,7 @@ class AxisTransformation:
         self.s_value = s_value
 
         if curvature != 0:
-            self.s, self.t = self.handle_curvature(x, y, x_origin, y_origin, heading, curvature, s_value, log)
+            self.s, self.t = self.handle_curvature(x, y, x_origin, y_origin, heading, curvature, s_value)
         else:
             x_translated, y_translated = self.__axis_translation(x, y, x_origin, y_origin)
             # print("translated: ", x_translated, y_translated, heading)
@@ -23,7 +23,7 @@ class AxisTransformation:
             self.s = self.s + s_value
 
     @classmethod
-    def handle_curvature(cls, x, y, x_origin, y_origin, heading, curvature, s_value, log: Log):
+    def handle_curvature(cls, x, y, x_origin, y_origin, heading, curvature, s_value):
         # radius_of_curvature = 1 / curvature
         # # print("Radius: ", radius_of_curvature)
         # log.radius_of_curvature = radius_of_curvature
@@ -173,10 +173,10 @@ class AxisTransformation:
         # log.rotated_axis_toward_curvature = [x_prime_curvature, y_prime_curvature]
 
         # Define the adjacent and opposite of triangle to find angle and hypotenuses.
-        adjacent = (x_prime_curvature)
+        adjacent = x_prime_curvature
         # print(y_prime_curvature)
         # opposite = round(y_prime_curvature)
-        opposite = (y_prime_curvature)
+        opposite = y_prime_curvature
         # print("Adjacent & Opposite: ", adjacent, opposite)
 
         # To calculate the angle values we use

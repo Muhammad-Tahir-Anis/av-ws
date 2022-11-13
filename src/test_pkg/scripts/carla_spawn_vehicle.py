@@ -4,6 +4,7 @@ from diagnostic_msgs.msg import KeyValue
 from carla_msgs.srv import SpawnObject
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 from src.map_parser_pkg.scripts.odr_map import OdrMap
+from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
 
 
 class SpawnEgoVehicle:
