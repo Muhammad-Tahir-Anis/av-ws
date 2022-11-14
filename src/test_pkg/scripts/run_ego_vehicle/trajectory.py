@@ -21,6 +21,7 @@ class Trajectory:
         self.throttle: float = 0
         self.steering: float = 0
         self.log = Log()
+        self.road_ended = False
 
     def update_trajectory(self, x, y):
         # print("X: ", x, "Y: ", y)
@@ -43,20 +44,27 @@ class Trajectory:
         print("rid: ", road_id)
 
         ego_location = EgoLocation(x, y)
-        #
-        # actual_roads = ego_location.get_location
-        # print(len(actual_roads))
-        # if len(actual_roads) == 1:
-        #     road_id = actual_roads[0][0]
 
-        # for roads in actual_roads:
-        #     if road_id == roads[0]:
-        #         road_id = roads[0]
+        actual_roads = ego_location.get_location
+        print(len(actual_roads))
+        is_road_present = False
+        if len(actual_roads) == 1:
+            if road_id == actual_roads[0][0]:
+                self._s_axis, self._t_axis = ego_location.get_ego_location_st
+                is_road_present = True
+        for roads in actual_roads:
+            if road_id == roads[0]:
+                print("DDDDDDDDD",roads[0])
+                self._s_axis = roads[2]
+                self._t_axis = roads[3]
+                is_road_present = True
+        if not is_road_present:
+            self.road_ended = True
 
-        x_origin, y_origin, heading, curvature, s_value, road_ended = map_analysis.road_info(road_id, self._s_axis,
-                                                                                             self._t_axis, self.log)
-        print("map anal: ", road_id, x_origin, y_origin, heading, curvature, road_ended)
-        self.log.heading = heading
+        x_origin, y_origin, heading, curvature = map_analysis.road_info(road_id, self._s_axis,
+                                                                        self._t_axis, self.log)
+        print("map anal: ", road_id, x_origin, y_origin, heading, curvature)
+        # self.log.heading = heading
 
         # self._s_axis, self._t_axis = ego_location.get_ego_location_st
 
@@ -65,8 +73,10 @@ class Trajectory:
         #     if road[0] == road_id:
         #         self._s_axis = road[2]
         #         self._t_axis = road[3]
-        axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
-        self._s_axis, self._t_axis = axis_transformation.s_t_axis
+        # axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
+        # self._s_axis, self._t_axis = axis_transformation.s_t_axis
+        print(ego_location.get_ego_location_st)
+
         print("S,T: ", self._s_axis, self._t_axis)
         # print("Path Index: ", self.path_index)
         self.log.path_index = self.path_index
@@ -76,16 +86,18 @@ class Trajectory:
         print(ego_location.get_location)
         self.steering = self.keep_in_lane(t_range, self._t_axis)
         print(road_id, self._s_axis, self._t_axis)
-        if road_ended:
-            if self._t_axis < 0:
-                self._s_axis = 0
-            else:
-                self._s_axis = 1
+        if self.road_ended:
+            # self._s_axis = 0
+            # if self._t_axis < 0:
+            #     self._s_axis = 0
+            # else:
+            #     self._s_axis = 1
             self.path_index += 1
             self.brake = 1
             self.steering = 0
             self.throttle = 0
-        elif curvature != 0 and not road_ended:
+            self.road_ended = False
+        elif curvature != 0 and not self.road_ended:
             self.throttle = 0.1
             self.brake = 0
             # self.steering = -curvature * 2.23

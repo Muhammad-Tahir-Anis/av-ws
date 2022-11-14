@@ -29,21 +29,21 @@ class MapAnalysis:
             # For right lanes
             if road_id == road.id:
                 print("ST: road info : ", s_axis, t_axis)
-                if t_axis < 0:
-                    if s_axis > float(road.length):
-                        # print("S: road info : ", s_axis)
-                        log.s_axis = s_axis
-                        self.road_ended = True
-                        self.s_value = 0
-                    else:
-                        self.road_ended = False
-                        # print("Road_id:", road_id)
-                        log.road_id = road_id
-                elif t_axis >= 0:
-                    if s_axis <= 0:
-                        log.s_axis = s_axis
-                        self.road_ended = True
-                        self.s_value = 0
+                # if t_axis < 0:
+                #     if s_axis > float(road.length):
+                #         # print("S: road info : ", s_axis)
+                #         log.s_axis = s_axis
+                #         self.road_ended = True
+                #         self.s_value = 0
+                #     else:
+                #         self.road_ended = False
+                #         # print("Road_id:", road_id)
+                #         log.road_id = road_id
+                # elif t_axis >= 0:
+                #     if s_axis <= 0:
+                #         log.s_axis = s_axis
+                #         self.road_ended = True
+                #         self.s_value = float(road.length)
                     #     if road.planview.geometry_list:
                     #         self.s_value = float(road.planview.geometry_list[0].length)
                     #     else:
@@ -83,5 +83,5 @@ class MapAnalysis:
                     if geometry.arc:
                         self.curvature = float(geometry.arc.curvature)
 
-        return self.x_origin, self.y_origin, self.heading, self.curvature, self.s_value, self.road_ended
+        return self.x_origin, self.y_origin, self.heading, self.curvature
 

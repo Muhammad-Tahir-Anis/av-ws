@@ -1,8 +1,8 @@
 from src.test_pkg.scripts.path_planning.path_list_maker import path_list
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 
-class shortest_path:
 
+class shortest_path:
     map_graph = []
 
     def __init__(self, edges):
@@ -80,4 +80,3 @@ if __name__ == '__main__':
     shortest_path_list_length = len(shortest_path)
     # shortest path by min total length of roads in each possible shortest paths
     route_graph.get_shortest_path_by_length(shortest_path_list_length, possible_shortest_paths)
-

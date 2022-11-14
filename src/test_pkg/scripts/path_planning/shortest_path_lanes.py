@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     start = "0"
     end = "3"
-    path = route_graph.get_shortest_path(start, end)
+    path = route_graph.get_shortest_path_by_length(start, end)
 
     start_lane = "-2"
     end_lane = "-2"
