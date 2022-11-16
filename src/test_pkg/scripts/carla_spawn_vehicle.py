@@ -23,7 +23,7 @@ class SpawnEgoVehicle:
             color = KeyValue("color", "255,255,255")
             key_value = [role_name, color]
             odr = OdrMap()
-            print(road_id,lane)
+            print(road_id, lane)
             x, y, z, w = odr.spawn_at_road(road_id, lane)
             print(x, y)
             print(z, w)
