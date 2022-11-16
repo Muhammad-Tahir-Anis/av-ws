@@ -288,32 +288,34 @@ class AxisTransformation:
             t = self.t
             # print("gl : ", geometry_length)
             # print("st : ", s, t)
-            print("mtmt: ",max_t, min_t)
-            print(1/curvature)
+            # print("mtmt: ",max_t, min_t)
+            # print(1/curvature)
 
             # adjacent, opposite, point_angle_in_radian = self.get_triangle_data(s, t, self.heading)
             adjacent, opposite, point_angle_in_radian = self.get_triangle_data(curvature_x_origin, curvature_y_origin, self.curvature)
 
             radius_of_curvature = abs(1 / curvature)
-            min_radius = radius_of_curvature - max_t
-            max_radius = radius_of_curvature - min_t
+            if curvature > 0:
+                min_radius = radius_of_curvature - max_t
+                max_radius = radius_of_curvature - min_t
+            else:
+                min_radius = radius_of_curvature + min_t
+                max_radius = radius_of_curvature + max_t
+
             # Hypotenuse is also a radius of a circle which follows by our point (Vehicle)
             point_radius = math.sqrt(pow(opposite, 2) + pow(adjacent, 2))
-            print("Min rad : ", min_radius, "Point_rad : ", point_radius, "Max rad : ", max_radius)
+            # print("Min rad : ", min_radius, "Point_rad : ", point_radius, "Max rad : ", max_radius)
 
             # if self.curvature > 0:
             if min_radius < point_radius < max_radius:
                 is_vehicle_in_circle = True
-                print(True)
+                # print(True)
             else:
                 is_vehicle_in_circle = False
-            # while curvature is negative than origin of curvature is on right so inner lanes are negative and vise versa
-            # else:
-            #     if min_radius < point_radius < max_radius:
-            #         is_vehicle_in_circle = True
-            #         print(True)
-            #     else:
-            #         is_vehicle_in_circle = False
+
+            # while curvature is negative than origin of curvature is on right so inner lanes are negative and vise
+            # versa else: if min_radius < point_radius < max_radius: is_vehicle_in_circle = True print(True) else:
+            # is_vehicle_in_circle = False
 
             # if curvature > 0:
             #     min_radius = t - min_t
@@ -330,10 +332,10 @@ class AxisTransformation:
             radius_of_curvature = abs(1 / curvature)
             min_angle = 0
             max_angle = geometry_length / radius_of_curvature
-            print("max, point, min : ", max_angle, point_angle_in_radian, min_angle)
+            # print("max, point, min : ", max_angle, point_angle_in_radian, min_angle)
             if min_angle <= point_angle_in_radian <= max_angle:
                 is_point_in_sector = True
-                print(True)
+                # print(True)
             else:
                 is_point_in_sector = False
             x, y = self.reverse_transformation(curvature_x_origin, curvature_y_origin, self.x_origin, self.y_origin, self.heading, self.curvature)
