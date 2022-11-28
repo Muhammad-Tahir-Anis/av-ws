@@ -1,6 +1,5 @@
 import math
 from math import atan, sin, cos
-from logs import Log
 
 
 class AxisTransformation:

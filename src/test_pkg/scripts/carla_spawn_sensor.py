@@ -24,7 +24,7 @@ class SpawnSensor:
             attach = attach_id
             # response = spawn_object('sensor.camera.rgb', 'rgb_camera-sensor', key_value, pose, attach, random_pos)
             response = spawn_object('sensor.other.gnss', 'gnss_sensor', key_value, pose, attach, random_pos)
-            response = spawn_object('sensor.other.imu', 'imu-sensor', key_value, pose, attach, random_pos)
+            response = spawn_object('sensor.other.imu', 'imu_sensor', key_value, pose, attach, random_pos)
             return response
         except rospy.ServiceException as e:
             return e

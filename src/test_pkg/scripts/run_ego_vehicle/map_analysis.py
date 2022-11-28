@@ -23,33 +23,9 @@ class MapAnalysis:
         # Getting all roads data from map
         roads = opendrive.road_list
         for road in roads:
-            # checking if road id matches
-            # t_axis > 0 => left lanes => opposite to road direction
-            # t_axis < 0 => right lanes => parallel to road direction
             # For right lanes
             if road_id == road.id:
                 print("ST: road info : ", s_axis, t_axis)
-                # if t_axis < 0:
-                #     if s_axis > float(road.length):
-                #         # print("S: road info : ", s_axis)
-                #         log.s_axis = s_axis
-                #         self.road_ended = True
-                #         self.s_value = 0
-                #     else:
-                #         self.road_ended = False
-                #         # print("Road_id:", road_id)
-                #         log.road_id = road_id
-                # elif t_axis >= 0:
-                #     if s_axis <= 0:
-                #         log.s_axis = s_axis
-                #         self.road_ended = True
-                #         self.s_value = float(road.length)
-                    #     if road.planview.geometry_list:
-                    #         self.s_value = float(road.planview.geometry_list[0].length)
-                    #     else:
-                    #         self.s_value = float(road.planview.geometry.length)
-                    # else:
-                    #     self.road_ended = False
 
                 # Checking road geometries
                 if road.planview.geometry_list:

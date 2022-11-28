@@ -27,14 +27,7 @@ class Trajectory:
         # print("X: ", x, "Y: ", y)
         self.log.x = x
         self.log.y = y
-        # print("S: ", self._s_axis, "T: ", self._t_axis)
-        # self.log.t = self._t_axis
-        # self.log.s = self._s_axis
-        # print(self.path_index)
         road_id, lane_id = self.route[self.path_index]
-        # ego_location = EgoLocation(x, y)
-        # self._s_axis, self._t_axis = ego_location.get_ego_location_st
-        # self._s_axis = 0
         self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id, lane_id)
         # print(self.throttle, self.steering, self.brake)
         return self.throttle, self.steering, self.brake
@@ -64,17 +57,6 @@ class Trajectory:
         x_origin, y_origin, heading, curvature = map_analysis.road_info(road_id, self._s_axis,
                                                                         self._t_axis, self.log)
         print("map anal: ", road_id, x_origin, y_origin, heading, curvature)
-        # self.log.heading = heading
-
-        # self._s_axis, self._t_axis = ego_location.get_ego_location_st
-
-        # road_list = ego_location.get_location
-        # for road in road_list:
-        #     if road[0] == road_id:
-        #         self._s_axis = road[2]
-        #         self._t_axis = road[3]
-        # axis_transformation = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
-        # self._s_axis, self._t_axis = axis_transformation.s_t_axis
         print(ego_location.get_ego_location_st)
 
         print("S,T: ", self._s_axis, self._t_axis)
@@ -87,11 +69,6 @@ class Trajectory:
         self.steering = self.keep_in_lane(t_range, self._t_axis)
         print(road_id, self._s_axis, self._t_axis)
         if self.road_ended:
-            # self._s_axis = 0
-            # if self._t_axis < 0:
-            #     self._s_axis = 0
-            # else:
-            #     self._s_axis = 1
             self.path_index += 1
             self.brake = 1
             self.steering = 0
@@ -132,9 +109,3 @@ class Trajectory:
                 return -1
             else:
                 return 0
-
-# traj = Trajectory(["3", "0", "10"])
-# x = 109.6906770464934
-# for y in range(5, 10):
-#     print("xy: ",x,y)
-#     traj.update_trajectory(x, y)

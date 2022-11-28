@@ -30,11 +30,6 @@ class EgoLocation:
     @classmethod
     def get_ego_road(cls, x, y, log: Log, ego_roads):
         global axis
-        x_origin = 0
-        y_origin = 0
-        curvature = 0
-        s_value = 0
-        geometry_length = 0
         road_id = None
         lane_id = None
         s_axis = None
@@ -70,13 +65,6 @@ class EgoLocation:
                                 lane_id = cls.get_lane_id(road_id, t_axis)
                                 ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
 
-                            # if is_point_in_sector:
-                            #     print("in sector : ",curvature_origin_x, curvature_origin_y, min_radius, max_radius)
-                            #     if cls.is_point_lies_in_circle(x, y, curvature_origin_x, curvature_origin_y, min_radius,
-                            #                                 max_radius):
-                            #         road_id = road.id
-                            #         s, t = axis.s_t_axis
-                            #         lane_id = cls.get_lane_id(road_id, t)
                         else:
                             # print("ID: ", road.id)  # //
                             curvature = 0
@@ -137,13 +125,6 @@ class EgoLocation:
                             lane_id = cls.get_lane_id(road_id, t_axis)
                             ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
 
-                        # if is_point_in_sector:
-                        #     print("in sector : ",curvature_origin_x, curvature_origin_y, min_radius, max_radius)
-                        #     if cls.is_point_lies_in_circle(x, y, curvature_origin_x, curvature_origin_y, min_radius,
-                        #                                    max_radius):
-                        #         road_id = road.id
-                        #         s, t = axis.s_t_axis
-                        #         lane_id = cls.get_lane_id(road_id, t)
                     else:
                         # print("ID: ", road.id)  # //
                         curvature = 0
