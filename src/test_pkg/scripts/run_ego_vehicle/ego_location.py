@@ -193,8 +193,8 @@ class EgoLocation:
     def get_lane_list_with_t(cls, lane_section, lane_offset):
         lanes_list = []
         t = lane_offset
-        if lane_section.lane_list:
-            lane_list = lane_section.lane_list
+        if lane_section.LaneList:
+            lane_list = lane_section.LaneList
             lane_id = lane_list[0].id
             lane_id = float(lane_id)
             # for left lanes
@@ -285,8 +285,8 @@ class EgoLocation:
 
         left_lane_section = road.lanes.lanesection.left
         if left_lane_section:
-            if left_lane_section.lane_list:
-                lane_list = left_lane_section.lane_list
+            if left_lane_section.LaneList:
+                lane_list = left_lane_section.LaneList
                 # take id of driving lanes only
                 left_driving_lanes = [float(lane.id) for lane in lane_list if lane.type == "driving"]
                 if not left_driving_lanes:
@@ -322,8 +322,8 @@ class EgoLocation:
 
         right_lane_section = road.lanes.lanesection.right
         if right_lane_section:
-            if right_lane_section.lane_list:
-                lane_list = right_lane_section.lane_list
+            if right_lane_section.LaneList:
+                lane_list = right_lane_section.LaneList
                 # take id of driving lanes only
                 right_driving_lanes = [float(lane.id) for lane in lane_list if lane.type == "driving"]
                 if not right_driving_lanes:
@@ -363,16 +363,16 @@ class EgoLocation:
         right_lane_section = road.lanes.lanesection.right
         left_lane_section = road.lanes.lanesection.left
         if right_lane_section:
-            if right_lane_section.lane_list:
-                for lane in right_lane_section.lane_list:
+            if right_lane_section.LaneList:
+                for lane in right_lane_section.LaneList:
                     if lane.type == "driving":
                         is_driving_lane = True
             else:
                 if right_lane_section.lane.type == "driving":
                     is_driving_lane = True
         elif left_lane_section:
-            if left_lane_section.lane_list:
-                for lane in left_lane_section.lane_list:
+            if left_lane_section.LaneList:
+                for lane in left_lane_section.LaneList:
                     if lane.type == "driving":
                         is_driving_lane = True
             else:
