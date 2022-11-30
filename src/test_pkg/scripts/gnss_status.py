@@ -18,13 +18,3 @@ class GnssData:
     @property
     def get_gnss_data(self):
         return self.x, self.y
-
-
-# def main():
-#     rospy.init_node("av_gnss_subscriber")
-#     rospy.Subscriber('/carla/ego_vehicle/gnss_sensor', NavSatFix, callback)
-#     rospy.wait_for_message("/carla/ego_vehicle/gnss_sensor", NavSatFix)
-#
-#
-# if __name__ == "__main__":
-#     main()
