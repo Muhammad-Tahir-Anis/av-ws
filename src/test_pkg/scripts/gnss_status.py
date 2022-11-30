@@ -12,7 +12,7 @@ class GnssData:
         self.location = ObjectLocation()
         rospy.Subscriber('/carla/ego_vehicle/gnss_sensor', NavSatFix, self.callback)
         rospy.wait_for_message("/carla/ego_vehicle/gnss_sensor", NavSatFix)
-        rospy.spin()
+        # rospy.spin()
 
     def callback(self, data: NavSatFix):
         gnss_const = 0.000009
@@ -20,17 +20,9 @@ class GnssData:
         self.x = data.longitude / gnss_const
         # print(self.x, self.y)
 
-        self.location.get_Obstacle_location(self.x, self.y)
-
-    @property
-    def get_gnss_data(self):
-        return self.x, self.y
-
 
 def main():
     rospy.init_node("av_gnss_subscriber")
-    # spawn_vehicle = SpawnEgoVehicle(3, "right")
-    # spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id)
     gnss_data = GnssData()
     print(gnss_data.get_gnss_data)
 
