@@ -21,7 +21,6 @@ class EgoLocation:
         return self.s_axis, self._t_axis
 
     def get_t_range(self, road_id, lane_id):
-        # print("t_r: ",road_id, lane_id)
         lanes_list = self.get_lanes_list_with_t_range(road_id)
         for lane in lanes_list:
             if lane[0] == lane_id:
@@ -38,7 +37,6 @@ class EgoLocation:
         point_p = (x, y)
         roads = opendrive.road_list
         for road in roads:
-            # print(road.id , cls.is_driving_lane(road))
             if cls.is_driving_lane(road):
                 max_t, min_t = cls.get_t_values(road)
                 if road.planview.geometry_list:
@@ -51,14 +49,11 @@ class EgoLocation:
                         geometry_length = float(geometry.length)
 
                         if geometry.arc:
-                            # print("ID: ", road.id)  # //
                             curvature = float(geometry.arc.curvature)
 
                             axis = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
                             curvature_origin_x, curvature_origin_y, min_radius, max_radius, is_point_on_road = \
                                 axis.get_boundaries(max_t, min_t, geometry_length, curvature)
-                            # print("mt mt : ", max_t, min_t)
-                            # print(min_radius, max_radius)
                             if is_point_on_road:
                                 road_id = road.id
                                 s_axis, t_axis = axis.s_t_axis
@@ -66,7 +61,6 @@ class EgoLocation:
                                 ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
 
                         else:
-                            # print("ID: ", road.id)  # //
                             curvature = 0
 
                             axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature,
@@ -74,18 +68,14 @@ class EgoLocation:
                             max_t, min_t = cls.get_t_values(road)
 
                             s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value).s_t_axis
-                            # lane_id = cls.get_lane_id(road.id, t)
 
                             # Rectangle points A,B,C,D
                             rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
                                                                                                      geometry_length,
                                                                                                      curvature)
-                            # print("Rect: ", rect_side_a, rect_side_b, rect_side_c, rect_side_d)  # //
 
                             triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
-                            # print("OK")
                             if triangle_abc:
-                                # print("Yes")
                                 road_id = road.id
                                 lane_id = cls.get_lane_id(road.id, t)
                                 s_axis = s
@@ -93,9 +83,7 @@ class EgoLocation:
                                 ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
 
                             triangle_adc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_d, rect_side_c)
-                            # print("OK")
                             if triangle_adc:
-                                # print("Yes")
                                 road_id = road.id
                                 lane_id = cls.get_lane_id(road.id, t)
                                 s_axis = s
@@ -111,14 +99,11 @@ class EgoLocation:
                     geometry_length = float(geometry.length)
 
                     if geometry.arc:
-                        # print("ID: ", road.id)  # //
                         curvature = float(geometry.arc.curvature)
 
                         axis = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
                         curvature_origin_x, curvature_origin_y, min_radius, max_radius, is_point_on_road = \
                             axis.get_boundaries(max_t, min_t, geometry_length, curvature)
-                        # print("mt mt : ", max_t, min_t)
-                        # print(min_radius, max_radius)
                         if is_point_on_road:
                             road_id = road.id
                             s_axis, t_axis = axis.s_t_axis
@@ -126,23 +111,17 @@ class EgoLocation:
                             ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
 
                     else:
-                        # print("ID: ", road.id)  # //
                         curvature = 0
 
                         axis = AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value)
-                        # max_t, min_t = cls.get_t_values(road)
 
                         s, t = AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value).s_t_axis
-                        # print(s, t)
-                        # lane_id = cls.get_lane_id(road.id, t)
 
                         # Rectangle points A,B,C,D
                         rect_side_a, rect_side_b, rect_side_c, rect_side_d = axis.get_boundaries(max_t, min_t,
                                                                                                  geometry_length,
                                                                                                  curvature)
-                        # print("Rect: ",rect_side_a, rect_side_b, rect_side_c, rect_side_d)  # //
                         # Let's make two triangles ABC and ADC
-                        # print("ID: ",road.id)  # //
                         triangle_abc = cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
                         if triangle_abc:
                             road_id = road.id
@@ -164,16 +143,12 @@ class EgoLocation:
 
     @classmethod
     def is_point_lies_in_circle(cls, x, y, curvature_origin_x, curvature_origin_y, min_radius, max_radius):
-        # print("is in circle: ", x, y, curvature_origin_x, curvature_origin_y, min_radius, max_radius)
         point = math.sqrt(pow(x - abs(curvature_origin_x), 2) + pow(y - abs(curvature_origin_y), 2))
-        # print("mr pt mr : ", min_radius, point, max_radius)
         # check if point is on driving lanes
         if min_radius < point < max_radius:
-            # print("OK")
             return True
         else:
             return False
-            # check if point lies inside a sector
 
     @classmethod
     def get_lane_id(cls, road_id, t):
@@ -184,7 +159,6 @@ class EgoLocation:
     def get_lanes_list_with_t_range(cls, road_id):
         left_lanes_list = []
         right_lanes_list = []
-        lane_offset = 0
         roads = opendrive.road_list
         for road in roads:
             if road.id == road_id:
@@ -210,7 +184,6 @@ class EgoLocation:
         for lane in lanes_list:
             if t > 0:
                 if lane[1] < t <= lane[2]:
-                    # print(t, lanes_list)
                     return lane[0]
             if t < 0:
                 if lane[1] > t >= lane[2]:
@@ -224,7 +197,6 @@ class EgoLocation:
             lane_list = lane_section.lane_list
             lane_id = lane_list[0].id
             lane_id = float(lane_id)
-            # lane_id = float(lane_list[0].id)
             # for left lanes
             if lane_id > 0:
                 lane_list.reverse()
@@ -263,13 +235,10 @@ class EgoLocation:
                 else:
                     lanes_list.append((float(lane_section.lane.id), t, t - float(lane_section.lane.width.a)))
                     t = t - float(lane_section.lane.width.a)
-        # print(lanes_list)
         return lanes_list
 
     @classmethod
     def is_point_lies_in_triangle(cls, point_p, point_a, point_b, point_c):
-        # print("Tri: ",point_p,point_a,point_b,point_c)  # //
-        is_point_lies_in = False
         # Triangle ABC
         area_of_tri_abc = cls.area_of_rectangle(point_a, point_b, point_c)
 
@@ -294,7 +263,6 @@ class EgoLocation:
         # round up to 12 to get approximate
         sum_of_p_triangles = round(sum_of_p_triangles, 11)
 
-        # print("abc, sum p : ",area_of_tri_abc, sum_of_p_triangles)  # //
         if area_of_tri_abc != sum_of_p_triangles:
             is_point_lies_in = False
         else:
@@ -311,15 +279,8 @@ class EgoLocation:
 
     @classmethod
     def get_t_values(cls, road):
-        left_driving_lanes = []
-        right_driving_lanes = []
-        lanes_width = 0
         lane_offset = 0
-        max_lane = 0
-        min_lane = 0
         left_max_t = 0
-        left_min_t = 0
-        right_min_t = 0
         right_max_t = 0
 
         left_lane_section = road.lanes.lanesection.left
@@ -334,7 +295,6 @@ class EgoLocation:
                 else:
                     max_lane = max(left_driving_lanes)
                     min_lane = min(left_driving_lanes)
-                # print(max_lane, min_lane)
 
                 # left lanes list is like [3,2,1] so we need to reverse it to get correct t axis values
                 lane_list.reverse()
