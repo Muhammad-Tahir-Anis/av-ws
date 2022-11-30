@@ -1,0 +1,203 @@
+
+DEFINE CLASS AxisTransformation:
+
+    DEFINE FUNCTION init(x, y, x_origin, y_origin, heading, curvature, s_value):
+
+        SET x , y , x_origin, .y_origin, heading, curvature , s_value
+
+        IF curvature != 0:
+
+            SET s, t
+
+        ELSE:
+
+            SET x_translated, y_translated, s, t
+
+
+    DEFINE FUNCTION handle_curvature( x, y, x_origin, y_origin, heading, curvature, s_value):
+
+        SET x_curvature, y_curvature, adjacent, opposite, angle_in_radian, radius_of_curvature, s, hypotenuse
+
+        IF curvature > 0:
+
+            SET t
+
+        ELSE:
+
+            SET t
+
+        RETURN s, t
+
+
+    DEFINE FUNCTION axis_translation( x, y, x_origin, y_origin):
+
+        SET x_translation, y_translation
+
+        RETURN x_translation, y_translation
+
+    DEFINE FUNCTION xis_rotation(x, y, heading):
+
+        SET s , t
+
+        IF t EQUALS -0.0:
+
+            SET t
+
+        IF s EQUALS -0.0:
+
+            SET s
+
+        RETURN s, t
+
+    DEFINE FUNCTION normalize_angle(adjacent, opposite, angle_in_radian, curvature):
+
+        IF curvature > 0:
+
+            IF opposite >= 0 and adjacent >= 0:
+
+                PASS
+
+            ELSEIF opposite >= 0 and adjacent < 0:
+
+                SET angle_in_radian
+
+            ELSEIF opposite < 0 and adjacent < 0:
+
+                SET angle_in_radian
+
+            ELSEIF opposite < 0 and adjacent > 0:
+
+                SET angle_in_radian
+
+        ELSE:
+
+            IF opposite >= 0 and adjacent >= 0:
+
+                SET angle_in_radian
+
+            ELSEIF opposite >= 0 and adjacent < 0:
+
+                SET angle_in_radian
+
+            ELSEIF opposite < 0 and adjacent < 0:
+
+                SET angle_in_radian
+
+            ELSEIF opposite < 0 and adjacent > 0:
+
+                SET angle_in_radian
+
+        RETURN angle_in_radian
+
+
+    DEFINE FUNCTION get_triangle_data(x_curvature, y_curvature, curvature):
+
+        SET x_prime_curvature, y_prime_curvature, adjacent, opposite
+
+        IF opposite EQUALS 0:
+
+            SET angle_in_radian
+
+        ELSE:
+
+            SET angle_in_radian, angle_in_radian
+
+        RETURN adjacent, opposite, angle_in_radian
+
+
+    DEFINE FUNCTION forward_transformation( x, y, x_origin, y_origin, heading, curvature):
+
+        IF curvature != 0:
+
+            SET radius_of_curvature, x_prime, y_prime, x_double_prime, y_double_prime ,curvature_x_origin
+
+            IF curvature > 0:
+
+                SET curvature_y_origin
+
+            ELSE:
+
+                SET curvature_y_origin
+
+            SET x_curvature, y_curvature,  s, t TO x_curvature, y_curvature
+
+            RETURN s, t
+
+        ELSE:
+
+            SET x_prime, y_prime, s, t
+
+            RETURN s, t
+
+    DEFINE FUNCTION reverse_transformation(s, t, x_origin, y_origin, heading, curvature):
+
+        IF curvature != 0:
+
+            SET x_prime, y_prime , x_rotated, y_rotated , x, y
+
+            RETURN x, y
+
+        ELSE:
+
+            SET x_prime, y_prime , x, y
+
+            RETURN x, y
+
+
+
+    DEFINE FUNCTION get_boundaries(max_t, min_t, geometry_length, curvature):
+
+        IF curvature != 0:
+
+            SET curvature_x_origin, curvature_y_origin , adjacent, opposite, point_angle_in_radian , radius_of_curvature TO abs(1 / curvature)
+
+            IF curvature > 0:
+
+                SET min_radius, max_radius TO radius_of_curvature - min_t
+
+            ELSE:
+
+                SET min_radius, max_radius TO radius_of_curvature + max_t,  point_radius
+
+            IF min_radius < point_radius < max_radius:
+
+                SET is_vehicle_in_circle
+
+            ELSE:
+
+                SET is_vehicle_in_circle
+
+            SET radius_of_curvature , min_angle , max_angle
+
+            IF min_angle <= point_angle_in_radian <= max_angle:
+
+                SET is_point_in_sector
+
+            ELSE:
+
+                SET is_point_in_sector
+
+            SET x, y
+
+            IF is_point_in_sector and is_vehicle_in_circle:
+
+                SET is_point_on_road
+
+            ELSE:
+
+                SET is_point_on_road
+
+            RETURN x, y, abs(min_radius), abs(max_radius), is_point_on_road
+
+
+
+        ELSE:
+
+            SET s, t , rect_side_a , rect_side_b , s , rect_side_c , rect_side_d, rect_side_a, rect_side_b , rect_side_c , rect_side_d
+
+            RETURN rect_side_a, rect_side_b, rect_side_c, rect_side_d
+
+    DEFINE FUNCTION s_t_axis():
+
+        RETURN s, t
+

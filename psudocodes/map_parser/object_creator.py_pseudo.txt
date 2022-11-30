@@ -1,0 +1,63 @@
+DEFINE CLASS ObjectCreator:
+
+    INITIALIZE class_object, class_import
+
+    DEFINE FUNCTION init(object_constructors, classes):
+
+        SET object_constructors, classes
+
+        object_template(object_constructors, classes)
+
+
+    DEFINE FUNCTION object_template(cls, object_constructors, classes):
+
+        SET object_temp
+
+        IF LENGTH OF object_constructors LIST EQUALS 3:
+
+            SET object_name, class_name
+
+            imports_template(class_name, classes)
+
+            SET class_parameters , class_parameters, object_temp
+
+        ELSEIF LENGTH OF object_constructors LIST EQUALS 2:
+
+            SET object_name , object_value, object_value, object_temp
+
+        SET cls.class_object
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION __parameters_template(cls, class_parameters):
+
+        IF isinstance(class_parameters, list):
+
+            FOR parameter IN class_parameters:
+
+                SET index TO class_parameters.index(parameter)
+
+                IF f"'" not IN parameter[1]:
+
+                    SET parameter[1] TO parameter[1].lower()
+
+                SET parameter[0] TO parameter[0].lower()
+
+                SET class_parameters[index] TO "=".join(parameter)
+
+        RETURN class_parameters
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION __imports_template(cls, class_name, classes):
+
+        IF class_name IN classes:
+
+            SET __import_temp TO f"from src.map_parser_pkg.odr_map.{class_name.lower()} IMPORT {class_name.capitalize()}"
+
+            SET cls.class_import TO __import_temp
+

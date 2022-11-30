@@ -1,0 +1,826 @@
+IMPORT math
+
+
+
+from src.map_parser_pkg.scripts.odr_map_obj IMPORT opendrive
+
+from src.test_pkg.scripts.run_ego_vehicle.axis_transformation IMPORT AxisTransformation
+
+from src.test_pkg.scripts.run_ego_vehicle.logs IMPORT Log
+
+
+
+
+
+DEFINE CLASS EgoLocation:
+
+    DEFINE FUNCTION __init__(self, x, y):
+
+        SET log TO Log()
+
+        SET self.ego_road TO []
+
+        SET self.road_id, self.lane_id, self.s_axis, self._t_axis TO self.get_ego_road(x, y, log, self.ego_road)
+
+
+
+    @property
+
+    DEFINE FUNCTION get_location(self):
+
+        # RETURN self.road_id, self.lane_id
+
+        RETURN self.ego_road
+
+
+
+    @property
+
+    DEFINE FUNCTION get_ego_location_st(self):
+
+        RETURN self.s_axis, self._t_axis
+
+
+
+    DEFINE FUNCTION get_t_range(self, road_id, lane_id):
+
+        SET lanes_list TO self.get_lanes_list_with_t_range(road_id)
+
+        FOR lane IN lanes_list:
+
+            IF lane[0] EQUALS lane_id:
+
+                RETURN lane[1], lane[2]
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_ego_road(cls, x, y, log: Log, ego_roads):
+
+        global axis
+
+        SET road_id TO None
+
+        SET lane_id TO None
+
+        SET s_axis TO None
+
+        SET t_axis TO None
+
+        # A point P is a point on coordinates where vehicle is located
+
+        SET point_p TO (x, y)
+
+        SET roads TO opendrive.road_list
+
+        FOR road IN roads:
+
+            IF cls.is_driving_lane(road):
+
+                SET max_t, min_t TO cls.get_t_values(road)
+
+                IF road.planview.geometry_list:
+
+                    SET geometries TO road.planview.geometry_list
+
+                    FOR geometry IN geometries:
+
+                        SET x_origin TO float(geometry.x)
+
+                        SET y_origin TO float(geometry.y)
+
+                        SET heading TO float(geometry.hdg)
+
+                        SET s_value TO float(geometry.s)
+
+                        SET geometry_length TO float(geometry.length)
+
+
+
+                        IF geometry.arc:
+
+                            SET curvature TO float(geometry.arc.curvature)
+
+
+
+                            SET axis TO AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
+
+                            SET curvature_origin_x, curvature_origin_y, min_radius, max_radius, is_point_on_road TO \
+
+                                axis.get_boundaries(max_t, min_t, geometry_length, curvature)
+
+                            IF is_point_on_road:
+
+                                SET road_id TO road.id
+
+                                SET s_axis, t_axis TO axis.s_t_axis
+
+                                SET lane_id TO cls.get_lane_id(road_id, t_axis)
+
+                                ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
+
+
+
+                        ELSE:
+
+                            SET curvature TO 0
+
+
+
+                            SET axis TO AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature,
+
+                                                      s_value)
+
+                            SET max_t, min_t TO cls.get_t_values(road)
+
+
+
+                            SET s, t TO AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value).s_t_axis
+
+
+
+                            # Rectangle points A,B,C,D
+
+                            SET rect_side_a, rect_side_b, rect_side_c, rect_side_d TO axis.get_boundaries(max_t, min_t,
+
+                                                                                                     geometry_length,
+
+                                                                                                     curvature)
+
+
+
+                            SET triangle_abc TO cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
+
+                            IF triangle_abc:
+
+                                SET road_id TO road.id
+
+                                SET lane_id TO cls.get_lane_id(road.id, t)
+
+                                SET s_axis TO s
+
+                                SET t_axis TO t
+
+                                ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
+
+
+
+                            SET triangle_adc TO cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_d, rect_side_c)
+
+                            IF triangle_adc:
+
+                                SET road_id TO road.id
+
+                                SET lane_id TO cls.get_lane_id(road.id, t)
+
+                                SET s_axis TO s
+
+                                SET t_axis TO t
+
+                                ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
+
+
+
+                ELSEIF road.planview.geometry:
+
+                    SET geometry TO road.planview.geometry
+
+                    SET x_origin TO float(geometry.x)
+
+                    SET y_origin TO float(geometry.y)
+
+                    SET heading TO float(geometry.hdg)
+
+                    SET s_value TO float(geometry.s)
+
+                    SET geometry_length TO float(geometry.length)
+
+
+
+                    IF geometry.arc:
+
+                        SET curvature TO float(geometry.arc.curvature)
+
+
+
+                        SET axis TO AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value)
+
+                        SET curvature_origin_x, curvature_origin_y, min_radius, max_radius, is_point_on_road TO \
+
+                            axis.get_boundaries(max_t, min_t, geometry_length, curvature)
+
+                        IF is_point_on_road:
+
+                            SET road_id TO road.id
+
+                            SET s_axis, t_axis TO axis.s_t_axis
+
+                            SET lane_id TO cls.get_lane_id(road_id, t_axis)
+
+                            ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
+
+
+
+                    ELSE:
+
+                        SET curvature TO 0
+
+
+
+                        SET axis TO AxisTransformation(x_origin, y_origin, x_origin, y_origin, heading, curvature, s_value)
+
+
+
+                        SET s, t TO AxisTransformation(x, y, x_origin, y_origin, heading, curvature, s_value).s_t_axis
+
+
+
+                        # Rectangle points A,B,C,D
+
+                        SET rect_side_a, rect_side_b, rect_side_c, rect_side_d TO axis.get_boundaries(max_t, min_t,
+
+                                                                                                 geometry_length,
+
+                                                                                                 curvature)
+
+                        # Let's make two triangles ABC and ADC
+
+                        SET triangle_abc TO cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_b, rect_side_c)
+
+                        IF triangle_abc:
+
+                            SET road_id TO road.id
+
+                            SET lane_id TO cls.get_lane_id(road.id, t)
+
+                            SET s_axis TO s
+
+                            SET t_axis TO t
+
+                            ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
+
+
+
+                        SET triangle_adc TO cls.is_point_lies_in_triangle(point_p, rect_side_a, rect_side_d, rect_side_c)
+
+                        IF triangle_adc:
+
+                            SET road_id TO road.id
+
+                            SET lane_id TO cls.get_lane_id(road.id, t)
+
+                            SET s_axis TO s
+
+                            SET t_axis TO t
+
+                            ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
+
+            ELSE:
+
+                PASS
+
+        RETURN road_id, lane_id, s_axis, t_axis
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION is_point_lies_in_circle(cls, x, y, curvature_origin_x, curvature_origin_y, min_radius, max_radius):
+
+        SET point TO math.sqrt(pow(x - abs(curvature_origin_x), 2) + pow(y - abs(curvature_origin_y), 2))
+
+        # check IF point is on driving lanes
+
+        IF min_radius < point < max_radius:
+
+            RETURN True
+
+        ELSE:
+
+            RETURN False
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_lane_id(cls, road_id, t):
+
+        SET lanes_list TO cls.get_lanes_list_with_t_range(road_id)
+
+        RETURN cls.check_lane_id(lanes_list, t)
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_lanes_list_with_t_range(cls, road_id):
+
+        SET left_lanes_list TO []
+
+        SET right_lanes_list TO []
+
+        SET roads TO opendrive.road_list
+
+        FOR road IN roads:
+
+            IF road.id EQUALS road_id:
+
+                SET lane_offsets TO road.lanes.laneoffset_list
+
+                IF lane_offsets:
+
+                    SET lane_offset TO float(lane_offsets[0].a)
+
+                ELSE:
+
+                    SET lane_offset TO float(road.lanes.laneoffset.a)
+
+
+
+                SET left_lane_section TO road.lanes.lanesection.left
+
+                IF left_lane_section:
+
+                    SET left_lanes_list TO cls.get_lane_list_with_t(left_lane_section, lane_offset)
+
+
+
+                SET right_lane_section TO road.lanes.lanesection.right
+
+                IF right_lane_section:
+
+                    SET right_lanes_list TO cls.get_lane_list_with_t(right_lane_section, lane_offset)
+
+
+
+                SET lanes_list TO left_lanes_list + right_lanes_list
+
+                RETURN lanes_list
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION check_lane_id(cls, lanes_list, t):
+
+        FOR lane IN lanes_list:
+
+            IF t > 0:
+
+                IF lane[1] < t <= lane[2]:
+
+                    RETURN lane[0]
+
+            IF t < 0:
+
+                IF lane[1] > t >= lane[2]:
+
+                    RETURN lane[0]
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_lane_list_with_t(cls, lane_section, lane_offset):
+
+        SET lanes_list TO []
+
+        SET t TO lane_offset
+
+        IF lane_section.LaneList:
+
+            SET lane_list TO lane_section.LaneList
+
+            SET lane_id TO lane_list[0].id
+
+            SET lane_id TO float(lane_id)
+
+            # FOR left lanes
+
+            IF lane_id > 0:
+
+                lane_list.reverse()
+
+                FOR lane IN lane_list:
+
+                    IF lane.width_list:
+
+                        lanes_list.append((float(lane.id), t, t + float(lane.width_list[0].a)))
+
+                        SET t TO t + float(lane.width_list[0].a)
+
+                    ELSE:
+
+                        lanes_list.append((float(lane.id), t, t + float(lane.width.a)))
+
+                        SET t TO t + float(lane.width.a)
+
+                lane_list.reverse()
+
+            # FOR right lanes
+
+            ELSEIF lane_id < 0:
+
+                FOR lane IN lane_list:
+
+                    IF lane.width_list:
+
+                        lanes_list.append((float(lane.id), t, t - float(lane.width_list[0].a)))
+
+                        SET t TO t - float(lane.width_list[0].a)
+
+                    ELSE:
+
+                        lanes_list.append((float(lane.id), t, t - float(lane.width.a)))
+
+                        SET t TO t - float(lane.width.a)
+
+        ELSE:
+
+            SET lane_id TO float(lane_section.lane.id)
+
+            # FOR left lane
+
+            IF lane_id > 0:
+
+                IF lane_section.lane.width_list:
+
+                    lanes_list.append((float(lane_section.lane.id), t, t + float(lane_section.lane.width_list[0].a)))
+
+                    SET t TO t + float(lane_section.lane.width_list[0].a)
+
+                ELSE:
+
+                    lanes_list.append((float(lane_section.lane.id), t, t + float(lane_section.lane.width.a)))
+
+                    SET t TO t + float(lane_section.lane.width.a)
+
+            # FOR right lane
+
+            ELSEIF lane_id < 0:
+
+                IF lane_section.lane.width_list:
+
+                    lanes_list.append((float(lane_section.lane.id), t, t - float(lane_section.lane.width_list[0].a)))
+
+                    SET t TO t - float(lane_section.lane.width_list[0].a)
+
+                ELSE:
+
+                    lanes_list.append((float(lane_section.lane.id), t, t - float(lane_section.lane.width.a)))
+
+                    SET t TO t - float(lane_section.lane.width.a)
+
+        RETURN lanes_list
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION is_point_lies_in_triangle(cls, point_p, point_a, point_b, point_c):
+
+        # Triangle ABC
+
+        SET area_of_tri_abc TO cls.area_of_rectangle(point_a, point_b, point_c)
+
+
+
+        # round up to 12 to get approximate
+
+        SET area_of_tri_abc TO round(area_of_tri_abc, 11)
+
+
+
+        # creating 3 more triangles with point P that are PAB PAD PBD
+
+
+
+        # Triangle PAB
+
+        SET area_of_tri_pab TO cls.area_of_rectangle(point_p, point_a, point_b)
+
+
+
+        # Triangle PAC
+
+        SET area_of_tri_pac TO cls.area_of_rectangle(point_p, point_a, point_c)
+
+
+
+        # Triangle PBC
+
+        SET area_of_tri_pbc TO cls.area_of_rectangle(point_p, point_b, point_c)
+
+
+
+        # Check IF point P lies IN Triangle ABD
+
+        # If yes than sum of the areas of Triangle PAB PAC PBC are equal to area of Triangle ABC
+
+        SET sum_of_p_triangles TO area_of_tri_pab + area_of_tri_pac + area_of_tri_pbc
+
+
+
+        # round up to 12 to get approximate
+
+        SET sum_of_p_triangles TO round(sum_of_p_triangles, 11)
+
+
+
+        IF area_of_tri_abc != sum_of_p_triangles:
+
+            SET is_point_lies_in TO False
+
+        ELSE:
+
+            SET is_point_lies_in TO True
+
+        RETURN is_point_lies_in
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION area_of_rectangle(cls, point_a, point_b, point_c):
+
+        SET side_a TO point_a[0] * (point_b[1] - point_c[1])
+
+        SET side_b TO point_b[0] * (point_c[1] - point_a[1])
+
+        SET side_c TO point_c[0] * (point_a[1] - point_b[1])
+
+        SET area_of_triangle TO abs((side_a + side_b + side_c) / 2)
+
+        RETURN area_of_triangle
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_t_values(cls, road):
+
+        SET lane_offset TO 0
+
+        SET left_max_t TO 0
+
+        SET right_max_t TO 0
+
+
+
+        SET left_lane_section TO road.lanes.lanesection.left
+
+        IF left_lane_section:
+
+            IF left_lane_section.LaneList:
+
+                SET lane_list TO left_lane_section.LaneList
+
+                # take id of driving lanes only
+
+                SET left_driving_lanes TO [float(lane.id) FOR lane IN lane_list IF lane.type EQUALS "driving"]
+
+                IF not left_driving_lanes:
+
+                    SET max_lane TO 0
+
+                    SET min_lane TO 0
+
+                ELSE:
+
+                    SET max_lane TO max(left_driving_lanes)
+
+                    SET min_lane TO min(left_driving_lanes)
+
+
+
+                # left lanes list is like [3,2,1] so we need to reverse it to get correct t axis values
+
+                lane_list.reverse()
+
+                SET left_max_t TO cls.get_max_t(max_lane, lane_list)
+
+                SET left_min_t TO cls.get_min_t(min_lane, lane_list)
+
+                # get lanes list back to its original form
+
+                lane_list.reverse()
+
+                IF road.lanes.laneoffset_list:
+
+                    SET lane_offset TO float(road.lanes.laneoffset_list[0].a)
+
+                ELSEIF road.lanes.laneoffset:
+
+                    SET lane_offset TO float(road.lanes.laneoffset.a)
+
+                # OUTPUT(lane_offset)
+
+                SET left_max_t TO left_max_t + lane_offset
+
+                SET left_min_t TO left_min_t + lane_offset
+
+
+
+                # OUTPUT(left_max_t, left_min_t)
+
+
+
+            ELSEIF left_lane_section.lane:
+
+                SET left_lane TO left_lane_section.lane
+
+                IF left_lane.width_list:
+
+                    SET left_max_t TO float(left_lane.width_list[0].a)
+
+                ELSEIF left_lane.width:
+
+                    SET left_max_t TO float(left_lane.width.a)
+
+                SET left_min_t TO 0  # Add lane offset
+
+
+
+        SET right_lane_section TO road.lanes.lanesection.right
+
+        IF right_lane_section:
+
+            IF right_lane_section.LaneList:
+
+                SET lane_list TO right_lane_section.LaneList
+
+                # take id of driving lanes only
+
+                SET right_driving_lanes TO [float(lane.id) FOR lane IN lane_list IF lane.type EQUALS "driving"]
+
+                IF not right_driving_lanes:
+
+                    SET max_lane TO 0
+
+                    SET min_lane TO 0
+
+                ELSE:
+
+                    SET max_lane TO min(right_driving_lanes)
+
+                    SET min_lane TO max(right_driving_lanes)
+
+
+
+                SET right_max_t TO cls.get_max_t(max_lane, lane_list)
+
+                SET right_min_t TO cls.get_min_t(min_lane, lane_list)
+
+
+
+                IF road.lanes.laneoffset_list:
+
+                    SET lane_offset TO float(road.lanes.laneoffset_list[0].a)
+
+                ELSEIF road.lanes.laneoffset:
+
+                    SET lane_offset TO float(road.lanes.laneoffset.a)
+
+
+
+                SET right_max_t TO right_max_t - lane_offset
+
+            ELSEIF right_lane_section.lane:
+
+                SET right_lane TO right_lane_section.lane
+
+                IF right_lane.width_list:
+
+                    SET right_max_t TO float(right_lane.width_list[0].a)
+
+                ELSEIF right_lane.width:
+
+                    SET right_max_t TO float(right_lane.width.a)
+
+
+
+        RETURN left_max_t, -right_max_t
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION is_driving_lane(cls, road):
+
+        SET is_driving_lane TO False
+
+        SET right_lane_section TO road.lanes.lanesection.right
+
+        SET left_lane_section TO road.lanes.lanesection.left
+
+        IF right_lane_section:
+
+            IF right_lane_section.LaneList:
+
+                FOR lane IN right_lane_section.LaneList:
+
+                    IF lane.type EQUALS "driving":
+
+                        SET is_driving_lane TO True
+
+            ELSE:
+
+                IF right_lane_section.lane.type EQUALS "driving":
+
+                    SET is_driving_lane TO True
+
+        ELSEIF left_lane_section:
+
+            IF left_lane_section.LaneList:
+
+                FOR lane IN left_lane_section.LaneList:
+
+                    IF lane.type EQUALS "driving":
+
+                        SET is_driving_lane TO True
+
+            ELSE:
+
+                IF left_lane_section.lane.type EQUALS "driving":
+
+                    SET is_driving_lane TO True
+
+        RETURN is_driving_lane
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_max_t(cls, max_lane, lanes):
+
+        # t is an axis along the width of a road
+
+        global max_t
+
+        SET t TO 0
+
+        SET lane_width TO 0
+
+        FOR lane IN lanes:
+
+            IF lane.width_list:
+
+                SET lane_width TO float(lane.width_list[0].a)
+
+            ELSEIF lane.width:
+
+                SET lane_width TO float(lane.width.a)
+
+            SET t TO t + lane_width
+
+            IF max_lane EQUALS float(lane.id):
+
+                SET max_t TO t
+
+                RETURN max_t
+
+            ELSE:
+
+                SET max_t TO 0
+
+        RETURN max_t
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION get_min_t(cls, min_lane, lanes):
+
+        # t is an axis along the width of a road
+
+        global min_t
+
+        SET t TO 0
+
+        SET lane_width TO 0
+
+        FOR lane IN lanes:
+
+            IF lane.width_list:
+
+                SET lane_width TO float(lane.width_list[0].a)
+
+            ELSEIF lane.width:
+
+                SET lane_width TO float(lane.width.a)
+
+            SET t TO t + lane_width
+
+            IF min_lane EQUALS float(lane.id):
+
+                SET min_t TO t - lane_width
+
+                RETURN min_t
+
+            ELSE:
+
+                SET min_t TO 0
+
+        RETURN min_t
+

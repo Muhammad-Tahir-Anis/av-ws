@@ -1,0 +1,175 @@
+
+DEFINE CLASS JsonReader:
+
+    INITIALIZE objects, classes_constructs, objects_constructs, classes, json_list
+
+    DEFINE FUNCTION init( json_file_path):
+
+        SET json_data FROM json_file
+
+        FOR key, value IN self.json_list:
+
+            CALL extract_class(key=key,value=value)
+
+        normalize_constructs(classes_constructs)
+
+        normalize_constructs(objects_constructs)
+
+
+    DEFINE FUNCTION read_json(json_data):
+
+        INITIALIZE keys, value
+
+        IF json_data IS dict TYPE:
+
+            IF json_data.keys():
+
+                FOR key IN json_data.keys():
+
+                    ADD key IN keys LIST
+
+                    IF not json_data[key] IS str, none TYPE:
+
+                        SET value
+
+                        ADD [key, value] TO json_list
+
+                        extract_object(key, value)
+
+                    read_json(__value)
+
+        ELSEIF json_data IS list TYPE:
+
+            FOR data IN json_data:
+
+                read_json(data)
+
+    DEFINE FUNCTION extract_class(key, value):
+
+        INITIALIZE attributes, is_key_exists
+
+        IF value IS list TYPE:
+
+            FOR index IN value:
+
+                extract_class(key, index)
+
+        ELSEIF value IS dict, str, none TYPE:
+
+            FOR keys IN value:
+
+                SET attribute
+
+                IF attribute IS list TYPE:
+
+                    ADD f"{keys}_list" TO attributes LIST
+
+                ELSE:
+
+                    ADD keys TO attributes LIST
+
+            IF classes_constructs LIST NOT EMPTY:
+
+                FOR class_constructs IN cls.classes_constructs:
+
+                    IF class_constructs[0] is key:
+
+                        SET is_key_exists, SET index, cls.classes_constructs[index]
+
+                IF is_key_exists is False:
+
+                    ADD [key, attributes] TO classes_constructs LIST
+
+                    ADD key TO classes LIST
+
+            ELSE:
+
+                ADD [key, attributes] TO classes_constructs LIST
+
+                ADD key TO classes LIST
+
+    DEFINE FUNCTION extract_object(key, value, index):
+
+        INITIALIZE parameter, parameters
+
+        IF isinstance(value, list):
+
+            SET list_parameter
+
+            FOR index IN value:
+
+                ADD f"{key}{value.index(index)}" list_parameter LIST
+
+            INSERT [f"{key}s", list_parameter] TO objects_constructs LIST AT TOP
+
+            FOR data IN value:
+
+                extract_object(key, data, index=value.index(data))
+
+                read_json(data)
+
+        ELSEIF value IS dict TYPE:
+
+            FOR keys IN value:
+
+                IF value[keys] IS list TYPE:
+
+                    SET parameter
+
+                ELSEIF value[keys] IS dict TYPE:
+
+                    SET parameter
+
+                ELSEIF value[keys] IS str TYPE:
+
+                    SET parameter
+
+                ELSEIF value[keys] IS none TYPE:
+
+                    SET parameter
+
+                ADD parameter TO parameters
+
+            IF index is None:
+
+                INSERT [key, key, parameters] TO objects_constructs LIST AT TOP
+
+            ELSE:
+
+                INSERT [f"{key}{index}", key, parameters] TO objects_constructs LIST AT TOP
+
+
+    DEFINE FUNCTION normalize_constructs(objects_constructs):
+
+        IF objects_constructs IS list TYPE:
+
+            FOR constructs IN objects_constructs:
+
+                IF constructs IS list TYPE:
+
+                    normalize_constructs(constructs)
+
+                ELSEIF constructs ist STR type:
+
+                    SET index, objects_constructs[index]
+
+    DEFINE FUNCTION normalize(word):
+
+        IF "@" IN word:
+
+            REMOVE "@" FROM word
+
+        IF "{" IN word:
+
+            REMOVE "{" FROM word
+
+        IF "}" IN word:
+
+            REMOVE "}" FROM word
+
+        IF word IS KEYWORD:
+
+            ADD "_" AFTER word
+
+        RETURN word
+

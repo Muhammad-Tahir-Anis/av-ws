@@ -1,0 +1,83 @@
+
+DEFINE CLASS ClassWriter:
+
+    DEFINE FUNCTION init(class_constructs, classes):
+
+        SET class_name, class_attributes, classes, class_template
+
+        CALL FUNCTION write_class(class_name,temp_class)
+
+    DEFINE FUNCTION class_template(class_name, class_attributes, classes):
+
+        SET classes, class_attributes, constructor_parameters, initialized_attributes, my_imports,
+            constructor_parameters, initialized_attributes, my_imports, attributes. imports, temp_class
+
+        RETURN temp_class
+
+    DEFINE FUNCTION attribute_template(class_name, class_attributes, classes):
+
+        SET temp_attributes
+
+        FOR class_attribute IN class_attributes:
+
+            SET temp_attribute
+
+            IF class_attribute IN classes and class_attribute != class_name.lower():
+
+                SET temp_attribute
+
+            ELSEIF "_list" IN class_attribute:
+
+                SET expected_class
+
+                IF expected_class IN classes:
+
+                    SET temp_attribute
+
+            ADD temp_attribute TO temp_attributes LIST
+
+        RETURN temp_attributes
+
+
+    DEFINE FUNCTION imports_template(class_name, class_attributes, classes):
+
+        SET temp_imports, list_import
+
+        FOR class_attribute IN class_attributes:
+
+            IF class_attribute IN classes and class_attribute != class_name.lower():
+
+                SET class_import
+
+                IF class_import not IN temp_imports:
+
+                    ADD class_import TO temp_imports LIST
+
+            IF "_list" IN class_attribute:
+
+                SET expected_class
+
+                IF expected_class IN classes and expected_class != class_name.lower():
+
+                    SET class_import
+
+                    IF class_import not IN temp_imports:
+
+                        ADD class_import TO temp_imports LIST
+
+                IF list_import not IN temp_imports:
+
+                    ADD list_import TO temp_imports LIST
+
+        RETURN temp_imports
+
+
+    DEFINE FUNCTION write_class(class_name, temp_class):
+
+        IF NOT "odr_map" FOLDER:
+
+            CREATE DIRECTORY "odr_map"
+
+        CREATE CLASS FILES
+
+        WRITE temp_class TO CLASS FILE

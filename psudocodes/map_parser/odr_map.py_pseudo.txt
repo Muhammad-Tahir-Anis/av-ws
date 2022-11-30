@@ -1,0 +1,338 @@
+
+DEFINE CLASS OdrMap:
+
+    INITIALIZE lane_width , driving_lane, driving_lanes, road
+
+
+
+    DEFINE FUNCTION init():
+
+        INITIALIZE lane_width , lane_offset, heading, y , x
+
+
+
+    DEFINE FUNCTION spawn_at_road(road_id, lane_section):
+
+        SET roads , road_id
+
+        FOR road IN roads:
+
+            IF road_id EQUALS road.id:
+
+                SET self._road TO road
+
+        IF road.planview.geometry_list:
+
+            SET x , y TO , heading
+
+        ELSE:
+
+            SET x , y , heading
+
+        IF road.lanes.laneoffset_list:
+
+            SET lane_offset
+
+        ELSE:
+
+            SET lane_offset
+
+        IF lane_section EQUALS "left":
+
+            IF road.lanes.lanesection.left.LaneList:
+
+                SET lane_section_list
+
+            ELSE:
+
+                SET lane_section_list
+
+            SET lane_width
+
+            IF lane_offset >= 0:
+
+                RETURN adjust_spawn_point(x, y, lane_section, heading, lane_width, lane_offset)
+
+            ELSE:
+
+                RETURN adjust_spawn_point(x, y, lane_section, heading, lane_width, lane_offset=0)
+
+        IF lane_section EQUALS "right":
+
+            IF road.lanes.lanesection.right.LaneList:
+
+                SET lane_section_list
+
+            ELSE:
+
+                SET lane_section_list
+
+            SET lane_width
+
+            IF self.lane_offset <= 0:
+
+                RETURN adjust_spawn_point(x, y, lane_section, heading, lane_width, -lane_offset)
+
+            ELSE:
+
+                RETURN adjust_spawn_point(x, y, lane_section, heading, lane_width, lane_offset=0)
+
+
+    DEFINE FUNCTION select_lane_section(lane_section_list):
+
+        IF lane_section_list IS list TYPE:
+
+            FOR lane IN lane_section_list:
+
+                IF lane.type EQUALS "driving":
+
+                    ADD lane.id TO driving_lanes LIST
+
+            SET driving_lane
+
+            FOR lane IN lane_section_list:
+
+                IF lane.id EQUALS str(driving_lane):
+
+                    SET lane_width
+
+        ELSE:
+
+            IF lane_section_list.type EQUALS "driving":
+
+                ADD lane_section_list.id TO driving_lanes LIST
+
+            IF lane_section_list.id EQUALS str(driving_lane):
+
+                SET lane_width
+
+        RETURN lane_width
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION rad_to_degree(cls, radian):
+
+        SET degree TO (radian / pi) * 180
+
+        RETURN degree
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION anticlockwise_degree_to_clockwise(cls, degree):
+
+        # IF degree < 0:
+
+        SET #     degree TO 360 + degree
+
+        RETURN degree
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION adjust_spawn_point(cls, x, y, lane_section, heading, lane_width, lane_offset):
+
+        global z
+
+        OUTPUT(heading)
+
+        SET angle TO cls.rad_to_degree(heading)
+
+        OUTPUT(angle)
+
+        SET degree TO cls.anticlockwise_degree_to_clockwise(angle)
+
+        OUTPUT(degree)
+
+        SET w TO 0
+
+        SET x_origin TO x
+
+        SET y_origin TO y
+
+        OUTPUT(x_origin, y_origin)
+
+        SET x_point TO x
+
+        SET y_point TO y
+
+        OUTPUT(x_point, y_point)
+
+
+
+        # New Added Axis Transformation Testing
+
+        SET axis_transformation TO AxisTransformation(x_point, y_point, x_origin, y_origin, heading, 0, 0)
+
+        SET s_transformed, t_transformed TO axis_transformation.s_t_axis
+
+        SET s_transformed TO s_transformed + 1
+
+        SET # s_transformed TO s_transformed
+
+
+
+        # # Axis Translation from Inertial XY to Reference Line ST
+
+        SET # s_translated TO x_point - x_origin
+
+        SET # t_translated TO y_point - y_origin
+
+        # OUTPUT(s_translated, t_translated)
+
+        #
+
+        # # Axis Rotation from Reference Line ST to local UV
+
+        SET # u_rotated TO s_translated * cos(heading) + t_translated * sin(heading) + 1
+
+        SET # v_rotated TO t_translated * cos(heading) - s_translated * sin(heading)
+
+        # OUTPUT(u_rotated, v_rotated)
+
+
+
+        # Setting Direction of vehicle on road WHILE spawning
+
+        IF lane_section EQUALS "left":
+
+            SET w TO cos((heading+pi)/2)
+
+            SET z TO sin((heading+pi)/2)
+
+            SET # v_rotated TO v_rotated + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
+
+            SET t_transformed TO t_transformed + lane_offset + cls.center_lane(len(cls.driving_lanes), lane_width)
+
+        ELSEIF lane_section EQUALS "right":
+
+            SET w TO cos(heading / 2)
+
+            SET z TO sin(heading / 2)
+
+            SET # v_rotated TO v_rotated - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
+
+            SET t_transformed TO t_transformed - lane_offset - cls.center_lane(len(cls.driving_lanes), lane_width)
+
+        # OUTPUT(u_rotated, v_rotated)
+
+
+
+        # Reverse Rotation from Local UV to Reference Line ST
+
+        OUTPUT(degree)
+
+        OUTPUT(cos(heading))
+
+        OUTPUT(sin(-heading))
+
+        SET # s_translated TO (u_rotated * np.cos(-heading)) + (v_rotated * np.sin(-heading))
+
+        SET # t_translated TO (v_rotated * np.cos(-heading)) - (u_rotated * np.sin(-heading))
+
+        SET x, y TO axis_transformation.reverse_transformation(s_transformed,t_transformed,x_origin,y_origin,heading,0)
+
+        # OUTPUT(s_translated, t_translated)
+
+
+
+        # Reverse Translation from Reference Line ST to Inertial XY
+
+        SET # x TO s_translated + x_origin
+
+        SET # y TO t_translated + y_origin
+
+        OUTPUT(x, y)
+
+        RETURN x, y, z, w
+
+
+
+    @classmethod
+
+    DEFINE FUNCTION center_lane(cls, no_of_lanes, lane_width):
+
+        SET point TO ((2 * no_of_lanes - 1) / 2) * lane_width
+
+        # OUTPUT(point)
+
+        RETURN point
+
+
+
+    # DEFINE FUNCTION normalize_s(self, last_s, next_road, s_list):
+
+    #     FOR road IN opendrive.road_list:
+
+    #         IF float(road.id) EQUALS next_road:
+
+    #             IF road.planview.geometry_list:
+
+    #                 FOR geometry IN road.planview.geometry_list:
+
+    #                     s_list.append([float(geometry.s) + last_s, road.id])
+
+    SET #                 last_s TO float(road.planview.geometry_list[len(road.planview.geometry_list) - 1].s)
+
+    #             ELSE:
+
+    #                 s_list.append([float(road.planview.geometry.s) + last_s, road.id])
+
+    SET #                 last_s TO float(road.planview.geometry.s)
+
+    SET #             next_road TO float(self.what_next(next_road)[0])
+
+    #             self.normalize_s(last_s, next_road, s_list)
+
+
+
+    # DEFINE FUNCTION what_s(self):
+
+    SET #     s_list TO []
+
+    SET #     last_s TO 0
+
+    SET #     next_road TO 0
+
+    #     self.normalize_s(last_s, next_road, s_list)
+
+    #     [OUTPUT(s) FOR s IN s_list]
+
+
+
+    # DEFINE FUNCTION what_next(self, road_id):
+
+    SET #     roads TO opendrive.road_list
+
+    #     FOR road IN roads:
+
+    #         IF road_id EQUALS float(road.id):
+
+    SET #             next_road TO road.link.successor.elementid
+
+    SET #             previous_road TO road.link.predecessor.elementid
+
+    #             RETURN next_road, previous_road
+
+
+
+
+
+# DEFINE FUNCTION main():
+
+SET #     odr_map TO OdrMap()
+
+#     odr_map.spawn_at_road(10, "left")
+
+#
+
+#
+
+# IF __name__ EQUALS '__main__':
+
+#     main()
+

@@ -1,0 +1,59 @@
+
+DEFINE CLASS ObjectWriter:
+
+    SET imports, objects
+
+
+    DEFINE FUNCTION init(objects_constructs, classes):
+
+        SET objects_constructS
+
+        FOR object_constructs IN objects_constructs:
+
+            SET object_creator
+
+            gather_objects(object_creator.class_import, object_creator.class_object)
+
+        write_object()
+
+
+    DEFINE FUNCTION gather_objects(class_import, class_object):
+
+        IF class_import not IN imports:
+
+            INSERT class_import TO imports LIST AT TOP
+
+        ADD class_object TO objects LIST
+
+
+
+    DEFINE FUNCTION write_object():
+
+        SET imports
+
+        SET objects
+
+        SET combine
+
+        OPEN "odr_map_obj" FILE
+
+        WRITE "combine" TO "odr_map_obj" FILE
+
+
+
+
+
+DEFINE FUNCTION main():
+
+    SET json_reader TO JsonReader("/home/maanz-ai/PycharmProjects/av-ws/src/test_pkg/scripts/json_map.json")
+
+    ObjectWriter(json_reader.objects_constructs, json_reader.classes)
+
+
+
+
+
+IF __name__ EQUALS '__main__':
+
+    main()
+

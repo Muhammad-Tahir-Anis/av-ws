@@ -1,0 +1,37 @@
+
+DEFINE FUNCTION main():
+
+    SET xml_file_path
+
+    IF xml_file_path NOT EXIST:
+
+        CREATE DIRECTORY "xml_files"
+
+        SET carla_world, opendrive_xml
+
+        CREATE "xml_file"
+
+        WRITE "opendrive_xml" TO "xml_file"
+
+    SET json_file_path
+
+    IF json_file_path NOT EXISTS:
+
+       CREATE DIRECTORY "json_files"
+
+        SET carla_world, opendrive_xml,  dict_map, opendirve_json
+
+        OPEN "json_file"
+
+        WRITE "opendirve_json" TO "json_file"
+
+
+    IF odr_map_obj FILE NOT EXIST:
+
+        SET json_reader
+
+        FOR class_constructs IN json_reader.classes_constructs:
+
+            ClassWriter(class_constructs, json_reader.classes)
+
+        ObjectWriter(json_reader.objects_constructs,json_reader.classes)

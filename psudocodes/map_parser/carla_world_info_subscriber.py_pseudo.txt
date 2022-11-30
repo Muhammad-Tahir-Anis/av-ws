@@ -1,0 +1,9 @@
+DEFINE CLASS WorldInfoSubscriber:
+
+    INITIALIZE opendrive_map
+
+    DEFINE FUNCTION init(self):
+
+        INITIALIZE ROS NODE (av_world_info_subscriber)
+        SUBSCRIBE ROS NODE (av_world_info) RETURNS (map_name, xml_file)
+
