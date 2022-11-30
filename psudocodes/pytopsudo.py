@@ -9,7 +9,7 @@ as the program cannot handle these convincingly
 
 import re
 
-python_file = '../../../map_parser_pkg/scripts/odr_map.py'
+python_file = '../src/ma'
 work_file = None
 
 basic_conversion_rules = {"for": "FOR", "=": "TO", "if": "IF", "==": "EQUALS", "while": "WHILE", "until": "UNTIL",
