@@ -2,9 +2,7 @@ import rospy
 from geometry_msgs.msg import Pose, Point, Quaternion
 from diagnostic_msgs.msg import KeyValue
 from carla_msgs.srv import SpawnObject
-from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 from src.map_parser_pkg.scripts.odr_map import OdrMap
-from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
 
 
 class SpawnEgoVehicle:
@@ -23,10 +21,7 @@ class SpawnEgoVehicle:
             color = KeyValue("color", "255,255,255")
             key_value = [role_name, color]
             odr = OdrMap()
-            print(road_id, lane)
             x, y, z, w = odr.spawn_at_road(road_id, lane)
-            print(x, y)
-            print(z, w)
             point = Point(x, y, 10)
             quaternion = Quaternion(0, 0, z, w)
             pose = Pose(point, quaternion)
@@ -36,11 +31,3 @@ class SpawnEgoVehicle:
             return response
         except rospy.ServiceException as e:
             return e
-
-
-# def main():
-#     rospy.init_node('spawn_vehicle_node')
-#
-#
-# if __name__ == '__main__':
-#     main()

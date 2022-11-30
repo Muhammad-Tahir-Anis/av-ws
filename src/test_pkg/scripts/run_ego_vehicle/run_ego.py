@@ -68,12 +68,9 @@ class AVGnssStatus:
         cls.y = data.latitude / gnss_const
         cls.x = data.longitude / gnss_const
         # --------------------------------------------
-        print("xy: ", cls.x, cls.y)
         cls.xp.append(cls.x)
         cls.yp.append(cls.y)
-        print(cls.imu_data.get_imu)
         throttle, steer, brake = cls.trajectory.update_trajectory(cls.x, cls.y)
-        # throttle, steer, brake = 0, 0, 0
         AVEgoVehicleControl(throttle, steer, brake)
 
 

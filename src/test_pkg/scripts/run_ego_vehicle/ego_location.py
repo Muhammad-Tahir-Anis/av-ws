@@ -332,7 +332,6 @@ class EgoLocation:
                 else:
                     max_lane = min(right_driving_lanes)
                     min_lane = max(right_driving_lanes)
-                # print(max_lane, min_lane)
 
                 right_max_t = cls.get_max_t(max_lane, lane_list)
                 right_min_t = cls.get_min_t(min_lane, lane_list)
@@ -341,19 +340,14 @@ class EgoLocation:
                     lane_offset = float(road.lanes.laneoffset_list[0].a)
                 elif road.lanes.laneoffset:
                     lane_offset = float(road.lanes.laneoffset.a)
-                # print(lane_offset)
 
                 right_max_t = right_max_t - lane_offset
-                right_min_t = right_min_t - lane_offset
             elif right_lane_section.lane:
                 right_lane = right_lane_section.lane
                 if right_lane.width_list:
                     right_max_t = float(right_lane.width_list[0].a)
                 elif right_lane.width:
                     right_max_t = float(right_lane.width.a)
-                right_min_t = 0  # Add lane offset
-
-            # print(right_max_t, right_min_t)
 
         return left_max_t, -right_max_t
 
@@ -387,7 +381,6 @@ class EgoLocation:
         t = 0
         lane_width = 0
         for lane in lanes:
-            # print("max: ", t)
             if lane.width_list:
                 lane_width = float(lane.width_list[0].a)
             elif lane.width:
@@ -407,7 +400,6 @@ class EgoLocation:
         t = 0
         lane_width = 0
         for lane in lanes:
-            # print("min: ", t)
             if lane.width_list:
                 lane_width = float(lane.width_list[0].a)
             elif lane.width:
@@ -419,11 +411,3 @@ class EgoLocation:
             else:
                 min_t = 0
         return min_t
-
-
-# eg = EgoLocation(27.931950886248025, -27.974526983282683)
-# print(eg.get_location)
-# print(eg.get_t_range(eg.get_location[0], -2))0
-# for road in opendrive.road_list:
-#     if road.id == "10":
-#         eg.get_t_values(road)

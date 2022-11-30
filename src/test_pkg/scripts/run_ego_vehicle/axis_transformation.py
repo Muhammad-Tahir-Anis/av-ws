@@ -120,15 +120,12 @@ class AxisTransformation:
         if curvature != 0:
             # radius always be positive
             radius_of_curvature = abs(1 / curvature)
-            # print("Radius: ", radius_of_curvature)
 
             # Translating Origin of axis to the starting point on road where s is initially 0
             x_prime, y_prime = cls.__axis_translation(x, y, x_origin, y_origin)
-            # print("Translating to Curvature road: ", x_prime, y_prime)
 
             # Rotating axis along the direction of the road.
             x_double_prime, y_double_prime = cls.__axis_rotation(x_prime, y_prime, heading)
-            # print("Rotating up to Curvature road heading / angle: ", x_double_prime, y_double_prime)
 
             # Translating axis to the center of curvature
             curvature_x_origin = 0
@@ -139,7 +136,6 @@ class AxisTransformation:
             else:
                 curvature_y_origin = -radius_of_curvature
 
-            # print("oc: ", curvature_x_origin, curvature_y_origin)
             x_curvature, y_curvature = cls.__axis_translation(x_double_prime, y_double_prime,
                                                               curvature_x_origin, curvature_y_origin)
 
@@ -186,7 +182,6 @@ class AxisTransformation:
 
             if min_radius < point_radius < max_radius:
                 is_vehicle_in_circle = True
-                # print(True)
             else:
                 is_vehicle_in_circle = False
 
