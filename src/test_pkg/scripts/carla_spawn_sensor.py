@@ -1,6 +1,8 @@
 import rospy
+from carla_msgs.msg import CarlaActorList
 from geometry_msgs.msg import Pose, Point, Quaternion
 from diagnostic_msgs.msg import KeyValue
+from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 from std_msgs.msg import UInt32, Bool, String
 from carla_msgs.srv import SpawnObject
 
@@ -23,13 +25,44 @@ class SpawnSensor:
 
             for sensor in sensors:
                 if sensor == 'camera':
+                    point = Point(0, 0, 2.4)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
+                    response = spawn_object('sensor.camera.rgb', 'rgb_camera_sensor', key_value, pose, attach,
+                                            random_pos)
+                elif sensor == 'lidar':
+                    point = Point(0, 0, 2.4)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
+                    response = spawn_object('sensor.lidar.ray_cast', 'lidar_sensor', key_value, pose, attach,
+                                            random_pos)
+                elif sensor == 'lidar_semantic':
+                    point = Point(0, 0, 2.4)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
+                    response = spawn_object('sensor.lidar.ray_cast_semantic', 'lidar_sensor', key_value, pose, attach,
+                                            random_pos)
+                elif sensor == 'control':
                     point = Point(0, 0, 0)
                     quaternion = Quaternion(0, 0, 0, 0)
                     pose = Pose(point, quaternion)
-                    response = spawn_object('sensor.camera.rgb', 'rgb_camera-sensor', key_value, pose, attach, random_pos)
+                    response = spawn_object('actor.pseudo.control.', 'control', key_value, pose, attach,
+                                            random_pos)
+                elif sensor == 'radar':
+                    point = Point(0, 0, 2.4)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
+                    response = spawn_object('sensor.other.radar', 'radar_sensor', key_value, pose, attach,
+                                            random_pos)
                 elif sensor == 'gnss':
                     response = spawn_object('sensor.other.gnss', 'gnss_sensor', key_value, pose, attach, random_pos)
                 elif sensor == 'imu':
                     response = spawn_object('sensor.other.imu', 'imu_sensor', key_value, pose, attach, random_pos)
         except rospy.ServiceException as e:
             return e
+
+
+# if __name__ == '__main__':
+#     rospy.init_node("AV_Drive")
+#     # spawn_vehicle = SpawnEgoVehicle(3, "right")
+#     spawn_sensor = SpawnSensor(24, "lidar_semantic")

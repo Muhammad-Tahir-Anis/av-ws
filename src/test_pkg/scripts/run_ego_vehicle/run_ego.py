@@ -1,7 +1,7 @@
 import rospy
 from carla_msgs.msg import CarlaEgoVehicleStatus
 from sensor_msgs.msg import NavSatFix
-from sensor_msgs.msg import Imu
+from sensor_msgs.msg import Imu, PointCloud2
 from src.test_pkg.scripts.carla_spawn_sensor import SpawnSensor
 from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 from src.test_pkg.scripts.ego_vehicle_control import EgoController
@@ -58,8 +58,14 @@ class AVGnssStatus:
 
     def __init__(self):
         rospy.Subscriber('/carla/ego_vehicle/gnss_sensor', NavSatFix, self.callback)
+        # rospy.Subscriber('/carla/ego_vehicle/radar_sensor', PointCloud2, self.lidar)
         rospy.wait_for_message("/carla/ego_vehicle/gnss_sensor", NavSatFix)
+        # rospy.wait_for_message("/carla/ego_vehicle/lidar_sensor", PointCloud2)
         rospy.spin()
+
+    # @classmethod
+    # def lidar(cls, data: PointCloud2):
+    #     print(data.fields[4])
 
     @classmethod
     def callback(cls, data: NavSatFix):
@@ -77,7 +83,7 @@ class AVGnssStatus:
 def main():
     rospy.init_node("AV_Drive")
     spawn_vehicle = SpawnEgoVehicle(3, "right")
-    spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id)
+    spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id, "gnss", "camera", "lidar", "radar")
     gnss = AVGnssStatus()
     print(gnss.xp)
     print(gnss.yp)
