@@ -63,10 +63,6 @@ class AVGnssStatus:
         # rospy.wait_for_message("/carla/ego_vehicle/lidar_sensor", PointCloud2)
         rospy.spin()
 
-    # @classmethod
-    # def lidar(cls, data: PointCloud2):
-    #     print(data.fields[4])
-
     @classmethod
     def callback(cls, data: NavSatFix):
         # Converting GNSS lat long to XY coordinates of MAP
@@ -83,7 +79,7 @@ class AVGnssStatus:
 def main():
     rospy.init_node("AV_Drive")
     spawn_vehicle = SpawnEgoVehicle(3, "right")
-    spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id, "gnss", "camera", "lidar", "radar")
+    spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id, "gnss", "camera", "imu", "lidar", "odometer", "speedometer", "radar", "control")
     gnss = AVGnssStatus()
     print(gnss.xp)
     print(gnss.yp)

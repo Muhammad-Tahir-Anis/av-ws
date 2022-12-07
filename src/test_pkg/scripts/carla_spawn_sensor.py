@@ -42,6 +42,21 @@ class SpawnSensor:
                     pose = Pose(point, quaternion)
                     response = spawn_object('sensor.lidar.ray_cast_semantic', 'lidar_sensor', key_value, pose, attach,
                                             random_pos)
+
+                elif sensor == 'odometer':
+                    point = Point(0, 0, 2.4)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
+                    response = spawn_object('sensor.pseudo.odom', 'odometer_sensor', key_value, pose, attach,
+                                            random_pos)
+
+                elif sensor == 'speedometer':
+                    point = Point(0, 0, 2.4)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
+                    response = spawn_object('sensor.pseudo.speedometer', 'speedometer_sensor', key_value, pose, attach,
+                                            random_pos)
+
                 elif sensor == 'control':
                     point = Point(0, 0, 0)
                     quaternion = Quaternion(0, 0, 0, 0)
@@ -64,5 +79,5 @@ class SpawnSensor:
 
 # if __name__ == '__main__':
 #     rospy.init_node("AV_Drive")
-#     # spawn_vehicle = SpawnEgoVehicle(3, "right")
-#     spawn_sensor = SpawnSensor(24, "lidar_semantic")
+#     spawn_vehicle = SpawnEgoVehicle(3, "right")
+#     spawn_sensor = SpawnSensor(24, "camera", "imu", "lidar", "odometer", "speedometer")
