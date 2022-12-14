@@ -1,6 +1,8 @@
 import math
 from math import atan, sin, cos
 
+import numpy as np
+
 
 class AxisTransformation:
     def __init__(self, x, y, x_origin, y_origin, heading, curvature, s_value):
@@ -149,17 +151,94 @@ class AxisTransformation:
     @classmethod
     def reverse_transformation(cls, s, t, x_origin, y_origin, heading, curvature):
         if curvature != 0:
-            # translated from origin of curvature / circle to starting point of geometry
-            x_prime, y_prime = cls.__axis_translation(0, 0, s, t)
+            # radius of curvature
+            radius = abs(1 / curvature)
+            # angle in degree of s on curvature
+            theta = np.rad2deg(s / radius)
+            print(radius, curvature, theta)
+            if curvature > 0:
+                radius = radius - t
+                adjacent, opposite = cls.get_angle_in_quadrant(curvature, theta, radius)
+            else:
+                radius = radius + t
+                adjacent, opposite = cls.get_angle_in_quadrant(curvature, theta, radius)
+            print(opposite, adjacent, radius)
+            # x = opposite
+            # y = adjacent
+            # translate from origin of curvature / circle to starting point of geometry
+            radius = abs(1 / curvature)
+            if curvature > 0:
+                x_prime, y_prime = cls.__axis_translation(opposite, adjacent, 0, -radius)
+            else:
+                x_prime, y_prime = cls.__axis_translation(opposite, adjacent, 0, radius)
+
+            print(x_prime, y_prime)
             # rotating axis from road direction to main xy axis
             x_rotated, y_rotated = cls.__axis_rotation(x_prime, y_prime, -heading)
+            print(x_rotated, y_rotated)
             # origin of curvature in xy global coordinates
             x, y = cls.__axis_translation(x_rotated, y_rotated, -x_origin, -y_origin)
+            print(x,y)
             return x, y
         else:
             x_prime, y_prime = cls.__axis_rotation(s, t, -heading)
             x, y = cls.__axis_translation(x_prime, y_prime, -x_origin, -y_origin)
             return x, y
+
+    @classmethod
+    def get_angle_in_quadrant(cls, curvature, theta, radius):
+        # Note: quadrants and signs of adjacent and opposites are decided on the basis of axis at origin of curvature
+        ad, op = 0,0
+        if curvature > 0:
+            # 4th quadrant
+            if theta <= 90:
+                ad = -1
+                op = 1
+                pass
+            # 1st quadrant
+            elif 90 < theta <= 180:
+                theta = 180 - theta
+                ad = 1
+                op = 1
+            # 2nd quadrant
+            elif 180 < theta <= 270:
+                theta = theta - 180
+                ad = 1
+                op = -1
+            # 3rd quadrant
+            elif 270 < theta <= 360:
+                theta = 360 - theta
+                ad = -1
+                op = -1
+            theta = np.deg2rad(theta)
+            adjacent = radius * np.cos(theta) * ad
+            opposite = radius * np.sin(theta) * op
+            return adjacent, opposite
+
+        if curvature < 0:
+            # 1st quadrant
+            if theta <= 90:
+                ad = 1
+                op = 1
+            # 4th quadrant
+            elif 90 < theta <= 180:
+                theta = 180 - theta
+                ad = -1
+                op = 1
+            # 3rd quadrant
+            elif 180 < theta <= 270:
+                theta = theta - 180
+                ad = -1
+                op = -1
+            # 2nd quadrant
+            elif 270 < theta <= 360:
+                theta = 360 - theta
+                ad = 1
+                op = -1
+            theta = np.deg2rad(theta)
+            adjacent = radius * np.cos(theta) * ad
+            opposite = radius * np.sin(theta) * op
+            return adjacent, opposite
 
     def get_boundaries(self, max_t, min_t, geometry_length, curvature):
         if curvature != 0:

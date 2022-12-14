@@ -59,7 +59,6 @@ class EgoLocation:
                                 s_axis, t_axis = axis.s_t_axis
                                 lane_id = cls.get_lane_id(road_id, t_axis)
                                 ego_roads.append((road_id, lane_id, s_axis, t_axis, float(road.length)))
-
                         else:
                             curvature = 0
 

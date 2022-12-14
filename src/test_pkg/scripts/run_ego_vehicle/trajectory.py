@@ -76,8 +76,8 @@ class Trajectory:
         if t_axis > 0:
             t_range.reverse()
             print(t_range)
-            print(t_range[0] - 1.5, t_range[1] + 2)
-            if (t_range[0] - 1.5) < t_axis:
+            print(t_range[0] - 1, t_range[1] + 2)
+            if (t_range[0] - 1) < t_axis:
                 return -1
             elif (t_range[1] + 2) > t_axis:
                 return 1
@@ -85,8 +85,8 @@ class Trajectory:
                 return 0
 
         else:
-            print(t_range[0] - 1.5, t_range[1] + 2)
-            if (t_range[0] - 1.5) < t_axis:
+            print(t_range[0] - 1, t_range[1] + 2)
+            if (t_range[0] - 1) < t_axis:
                 return 1
             elif (t_range[1] + 2) > t_axis:
                 return -1
