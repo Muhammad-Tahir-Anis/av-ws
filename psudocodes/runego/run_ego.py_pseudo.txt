@@ -1,174 +1,52 @@
-IMPORT rospy
-
-from carla_msgs.msg IMPORT CarlaEgoVehicleStatus
-
-from sensor_msgs.msg IMPORT NavSatFix
-
-from sensor_msgs.msg IMPORT Imu
-
-from src.test_pkg.scripts.carla_spawn_sensor IMPORT SpawnSensor
-
-from src.test_pkg.scripts.carla_spawn_vehicle IMPORT SpawnEgoVehicle
-
-from src.test_pkg.scripts.ego_vehicle_control IMPORT EgoController
-
-from src.test_pkg.scripts.run_ego_vehicle.ego_location IMPORT EgoLocation
-
-from src.test_pkg.scripts.run_ego_vehicle.path_planning IMPORT PathPlanning
-
-from src.test_pkg.scripts.run_ego_vehicle.trajectory IMPORT Trajectory
-
-
-
-
 
 DEFINE CLASS AVEgoVehicleStatus:
 
-    SET ego_vehicle_status: CarlaEgoVehicleStatus TO CarlaEgoVehicleStatus()
+    initialize ego_vehicle_status
 
+    DEFINE FUNCTION init():
 
-
-    DEFINE FUNCTION __init__(self):
-
-        rospy.Subscriber('/carla/ego_vehicle/vehicle_status', CarlaEgoVehicleStatus, self.callback)
-
-
-
-    @classmethod
-
-    DEFINE FUNCTION callback(cls, data):
-
-        SET cls.ego_vehicle_status TO data
-
-
-
-
+        SUBSCRIBE TO TOPIC '/carla/ego_vehicle/vehicle_status' RETURNS ego_vehicle status
 
 DEFINE CLASS AVEgoVehicleControl:
 
-    SET header TO AVEgoVehicleStatus.ego_vehicle_status.header
+    INITIALIZE header
 
+    DEFINE FUNCTION init(throttle, steer, brake):
 
-
-    DEFINE FUNCTION __init__(self, throttle: float, steer: float, brake: float):
-
-        EgoController(self.header, throttle=throttle, steer=steer, brake=brake, hand_break=0, reverse=0, gear=0,
-
-                      manual_gear_shift=0)
-
-
-
-
+        EgoController(header, throttle, steer, brake, hand_break, reverse, gear, manual_gear_shift)
 
 DEFINE CLASS AVimuStatus:
 
+    DEFINE FUNCTION init():
 
+        SET imu_data
 
-    DEFINE FUNCTION __init__(self):
+        SUBSCRIBE TO TOPIC "/carla/ego_vehicle/imu_sensor" RETURNS imu data
 
-        SET self.imu_data: Imu TO Imu()
+    DEFINE FUNCTION get_imu():
 
-        rospy.Subscriber('/carla/ego_vehicle/imu_sensor', Imu, self.callback)
-
-        # rospy.wait_for_message("/carla/ego_vehicle/imu_sensor", Imu)
-
-        # rospy.spin()
-
-
-
-    DEFINE FUNCTION callback(self, data):
-
-        SET self.imu_data TO data
-
-
-
-    @property
-
-    DEFINE FUNCTION get_imu(self):
-
-        RETURN self.imu_data
-
-
-
-
+        RETURN imu_data
 
 DEFINE CLASS AVGnssStatus:
 
-    SET y TO None
+    INITIALIZE y, x, path, route, trajectory , xp , yp, imu_data
 
-    SET x TO None
+    DEFINE FUNCTION init():
 
-    SET path TO PathPlanning()
+        SUBSCRIBE TO TOPIC "/carla/ego_vehicle/gnss_sensor" RETURNS gnss data
 
-    SET route TO path.route
+    DEFINE FUNCTION callback(data):
 
-    SET trajectory TO Trajectory(route)
-
-    SET xp TO []
-
-    SET yp TO []
-
-
-
-    SET imu_data TO AVimuStatus()
-
-
-
-    DEFINE FUNCTION __init__(self):
-
-        rospy.Subscriber('/carla/ego_vehicle/gnss_sensor', NavSatFix, self.callback)
-
-        rospy.wait_for_message("/carla/ego_vehicle/gnss_sensor", NavSatFix)
-
-        rospy.spin()
-
-
-
-    @classmethod
-
-    DEFINE FUNCTION callback(cls, data: NavSatFix):
-
-        # Converting GNSS lat long to XY coordinates of MAP
-
-        SET gnss_const TO 0.000009
-
-        SET cls.y TO data.latitude / gnss_const
-
-        SET cls.x TO data.longitude / gnss_const
-
-        # --------------------------------------------
-
-        cls.xp.append(cls.x)
-
-        cls.yp.append(cls.y)
-
-        SET throttle, steer, brake TO cls.trajectory.update_trajectory(cls.x, cls.y)
+        SET gnss_const,  y , x, throttle, steer, brake
 
         AVEgoVehicleControl(throttle, steer, brake)
 
-
-
-
-
 DEFINE FUNCTION main():
 
-    rospy.init_node("AV_Drive")
+    INITIALIZE NODE "AV_Drive"
 
-    SET spawn_vehicle TO SpawnEgoVehicle(3, "right")
+    SPAWN EGO VEHICLE
 
-    SET spawn_sensor TO SpawnSensor(spawn_vehicle.ego_vehicle_id)
+    SPAWN SENSORS
 
-    SET gnss TO AVGnssStatus()
-
-    OUTPUT(gnss.xp)
-
-    OUTPUT(gnss.yp)
-
-
-
-
-
-IF __name__ EQUALS "__main__":
-
-    main()
-
+    SET gnss

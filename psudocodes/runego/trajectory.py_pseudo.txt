@@ -1,0 +1,83 @@
+
+DEFINE CLASS Trajectory:
+
+    DEFINE FUNCTION init(route):
+
+        SET t_axis, _s_axis, curvature, route, path_index, brake, throttle, steering, road_ended
+
+    DEFINE FUNCTION update_trajectory(x, y):
+
+        SET log.x , log, road_id, lane_id, throttle, steering, brake
+
+        RETURN self.throttle, self.steering, self.brake
+
+    DEFINE FUNCTION follow_trajectory(x, y, road_id, lane_id):
+
+        SET map_analysis, ego_location, actual_roads, is_road_present
+
+        IF LENGTH OF actual_roads LIST EQUALS 1:
+
+            IF road_id EQUALS actual_roads[0][0]:
+
+                SET s_axis, t_axis, is_road_present
+
+        FOR roads IN actual_roads:
+
+            IF road_id EQUALS roads[0]:
+
+                SET s_axis , t_axis , is_road_present
+
+        IF not is_road_present:
+
+            SET road_ended
+
+        SET x_origin, y_origin, heading, curvature, t_range , steering
+
+        IF road_ended:
+
+            path_index, brake , steering, throttle, road_ended
+
+        ELSEIF curvature != 0 and not self.road_ended:
+
+            SET throttle , brake
+
+        ELSE:
+
+            SET throttle , brake
+
+        log.set_log()
+
+        RETURN self.throttle, self.steering, self.brake
+
+    DEFINE FUNCTION keep_in_lane(t_range, t_axis):
+
+        IF t_axis > 0:
+
+            t_range.reverse()
+
+            IF (t_range[0] - 1) < t_axis:
+
+                RETURN -1
+
+            ELSEIF (t_range[1] + 2) > t_axis:
+
+                RETURN 1
+
+            ELSE:
+
+                RETURN 0
+
+        ELSE:
+
+            IF (t_range[0] - 1) < t_axis:
+
+                RETURN 1
+
+            ELSEIF (t_range[1] + 2) > t_axis:
+
+                RETURN -1
+
+            ELSE:
+
+                RETURN 0
+

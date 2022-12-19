@@ -1,62 +1,21 @@
-IMPORT rospy
-
-from geometry_msgs.msg IMPORT Pose, Point, Quaternion
-
-from diagnostic_msgs.msg IMPORT KeyValue
-
-from carla_msgs.srv IMPORT SpawnObject
-
-from src.map_parser_pkg.scripts.odr_map IMPORT OdrMap
-
-
-
-
 
 DEFINE CLASS SpawnEgoVehicle:
 
-    SET ego_vehicle_id: int TO 0
+    INITIALIZE ego_vehicle_id
 
 
 
-    DEFINE FUNCTION __init__(self, road_id: int, lane: str):
+    DEFINE FUNCTION init(road_id, lane):
 
-        SET spawning TO self.spawn_object_client(road_id, lane)
+        SET spawning, self.ego_vehicle_id TO spawning.id
 
-        SET self.ego_vehicle_id TO spawning.id
+    DEFINE FUNCTION spawn_object_client(road_id, lane):
 
-
-
-    @classmethod
-
-    DEFINE FUNCTION spawn_object_client(cls, road_id, lane):
-
-        rospy.wait_for_service('/carla/spawn_object')
+        WAIT FOR SERVICE "/carla/spawn_object"
 
         TRY:
 
-            SET spawn_object TO rospy.ServiceProxy('/carla/spawn_object', SpawnObject)
-
-            SET role_name TO KeyValue("role_name", "ego_vehicle")
-
-            SET color TO KeyValue("color", "255,255,255")
-
-            SET key_value TO [role_name, color]
-
-            SET odr TO OdrMap()
-
-            SET x, y, z, w TO odr.spawn_at_road(road_id, lane)
-
-            SET point TO Point(x, y, 10)
-
-            SET quaternion TO Quaternion(0, 0, z, w)
-
-            SET pose TO Pose(point, quaternion)
-
-            SET random_pos TO False
-
-            SET attach TO 0
-
-            SET response TO spawn_object('vehicle.tesla.model3', 'vehicle.tesla.model3', key_value, pose, attach, random_pos)
+            SET spawn_object, role_name, color, key_value, odr, x, y, z, w, point, quaternion, pose, random_pos, attach, response
 
             RETURN response
 

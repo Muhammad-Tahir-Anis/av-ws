@@ -1,90 +1,37 @@
-from math IMPORT cos, sin
-
-
-
-from src.map_parser_pkg.scripts.odr_map_obj IMPORT opendrive
-
-from src.test_pkg.scripts.run_ego_vehicle.logs IMPORT Log
-
-
-
-
 
 DEFINE CLASS MapAnalysis:
 
-    SET x_origin: float TO 0
+    SET x_origin, y_origin, heading, curvature, road_ended, s_value
 
-    SET y_origin: float TO 0
+    DEFINE FUNCTION int():
 
-    SET heading: float TO 0
+        SET x_origin, y_origin, heading, curvature, s_value
 
-    SET curvature: float TO 0
+    DEFINE FUNCTION road_info(road_id, s_axis, t_axis, log):
 
-    SET road_ended: bool TO False
-
-    SET s_value: float TO 0
-
-
-
-    DEFINE FUNCTION __int__(self):
-
-        SET self.x_origin: float TO 0
-
-        SET self.y_origin: float TO 0
-
-        SET self.heading: float TO 0
-
-        SET self.curvature: float TO 0
-
-        SET self.s_value: float TO 0
-
-
-
-    DEFINE FUNCTION road_info(self, road_id, s_axis, t_axis, log:Log):
-
-        # Getting all roads data from map
-
-        SET roads TO opendrive.road_list
+        SET roads
 
         FOR road IN roads:
 
-            # For right lanes
-
             IF road_id EQUALS road.id:
-
-                OUTPUT("ST: road info : ", s_axis, t_axis)
-
-
-
-                # Checking road geometries
 
                 IF road.planview.geometry_list:
 
-                    SET geometries TO road.planview.geometry_list
+                    SET geometries
 
                     FOR geometry IN geometries:
 
                         IF geometries.index(geometry) < len(geometries) - 1:
 
-                            SET next_geometry TO geometries[geometries.index(geometry) + 1]
-
-                            SET geometry.s TO float(geometry.s)
-
-                            SET next_geometry.s TO float(next_geometry.s)
+                            SET next_geometry, geometry.s, next_geometry.s
 
                             IF geometry.s <= s_axis < next_geometry.s:
 
                                 IF geometry.arc:
 
-                                    SET self.curvature TO float(geometry.arc.curvature)
+                                    SET curvature
 
-                                SET self.heading TO float(geometry.hdg)
-
-                                SET self.x_origin TO float(geometry.x)
-
-                                SET self.y_origin TO float(geometry.y)
-
-                                SET self.s_value TO float(geometry.s)
+                                SET heading, x_origin, y_origin, s_value
 
                         ELSEIF geometries[len(geometries) - 1]:
 
@@ -92,33 +39,17 @@ DEFINE CLASS MapAnalysis:
 
                                 IF geometry.arc:
 
-                                    SET self.curvature TO float(geometry.arc.curvature)
+                                    SET curvature
 
-                                SET self.heading TO float(geometry.hdg)
-
-                                SET self.x_origin TO float(geometry.x)
-
-                                SET self.y_origin TO float(geometry.y)
-
-                                SET self.s_value TO float(geometry.s)
+                                SET heading, x_origin, y_origin, s_value
 
                 ELSE:
 
-                    SET geometry TO road.planview.geometry
-
-                    SET self.heading TO float(geometry.hdg)
-
-                    SET self.x_origin TO float(geometry.x)
-
-                    SET self.y_origin TO float(geometry.y)
-
-                    SET self.s_value TO float(geometry.s)
+                    SET geometry , heading , x_origin, y_origin, s_value
 
                     IF geometry.arc:
 
-                        SET self.curvature TO float(geometry.arc.curvature)
-
-
+                        SET curvature
 
         RETURN self.x_origin, self.y_origin, self.heading, self.curvature
 

@@ -1,70 +1,32 @@
-IMPORT rospy
-
-from geometry_msgs.msg IMPORT Pose, Point, Quaternion
-
-from diagnostic_msgs.msg IMPORT KeyValue
-
-from std_msgs.msg IMPORT UInt32, Bool, String
-
-from carla_msgs.srv IMPORT SpawnObject
-
-
-
-
 
 DEFINE CLASS SpawnSensor:
 
-    DEFINE FUNCTION __init__(self, attach_id, *args):
+    DEFINE FUNCTION init(attach_id, *args):
 
-        self.spawn_object_client(attach_id, *args)
+        spawn_object_client(attach_id, *args)
 
+    DEFINE FUNCTION spawn_object_client(attach_id, *sensors):
 
-
-    @classmethod
-
-    DEFINE FUNCTION spawn_object_client(cls, attach_id, *sensors):
-
-        rospy.wait_for_service('/carla/spawn_object')
+        WAIT FOR SERVICE "/carla/spawn_object"
 
         TRY:
 
-            SET spawn_object TO rospy.ServiceProxy('/carla/spawn_object', SpawnObject)
-
-            SET key_value TO []
-
-            SET point TO Point(0, 0, 0)
-
-            SET quaternion TO Quaternion(0, 0, 0, 0)
-
-            SET pose TO Pose(point, quaternion)
-
-            SET random_pos TO False
-
-            SET attach TO attach_id
-
-
+            SET spawn_object, key_value, point, quaternion, pose, random_pos, attach
 
             FOR sensor IN sensors:
 
                 IF sensor EQUALS 'camera':
 
-                    SET point TO Point(0, 0, 0)
-
-                    SET quaternion TO Quaternion(0, 0, 0, 0)
-
-                    SET pose TO Pose(point, quaternion)
-
-                    SET response TO spawn_object('sensor.camera.rgb', 'rgb_camera-sensor', key_value, pose, attach, random_pos)
+                    SET point, quaternion, pose, response
 
                 ELSEIF sensor EQUALS 'gnss':
 
-                    SET response TO spawn_object('sensor.other.gnss', 'gnss_sensor', key_value, pose, attach, random_pos)
+                    SET response
 
                 ELSEIF sensor EQUALS 'imu':
 
-                    SET response TO spawn_object('sensor.other.imu', 'imu_sensor', key_value, pose, attach, random_pos)
+                    SET response
 
         except rospy.ServiceException as e:
 
             RETURN e
-

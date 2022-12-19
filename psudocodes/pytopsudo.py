@@ -9,7 +9,7 @@ as the program cannot handle these convincingly
 
 import re
 
-python_file = '../src/ma'
+python_file = '/home/mta/PycharmProjects/av-ws/src/test_pkg/scripts/run_ego_vehicle/trajectory.py'
 work_file = None
 
 basic_conversion_rules = {"for": "FOR", "=": "TO", "if": "IF", "==": "EQUALS", "while": "WHILE", "until": "UNTIL",
