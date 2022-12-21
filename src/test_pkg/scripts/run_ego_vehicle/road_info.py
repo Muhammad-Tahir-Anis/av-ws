@@ -18,19 +18,7 @@ class RoadInfo:
         roads = opendrive.road_list
         road = [road for road in roads if road.id == road_id][0]
 
-        previous_road = [previous_road for previous_road in roads if road.id == previous_road_id][0]
-        if cls.successor:
-            if previous_road.link.successor.elementtype == 'road':
-                if previous_road.link.successor.elementid == road_id:
-                    if previous_road.link.successor.contactpoint == 'start':
-                        print('True')
-                    else:
-                        print('False')
-                        cls.successor = False
-            # elif road.link.successor.elementtype == 'junction':
-        # else:
-        #     if previous_road.link.predecessor.elementtype == 'road':
-
+        # generating road information list
         geometries = road.planview.geometry_list
         if geometries:
             for geometry in geometries:
@@ -53,6 +41,60 @@ class RoadInfo:
                 curvature = geometry.arc.curvature
             information_list = [x, y, length, heading, curvature]
         information_list = np.float_(information_list)
+
+        # decision for reversing the list
+        junctions = opendrive.junction_list
+        if previous_road_id:
+            previous_road_id = str(previous_road_id)
+            previous_road = [previous_road for previous_road in roads if previous_road.id == previous_road_id][0]
+            if cls.successor:
+                element_type = previous_road.link.successor.elementtype
+                if element_type == 'road':
+                    element_id = previous_road.link.successor.elementid
+                    if element_id == road_id:
+                        connecting_point = previous_road.link.successor.contactpoint
+                        if connecting_point != 'start':
+                            cls.successor = False
+                            # information_list.reverse()
+                            # if information_list.ndim != 1:
+                            #     information_list = np.flip(information_list,0)
+                elif element_type == 'junction':
+                    element_id = previous_road.link.successor.elementid
+                    junction = [junction for junction in junctions if junction.id == element_id][0]
+                    connections = junction.connection_list
+                    connection = [connection for connection in connections if
+                                  connection.incomingroad == previous_road_id and connection.connectingroad == road_id][0]
+                    if connection.contactpoint != 'start':
+                        cls.successor = False
+                        # information_list.reverse()
+                        # if information_list.ndim != 1:
+                        #     information_list = np.flip(information_list,0)
+            else:
+                # list will always flip until successor is false
+                # if information_list.ndim != 1:
+                #     information_list = np.flip(information_list,0)
+                element_type = previous_road.link.predecessor.elementtype
+                if element_type == 'road':
+                    element_id = previous_road.link.predecessor.elementid
+                    if element_id == road_id:
+                        connecting_point = previous_road.link.predecessor.contactpoint
+                        if connecting_point == 'start':
+                            cls.successor = True
+                            # information_list.reverse()
+                            # if information_list.ndim != 1:
+                            #     information_list = np.flip(information_list,0)
+                elif element_type == 'junction':
+                    element_id = previous_road.link.predecessor.elementid
+                    junction = [junction for junction in junctions if junction.id == element_id][0]
+                    connections = junction.connection_list
+                    connection = [connection for connection in connections if
+                                  connection.incomingroad == previous_road_id and connection.connectingroad == road_id][0]
+                    if connection.contactpoint == 'start':
+                        cls.successor = True
+                        # information_list.reverse()
+                        # if information_list.ndim != 1:
+                        #     information_list = np.flip(information_list,0)
+        print(road_id, information_list)
         return information_list
 
     @classmethod
