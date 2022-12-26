@@ -155,14 +155,12 @@ class AxisTransformation:
             radius = abs(1 / curvature)
             # angle in degree of s on curvature
             theta = np.rad2deg(s / radius)
-            print(radius, curvature, theta)
             if curvature > 0:
                 radius = radius - t
                 adjacent, opposite = cls.get_angle_in_quadrant(curvature, theta, radius)
             else:
                 radius = radius + t
                 adjacent, opposite = cls.get_angle_in_quadrant(curvature, theta, radius)
-            print(opposite, adjacent, radius)
             # x = opposite
             # y = adjacent
             # translate from origin of curvature / circle to starting point of geometry
@@ -172,13 +170,10 @@ class AxisTransformation:
             else:
                 x_prime, y_prime = cls.__axis_translation(opposite, adjacent, 0, radius)
 
-            print(x_prime, y_prime)
             # rotating axis from road direction to main xy axis
             x_rotated, y_rotated = cls.__axis_rotation(x_prime, y_prime, -heading)
-            print(x_rotated, y_rotated)
             # origin of curvature in xy global coordinates
             x, y = cls.__axis_translation(x_rotated, y_rotated, -x_origin, -y_origin)
-            print(x,y)
             return x, y
         else:
             x_prime, y_prime = cls.__axis_rotation(s, t, -heading)

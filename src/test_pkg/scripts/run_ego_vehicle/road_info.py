@@ -12,7 +12,7 @@ class RoadInfo:
 
     @classmethod
     def get_road_info(cls, road_id, previous_road_id):
-        print(previous_road_id)
+        # print(previous_road_id)
         information_list = []
         road_id = str(road_id)
         roads = opendrive.road_list
@@ -94,7 +94,7 @@ class RoadInfo:
                         # information_list.reverse()
                         # if information_list.ndim != 1:
                         #     information_list = np.flip(information_list,0)
-        print(road_id, information_list)
+        # print(road_id, information_list)
         return information_list
 
     @classmethod

@@ -8,8 +8,14 @@ import numpy as np
 
 
 class PathWayPoints:
-    def __init__(self, planed_path):
-        self.extract_waypoints(planed_path)
+    def __init__(self):
+        path = PathPlanning()
+        planned_path = path.route
+        self.waypoints = self.extract_waypoints(planned_path)
+
+    @property
+    def get_waypoints(self):
+        return self.waypoints
 
     @classmethod
     def extract_waypoints(cls, route):
@@ -34,22 +40,26 @@ class PathWayPoints:
                 heading = sections[3]
                 curvature = sections[4]
                 axis_transformation = AxisTransformation(x, y, x, y, heading, curvature, 0)
-                # lane_center = road_info.lane_center_point(int(road), int(lane))
-                lane_center = 0
+                lane_center = road_info.lane_center_point(int(road), int(lane))
 
                 print('lc: ', lane_center)
 
+                forward_start = axis_transformation.reverse_transformation(0, lane_center,
+                                                                           x, y, heading, curvature)
+
+                x_list.append(forward_start[0])
+                y_list.append(forward_start[1])
+
                 no_of_sections = int(length / 0.1 + 1)
                 subsections = np.linspace(0, length, no_of_sections)
-                for subsection in range(len(subsections)-1):
-                    forward_start = axis_transformation.reverse_transformation(subsections[subsection], lane_center, x, y, heading, curvature)
-                    forward_end = axis_transformation.reverse_transformation(subsections[subsection+1], lane_center, x, y, heading, curvature)
+                for subsection in range(len(subsections) - 1):
+                    forward_start = axis_transformation.reverse_transformation(subsections[subsection], lane_center, x,
+                                                                               y, heading, curvature)
+                    forward_end = axis_transformation.reverse_transformation(subsections[subsection + 1], lane_center,
+                                                                             x, y, heading, curvature)
                     print(f"1: {road}: {curvature}: ", forward_start, forward_end)
 
-                    # if road_info.successor:
-                    x_list.append(forward_start[0])
                     x_list.append(forward_end[0])
-                    y_list.append(forward_start[1])
                     y_list.append(forward_end[1])
 
                 if not road_info.successor:
@@ -69,26 +79,28 @@ class PathWayPoints:
                     heading = section[3]
                     curvature = section[4]
                     axis_transformation = AxisTransformation(x, y, x, y, heading, curvature, 0)
-                    # lane_center = road_info.lane_center_point(int(road), int(lane))
-                    lane_center = 0
+                    lane_center = road_info.lane_center_point(int(road), int(lane))
 
                     print('lc: ', lane_center)
 
+                    forward_start = axis_transformation.reverse_transformation(0, lane_center,
+                                                                               x, y, heading, curvature)
+
+                    x_list.append(forward_start[0])
+                    y_list.append(forward_start[1])
+
                     no_of_sections = int(length / 0.1 + 1)
                     subsections = np.linspace(0, length, no_of_sections)
-                    for subsection in range(len(subsections)-1):
+                    for subsection in range(len(subsections) - 1):
+                        forward_start = axis_transformation.reverse_transformation(subsections[subsection], lane_center,
+                                                                                   x, y, heading, curvature)
 
-                        forward_start = axis_transformation.reverse_transformation(subsections[subsection], lane_center, x, y, heading,
-                                                                                   curvature)
-
-                        forward_end = axis_transformation.reverse_transformation(subsections[subsection-1], lane_center, x, y, heading,
-                                                                                 curvature)
+                        forward_end = axis_transformation.reverse_transformation(subsections[subsection + 1],
+                                                                                 lane_center, x, y, heading, curvature)
 
                         print(f"1: {road}: {curvature}: ", forward_start, forward_end)
 
-                        x_list.append(forward_start[0])
                         x_list.append(forward_end[0])
-                        y_list.append(forward_start[1])
                         y_list.append(forward_end[1])
 
                 if not road_info.successor:
@@ -104,10 +116,9 @@ class PathWayPoints:
         # plt.grid()
         # plt.show()
 
-        print(x_points, y_points)
+        waypoints = x_points, y_points
+        return waypoints
 
 
 if __name__ == '__main__':
-    path = PathPlanning()
-    PathWayPoints(path.route)
-
+    PathWayPoints()

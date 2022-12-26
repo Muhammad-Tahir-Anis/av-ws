@@ -28,6 +28,8 @@ class Trajectory:
         self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id, lane_id)
         return self.throttle, self.steering, self.brake
 
+    # def followtrajactory(self, x, y):
+
     def follow_trajectory(self, x, y, road_id, lane_id):
         map_analysis = MapAnalysis()
 
