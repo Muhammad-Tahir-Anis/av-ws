@@ -46,7 +46,7 @@ class DrivingRope:
 
     @classmethod
     def get_angle(cls, x, y, future_x, future_y):
-        
+        pass
 
 
 if __name__ == '__main__':
