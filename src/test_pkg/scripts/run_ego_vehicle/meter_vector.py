@@ -1,14 +1,22 @@
+import math
+
 import numpy as np
 
+from src.test_pkg.scripts.run_ego_vehicle.axis_transformation import AxisTransformation
 from src.test_pkg.scripts.run_ego_vehicle.pathpoint import PathWayPoints
 
 from scipy import spatial
 
 
 class DrivingRope:
-    def __init__(self, x, y):
-        waypoints = PathWayPoints()
-        self.get_meter_point(waypoints.get_waypoints, x, y)
+    def __init__(self):
+        self.waypoints = PathWayPoints()
+
+    def get_steering_angle(self, x, y, ego_heading):
+        future_x, future_y = self.get_meter_point(self.waypoints.get_waypoints, x, y)
+        angle = self.get_angle(x, y, future_x, future_y, ego_heading)
+        steering_angle = self.get_steering(angle)
+        return steering_angle
 
     @classmethod
     def get_meter_point(cls, waypoints, x, y):
@@ -24,12 +32,11 @@ class DrivingRope:
         print(pathpoints[1519])
         x, y = pathpoints[index]
         future_x, future_y = cls.find_next_1m(index, pathpoints)
-        print(future_x, future_y)
-        print(cls.get_angle(x, y, future_x, future_y))
+        return future_x, future_y
 
     @classmethod
     def find_nearest(cls, array, value):
-        array = np.asarray(array)-5.30242673317159
+        array = np.asarray(array) - 5.30242673317159
         idx = (np.abs(array - value)).argmin()
         return array[idx]
 
@@ -45,8 +52,21 @@ class DrivingRope:
         return future_cord
 
     @classmethod
-    def get_angle(cls, x, y, future_x, future_y):
-        pass
+    def get_angle(cls, x, y, future_x, future_y, ego_heading):
+        axis = AxisTransformation(future_x, future_y, x, y, ego_heading, 0, 0)
+        perpendicular = axis.y
+        base = axis.x
+        hypotenuses = np.square(perpendicular) + np.square(base)
+        angle = math.sinh(perpendicular / hypotenuses)
+        angle = np.rad2deg(angle)
+        return angle
+
+    @classmethod
+    def get_steering(cls, angle):
+        # steering = np.linspace(0, 1, 70)
+        steering = 1 / 70 * angle
+        print(steering)
+        return steering
 
 
 if __name__ == '__main__':
