@@ -23,16 +23,17 @@ class DrivingRope:
     @classmethod
     def get_meter_point(cls, waypoints, x, y):
         x_points, y_points = waypoints
-        print(x_points)
-        print(y_points)
+        # print(x_points)
+        # print(y_points)
         pathpoints = []
         for xp, yp in zip(x_points, y_points):
             pathpoints.append((xp, yp))
+        print(pathpoints)
         cordinates, index = cls.find_nearest_coordinates(x, y, pathpoints)
         index = int(index)
         print(cordinates, index)
-        print(pathpoints[1519])
         x, y = pathpoints[index]
+        print(x, y)
         future_x, future_y = cls.find_next_1m(index, pathpoints)
         return future_x, future_y
 
@@ -51,19 +52,24 @@ class DrivingRope:
     @classmethod
     def find_next_1m(cls, index, pathpoints):
         future_cord = pathpoints[index + 10]
+        print(future_cord, 'fc')
         return future_cord
 
     @classmethod
     def get_angle(cls, x, y, future_x, future_y, ego_heading):
+        print(future_x, future_y, 'fx,fy')
         axis = AxisTransformation(future_x, future_y, x, y, ego_heading, 0, 0)
-        # axis = AxisTransformation(future_x, future_y, x, y, 0, 0, 0)
-        perpendicular = axis.s
-        base = axis.t
+        # axis = AxisTransformation(15, 15, 10, 10, 0, 0, 0)
+        perpendicular = abs(axis.t)
+        base = abs(axis.s)
         print(axis.s, axis.t, 'st')
-        hypotenuses = np.sqrt(np.square(perpendicular) + np.square(base))
+        hypotenuses = abs(math.sqrt(math.pow(perpendicular,2) + math.pow(base,2)))
         print(hypotenuses)
-        angle = math.sinh(perpendicular / hypotenuses)
+        angle = math.asin(perpendicular/hypotenuses)
+        # print(angle)
+        # angle = 180-angle-90
         print(angle)
+        print(np.rad2deg(angle))
         angle = np.rad2deg(angle)
         print(perpendicular, base, hypotenuses)
         return angle
@@ -80,4 +86,4 @@ class DrivingRope:
 #
 if __name__ == '__main__':
     dr = DrivingRope()
-    print(dr.get_steering_angle(104.64652330011117, 4.4613107285925366, 1.5639764844735438))
+    print(dr.get_steering_angle(109.69749257264434, 5.415327227827523, 1.5639764844735438))
