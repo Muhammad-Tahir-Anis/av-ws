@@ -12,8 +12,8 @@ class path_list:
         is_driving = False  # For selecting roads that have driving lanes also
         # Checking if left lanes have any driving lane
         if road.lanes.lanesection.left:
-            if road.lanes.lanesection.left.LaneList:
-                for lane in road.lanes.lanesection.left.LaneList:
+            if road.lanes.lanesection.left.lane_list:
+                for lane in road.lanes.lanesection.left.lane_list:
                     if lane.type == "driving":
                         is_driving = True
             else:
@@ -25,8 +25,8 @@ class path_list:
                 is_driving = True
         # Checking if right have any driving lane
         if road.lanes.lanesection.right:
-            if road.lanes.lanesection.right.LaneList:
-                for lane in road.lanes.lanesection.right.LaneList:
+            if road.lanes.lanesection.right.lane_list:
+                for lane in road.lanes.lanesection.right.lane_list:
                     if lane.type == "driving":
                         is_driving = True
             else:
