@@ -57,21 +57,26 @@ class DrivingRope:
 
     @classmethod
     def get_angle(cls, x, y, future_x, future_y, ego_heading):
+
         print(future_x, future_y, 'fx,fy')
-        axis = AxisTransformation(future_x, future_y, x, y, ego_heading, 0, 0)
-        # axis = AxisTransformation(15, 15, 10, 10, 0, 0, 0)
-        perpendicular = abs(axis.t)
-        base = abs(axis.s)
-        print(axis.s, axis.t, 'st')
-        hypotenuses = abs(math.sqrt(math.pow(perpendicular,2) + math.pow(base,2)))
-        print(hypotenuses)
-        angle = math.asin(perpendicular/hypotenuses)
-        # print(angle)
-        # angle = 180-angle-90
+        angle = math.atan((future_y - y) / (future_x - x))
         print(angle)
-        print(np.rad2deg(angle))
-        angle = np.rad2deg(angle)
-        print(perpendicular, base, hypotenuses)
+        angle = angle - ego_heading
+
+        # axis = AxisTransformation(future_x, future_y, x, y, ego_heading, 0, 0)
+        # # axis = AxisTransformation(15, 15, 10, 10, 0, 0, 0)
+        # perpendicular = abs(axis.s)
+        # base = abs(axis.t)
+        # print(axis.s, axis.t, 'st')
+        # hypotenuses = abs(math.sqrt(math.pow(perpendicular, 2) + math.pow(base, 2)))
+        # print(hypotenuses)
+        # angle = math.asin(perpendicular/hypotenuses)
+        # # print(angle)
+        # # angle = 180-angle-90
+        # print(angle)
+        # print(np.rad2deg(angle))
+        # angle = np.rad2deg(angle)
+        # print(perpendicular, base, hypotenuses)
         return angle
 
     @classmethod
