@@ -15,6 +15,7 @@ class DrivingRope:
     def get_steering_angle(self, x, y, ego_heading):
         future_x, future_y = self.get_meter_point(self.waypoints.get_waypoints, x, y)
         angle = self.get_angle(x, y, future_x, future_y, ego_heading)
+        print(angle, "angle")
         steering_angle = self.get_steering(angle)
         steering_angle = float(steering_angle)
         return steering_angle
@@ -55,9 +56,12 @@ class DrivingRope:
     @classmethod
     def get_angle(cls, x, y, future_x, future_y, ego_heading):
         axis = AxisTransformation(future_x, future_y, x, y, ego_heading, 0, 0)
-        perpendicular = axis.t
-        base = axis.s
+        # axis = AxisTransformation(future_x, future_y, x, y, 0, 0, 0)
+        perpendicular = axis.s
+        base = axis.t
+        print(axis.s, axis.t, 'st')
         hypotenuses = np.sqrt(np.square(perpendicular) + np.square(base))
+        print(hypotenuses)
         angle = math.sinh(perpendicular / hypotenuses)
         print(angle)
         angle = np.rad2deg(angle)
