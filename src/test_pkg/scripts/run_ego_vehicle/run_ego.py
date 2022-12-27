@@ -76,6 +76,7 @@ class AVGnssStatus:
         AVEgoVehicleControl(throttle, steer, brake)
 
 
+
 def main():
     rospy.init_node("AV_Drive")
     spawn_vehicle = SpawnEgoVehicle(3, "right")
