@@ -3,7 +3,7 @@ from src.test_pkg.scripts.path_planning.path_list_maker import path_list
 from src.test_pkg.scripts.path_planning.shortest_path_finder import shortest_path
 
 
-class LaneList:
+class lane_list:
 
     @classmethod
     def lane_in_path(cls, starting_lane, shortest_path_list=None):
@@ -27,8 +27,8 @@ class LaneList:
                             final_shortest_path.append(list((current_road, starting_lane)))
                         elif roads.link.predecessor.elementtype == "road":
                             final_shortest_path.append(list((current_road, starting_lane)))
-                            if roads.lanes.lanesection.left.LaneList:
-                                for lane in roads.lanes.lanesection.left.LaneList:
+                            if roads.lanes.lanesection.left.lane_list:
+                                for lane in roads.lanes.lanesection.left.lane_list:
                                     if lane.id == starting_lane:
                                         starting_lane = lane.link.predecessor.id
                             elif roads.lanes.lanesection.left.lane:
@@ -46,8 +46,8 @@ class LaneList:
                             final_shortest_path.append(list((current_road, starting_lane)))
                         elif roads.link.successor.elementtype == "road":
                             final_shortest_path.append(list((current_road, starting_lane)))
-                            if roads.lanes.lanesection.right.LaneList:
-                                for lane in roads.lanes.lanesection.right.LaneList:
+                            if roads.lanes.lanesection.right.lane_list:
+                                for lane in roads.lanes.lanesection.right.lane_list:
                                     if lane.id == starting_lane:
                                         starting_lane = lane.link.successor.id
                             elif roads.lanes.lanesection.right.lane:
@@ -61,11 +61,11 @@ if __name__ == '__main__':
     route_graph = shortest_path(routes.map_graph)
 
     starting_road_id = "0"
-    end = "3"
+    end = "13"
     path = route_graph.get_shortest_path_by_road_segments(starting_road_id, end)
 
-    start_lane = "-2"
-    lane_path = LaneList()
+    start_lane = "2"
+    lane_path = lane_list()
     final_path_list = lane_path.lane_in_path(start_lane, path)
 
     print(final_path_list)

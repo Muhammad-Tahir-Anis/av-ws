@@ -12,6 +12,7 @@ from src.test_pkg.scripts.run_ego_vehicle.trajectory import Trajectory
 from src.test_pkg.scripts.Obstacle_avoidance.npc_distance_finder import NpcDistanceFinder
 from src.test_pkg.scripts.object_detection.detect_obstacle import DetectObstacle
 from src.test_pkg.scripts.object_detection.save_npc_data import NpcDataStorage
+from src.test_pkg.scripts.Obstacle_avoidance.distancethreshold import DistanceThreshold
 
 
 class AVEgoVehicleStatus:
@@ -67,6 +68,7 @@ class AVGnssStatus:
     ego_t = 0.0
     road_id = 0
     npc_distance = DetectObstacle()
+    distance_diff = DistanceThreshold()
     imu_data = AVimuStatus()
 
     def __init__(self):
@@ -97,6 +99,8 @@ class AVGnssStatus:
         load_file = NpcDataStorage()
         data = load_file.load_object("data.pickle")
         print("npc_distance ; ", data)
+        print("distance difference : ", cls.distance_diff.distance_calculator(data, cls.ego_s))
+
 
 
 def main():

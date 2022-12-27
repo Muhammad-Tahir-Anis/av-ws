@@ -1,7 +1,7 @@
 import pickle
 
 
-class NpcDataStorage():
+class NpcDataStorage:
     def __init__(self):
         # self.param = param
         # self.save = save_object(param)

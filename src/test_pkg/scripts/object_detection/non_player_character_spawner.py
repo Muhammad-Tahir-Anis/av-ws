@@ -3,10 +3,6 @@ from sensor_msgs.msg import NavSatFix
 from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 from src.test_pkg.scripts.carla_spawn_sensor import SpawnSensor
 from src.test_pkg.scripts.object_detection.detect_obstacle import DetectObstacle
-from src.test_pkg.scripts.path_planning.Shortest_path_with_lanes import LaneList
-from src.test_pkg.scripts.path_planning.shortest_path_finder import shortest_path
-from src.test_pkg.scripts.path_planning.path_list_maker import path_list
-from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 
 from std_msgs.msg import String
 
@@ -30,7 +26,7 @@ class Npc_1:
 
     def talker(self, road_id, lane):
 
-        pub = rospy.Publisher('npc_topic', String, queue_size=10)
+        # pub = rospy.Publisher('npc_topic', String, queue_size=10)
         # rospy.init_node('publisher_node', anonymous=True)
         rospy.init_node('publisher_node')
 
@@ -42,7 +38,8 @@ class Npc_1:
         rospy.wait_for_message("/carla/npc/gnss_sensor", NavSatFix)
         pub = rospy.Publisher('npc_topic', String, queue_size=10)
 
-        while not rospy.is_shutdown():
+        # while not rospy.is_shutdown():
+        for i in range(4):
             npc_id = str(spawn_vehicle.ego_vehicle_id)
             msg = self.x, self.y
             # print("x :" + self.x, "y :" + self.y)

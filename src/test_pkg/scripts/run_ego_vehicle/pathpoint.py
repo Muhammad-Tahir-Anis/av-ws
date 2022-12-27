@@ -110,11 +110,11 @@ class PathWayPoints:
                 [x_points.append(x) for x in x_list]
                 [y_points.append(y) for y in y_list]
 
-        # plt_1 = plt.figure(figsize=(40, 22.5))
-        # plt.plot(x_points, y_points, 'x-')
-        #
-        # plt.grid()
-        # plt.show()
+        plt_1 = plt.figure(figsize=(40, 22.5))
+        plt.plot(x_points, y_points, 'x-')
+
+        plt.grid()
+        plt.show()
 
         waypoints = x_points, y_points
         return waypoints
@@ -122,3 +122,4 @@ class PathWayPoints:
 
 # if __name__ == '__main__':
 #     PathWayPoints()
+
