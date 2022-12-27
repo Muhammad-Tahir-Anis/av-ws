@@ -3,7 +3,7 @@ from sensor_msgs.msg import NavSatFix
 from src.test_pkg.scripts.carla_spawn_vehicle import SpawnEgoVehicle
 from src.test_pkg.scripts.carla_spawn_sensor import SpawnSensor
 from src.test_pkg.scripts.object_detection.detect_obstacle import DetectObstacle
-from src.test_pkg.scripts.path_planning.Shortest_path_with_lanes import lane_list
+from src.test_pkg.scripts.path_planning.Shortest_path_with_lanes import LaneList
 from src.test_pkg.scripts.path_planning.shortest_path_finder import shortest_path
 from src.test_pkg.scripts.path_planning.path_list_maker import path_list
 from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation

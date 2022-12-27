@@ -79,7 +79,7 @@ class AVGnssStatus:
 
 def main():
     rospy.init_node("AV_Drive")
-    spawn_vehicle = SpawnEgoVehicle(3, "right")
+    spawn_vehicle = SpawnEgoVehicle(3, "right", "ego_vehicle")
     spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id, "gnss", "camera", "imu", "lidar", "odometer", "speedometer", "radar")
     gnss = AVGnssStatus()
     print(gnss.xp)

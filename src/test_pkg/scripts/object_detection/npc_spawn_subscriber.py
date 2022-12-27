@@ -3,7 +3,6 @@ from std_msgs.msg import String
 from src.test_pkg.scripts.object_detection.non_player_character_spawner import Npc_1
 from src.test_pkg.scripts.path_planning.path_list_maker import path_list
 from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
-from src.test_pkg.scripts.path_planning.Shortest_path_with_lanes import lane_list
 from src.test_pkg.scripts.path_planning.shortest_path_finder import shortest_path
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
 

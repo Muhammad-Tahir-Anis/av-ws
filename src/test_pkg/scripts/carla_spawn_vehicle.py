@@ -8,16 +8,16 @@ from src.map_parser_pkg.scripts.odr_map import OdrMap
 class SpawnEgoVehicle:
     ego_vehicle_id: int = 0
 
-    def __init__(self, road_id: int, lane: str):
-        spawning = self.spawn_object_client(road_id, lane)
+    def __init__(self, road_id: int, lane: str, role_name:str):
+        spawning = self.spawn_object_client(road_id, lane, role_name)
         self.ego_vehicle_id = spawning.id
 
     @classmethod
-    def spawn_object_client(cls, road_id, lane):
+    def spawn_object_client(cls, road_id, lane, role_name:str):
         rospy.wait_for_service('/carla/spawn_object')
         try:
             spawn_object = rospy.ServiceProxy('/carla/spawn_object', SpawnObject)
-            role_name = KeyValue("role_name", "ego_vehicle")
+            role_name = KeyValue("role_name", role_name)
             color = KeyValue("color", "255,255,255")
             key_value = [role_name, color]
             odr = OdrMap()

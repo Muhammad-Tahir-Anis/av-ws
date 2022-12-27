@@ -1,9 +1,9 @@
 
 from src.test_pkg.scripts.path_planning.path_list_maker import path_list
 from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
-from src.test_pkg.scripts.path_planning.Shortest_path_with_lanes import lane_list
+from src.test_pkg.scripts.path_planning.Shortest_path_with_lanes import LaneList
 from src.test_pkg.scripts.path_planning.shortest_path_finder import shortest_path
-from src.test_pkg.scripts.object_detection.npc_distance_finder import NpcDistanceFinder
+from src.test_pkg.scripts.Obstacle_avoidance.npc_distance_finder import NpcDistanceFinder
 
 
 
@@ -24,7 +24,7 @@ class DetectObstacle:
         path = route_graph.get_shortest_path_by_road_segments(starting_road_id, end)
 
         start_lane = "2"
-        lane_path = lane_list()
+        lane_path = LaneList()
         final_path_list = lane_path.lane_in_path(start_lane, path)
 
         # print(final_path_list)
