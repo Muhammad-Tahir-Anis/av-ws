@@ -1,7 +1,5 @@
-from math import cos, sin
 
 from src.map_parser_pkg.scripts.odr_map_obj import opendrive
-from src.test_pkg.scripts.run_ego_vehicle.logs import Log
 
 
 class MapAnalysis:
@@ -19,7 +17,7 @@ class MapAnalysis:
         self.curvature: float = 0
         self.s_value: float = 0
 
-    def road_info(self, road_id, s_axis, t_axis, log:Log):
+    def road_info(self, road_id, s_axis, t_axis):
         # Getting all roads data from map
         roads = opendrive.road_list
         for road in roads:
@@ -60,4 +58,3 @@ class MapAnalysis:
                         self.curvature = float(geometry.arc.curvature)
 
         return self.x_origin, self.y_origin, self.heading, self.curvature
-

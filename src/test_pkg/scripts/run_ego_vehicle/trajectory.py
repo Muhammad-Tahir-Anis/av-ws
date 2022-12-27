@@ -1,7 +1,7 @@
 import rospy
 from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 from src.test_pkg.scripts.run_ego_vehicle.map_analysis import MapAnalysis
-from logs import Log
+# from logs import Log
 from carla_msgs.msg import CarlaEgoVehicleStatus
 
 
@@ -20,15 +20,15 @@ class Trajectory:
         self.brake: bool = False
         self.throttle: float = 0
         self.steering: float = 0
-        self.log = Log()
+        # self.log = Log()
         self.road_ended = False
         self.ego_status = None
 
     def update_trajectory(self, x, y):
         ego_status = self.get_ego_heading()
         print(ego_status)
-        self.log.x = x
-        self.log.y = y
+        # self.log.x = x
+        # self.log.y = y
         road_id, lane_id = self.route[self.path_index]
         self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id, lane_id)
         return self.throttle, self.steering, self.brake
@@ -62,7 +62,7 @@ class Trajectory:
             self.road_ended = True
 
         x_origin, y_origin, heading, curvature = map_analysis.road_info(road_id, self._s_axis,
-                                                                        self._t_axis, self.log)
+                                                                        self._t_axis)
 
         t_range = list(ego_location.get_t_range(road_id, float(lane_id)))
         self.steering = self.keep_in_lane(t_range, self._t_axis)
@@ -80,7 +80,7 @@ class Trajectory:
             self.throttle = 0.2
             self.brake = 0
             # self.steering = 0
-        self.log.set_log()
+        # self.log.set_log()
         print(self.throttle, self.steering, self.brake)
         return self.throttle, self.steering, self.brake
 
