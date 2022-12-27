@@ -61,7 +61,7 @@ class SpawnSensor:
                     point = Point(0, 0, 0)
                     quaternion = Quaternion(0, 0, 0, 0)
                     pose = Pose(point, quaternion)
-                    response = spawn_object('actor.pseudo.control.', 'control', key_value, pose, attach,
+                    response = spawn_object('actor.pseudo.control', 'control', key_value, pose, attach,
                                             random_pos)
                 elif sensor == 'radar':
                     point = Point(0, 0, 2.4)
@@ -73,6 +73,10 @@ class SpawnSensor:
                     response = spawn_object('sensor.other.gnss', 'gnss_sensor', key_value, pose, attach, random_pos)
                 elif sensor == 'imu':
                     response = spawn_object('sensor.other.imu', 'imu_sensor', key_value, pose, attach, random_pos)
+                elif sensor == 'object_sensor':
+                    response = spawn_object('sensor.pseudo.objects', 'objects', key_value, pose, attach, random_pos)
+                elif sensor == 'actor_list_sensor':
+                    response = spawn_object('sensor.pseudo.actor_list', 'actor_list', key_value, pose, attach, random_pos)
         except rospy.ServiceException as e:
             return e
 
