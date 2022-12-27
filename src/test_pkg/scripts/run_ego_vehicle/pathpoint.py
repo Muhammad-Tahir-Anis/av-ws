@@ -42,7 +42,7 @@ class PathWayPoints:
                 axis_transformation = AxisTransformation(x, y, x, y, heading, curvature, 0)
                 lane_center = road_info.lane_center_point(int(road), int(lane))
 
-                print('lc: ', lane_center)
+                # print('lc: ', lane_center)
 
                 forward_start = axis_transformation.reverse_transformation(0, lane_center,
                                                                            x, y, heading, curvature)
@@ -57,7 +57,7 @@ class PathWayPoints:
                                                                                y, heading, curvature)
                     forward_end = axis_transformation.reverse_transformation(subsections[subsection + 1], lane_center,
                                                                              x, y, heading, curvature)
-                    print(f"1: {road}: {curvature}: ", forward_start, forward_end)
+                    # print(f"1: {road}: {curvature}: ", forward_start, forward_end)
 
                     x_list.append(forward_end[0])
                     y_list.append(forward_end[1])
@@ -81,7 +81,7 @@ class PathWayPoints:
                     axis_transformation = AxisTransformation(x, y, x, y, heading, curvature, 0)
                     lane_center = road_info.lane_center_point(int(road), int(lane))
 
-                    print('lc: ', lane_center)
+                    # print('lc: ', lane_center)
 
                     forward_start = axis_transformation.reverse_transformation(0, lane_center,
                                                                                x, y, heading, curvature)
@@ -98,7 +98,7 @@ class PathWayPoints:
                         forward_end = axis_transformation.reverse_transformation(subsections[subsection + 1],
                                                                                  lane_center, x, y, heading, curvature)
 
-                        print(f"1: {road}: {curvature}: ", forward_start, forward_end)
+                        # print(f"1: {road}: {curvature}: ", forward_start, forward_end)
 
                         x_list.append(forward_end[0])
                         y_list.append(forward_end[1])
@@ -120,5 +120,5 @@ class PathWayPoints:
         return waypoints
 
 
-if __name__ == '__main__':
-    PathWayPoints()
+# if __name__ == '__main__':
+#     PathWayPoints()

@@ -2,6 +2,8 @@ import numpy as np
 
 from src.test_pkg.scripts.run_ego_vehicle.pathpoint import PathWayPoints
 
+from scipy import spatial
+
 
 class DrivingRope:
     def __init__(self, x, y):
@@ -13,26 +15,39 @@ class DrivingRope:
         x_points, y_points = waypoints
         print(x_points)
         print(y_points)
-        future_x = cls.find_nearest(x_points, x)
-        future_y = cls.find_nearest(y_points, y)
+        pathpoints = []
+        for xp, yp in zip(x_points, y_points):
+            pathpoints.append((xp, yp))
+        cordinates, index = cls.find_nearest_coordinates(x, y, pathpoints)
+        index = int(index)
+        print(cordinates, index)
+        print(pathpoints[1519])
+        x, y = pathpoints[index]
+        future_x, future_y = cls.find_next_1m(index, pathpoints)
+        print(future_x, future_y)
+        print(cls.get_angle(x, y, future_x, future_y))
 
     @classmethod
     def find_nearest(cls, array, value):
-        array = np.asarray(array)
+        array = np.asarray(array)-5.30242673317159
         idx = (np.abs(array - value)).argmin()
         return array[idx]
 
-    # @classmethod
-    # def get_curve(cls):
-    #     curve = np.polyfit(x, y, 3)
-    #     poly = np.poly1d(curve)
-    #     new_x = []
-    #     new_y = []
-    #     for i in range(10):
-    #         print(i)
-    #         new_x.append((i + 1))
-    #         new_y.append(poly(i + 1))
+    @classmethod
+    def find_nearest_coordinates(cls, x, y, pathpoints):
+        tree = spatial.KDTree(pathpoints)
+        result = tree.query([(x, y)])
+        return result
+
+    @classmethod
+    def find_next_1m(cls, index, pathpoints):
+        future_cord = pathpoints[index + 10]
+        return future_cord
+
+    @classmethod
+    def get_angle(cls, x, y, future_x, future_y):
+        
 
 
 if __name__ == '__main__':
-    dr = DrivingRope(12, 23)
+    dr = DrivingRope(-5, 66)
