@@ -1,3 +1,5 @@
+import numpy as np
+
 import rospy
 from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 from src.test_pkg.scripts.run_ego_vehicle.map_analysis import MapAnalysis
@@ -22,7 +24,7 @@ class Trajectory:
         self.steering: float = 0
         # self.log = Log()
         self.road_ended = False
-        self.ego_status = None
+        self.ego_heading = None
 
     def update_trajectory(self, x, y):
         ego_status = self.get_ego_heading()
@@ -35,12 +37,16 @@ class Trajectory:
 
     def get_ego_heading(self):
         rospy.Subscriber('/carla/ego_vehicle/vehicle_status', CarlaEgoVehicleStatus, self.callback)
-        return self.ego_status
+        # rospy.wait_for_message('/carla/ego_vehicle/vehicle_status', CarlaEgoVehicleStatus)
+        return self.ego_heading
 
     @classmethod
-    def callback(cls, data):
-        print('_____________====_________,', data)
-        cls.ego_status = data
+    def callback(cls, data:CarlaEgoVehicleStatus):
+        print('_____________====_________,', data.orientation)
+        ego_heading = np.math.asin(2 * data.orientation.x * data.orientation.y + 2 * data.orientation.z * data.orientation.w)
+        print(ego_heading)
+        cls.ego_heading = ego_heading
+        # rospy.spin()
 
     def follow_trajectory(self, x, y, road_id, lane_id):
         map_analysis = MapAnalysis()

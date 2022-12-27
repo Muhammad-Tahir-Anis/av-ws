@@ -96,6 +96,7 @@ class AVGnssStatus:
         print('stststststtsttstts: ',cls.ego_s, cls.ego_t)
         load_file = NpcDataStorage()
         data = load_file.load_object("data.pickle")
+        print("npc_distance ; ", data)
 
 
 def main():
