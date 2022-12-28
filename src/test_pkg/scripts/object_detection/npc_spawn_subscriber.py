@@ -6,18 +6,7 @@ from src.test_pkg.scripts.object_detection.non_player_character_spawner import N
 class NpcSubscriber:
 
     def __init__(self):
-        self.x = 0
-        self.y = 0
-        self.sub = rospy.Subscriber("talker", String, self.callback)
-
-    def callback(self, data):
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-        self.x = data.data
-        self.y = data.data
-
-    @property
-    def get_gnss_data(self):
-        return self.x, self.y
+        pass
 
 
 def main():

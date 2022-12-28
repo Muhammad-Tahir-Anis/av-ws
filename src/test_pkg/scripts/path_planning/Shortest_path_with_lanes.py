@@ -61,10 +61,10 @@ if __name__ == '__main__':
     route_graph = shortest_path(routes.map_graph)
 
     starting_road_id = "0"
-    end = "13"
+    end = "3"
     path = route_graph.get_shortest_path_by_road_segments(starting_road_id, end)
 
-    start_lane = "2"
+    start_lane = "-2"
     lane_path = lane_list()
     final_path_list = lane_path.lane_in_path(start_lane, path)
 

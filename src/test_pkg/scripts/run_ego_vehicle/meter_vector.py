@@ -28,7 +28,7 @@ class DrivingRope:
         pathpoints = []
         for xp, yp in zip(x_points, y_points):
             pathpoints.append((xp, yp))
-        print(pathpoints)
+        # print(pathpoints)
         cordinates, index = cls.find_nearest_coordinates(x, y, pathpoints)
         index = int(index)
         print(cordinates, index)
@@ -89,6 +89,6 @@ class DrivingRope:
 
 
 #
-if __name__ == '__main__':
-    dr = DrivingRope()
-    print(dr.get_steering_angle(109.69749257264434, 5.415327227827523, 1.5639764844735438))
+# if __name__ == '__main__':
+#     dr = DrivingRope()
+#     print(dr.get_steering_angle(109.69749257264434, 5.415327227827523, 1.5639764844735438))

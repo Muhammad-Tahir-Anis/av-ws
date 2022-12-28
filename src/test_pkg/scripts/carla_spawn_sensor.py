@@ -70,6 +70,9 @@ class SpawnSensor:
                     response = spawn_object('sensor.other.radar', 'radar_sensor', key_value, pose, attach,
                                             random_pos)
                 elif sensor == 'gnss':
+                    point = Point(2, 0, 0)
+                    quaternion = Quaternion(0, 0, 0, 0)
+                    pose = Pose(point, quaternion)
                     response = spawn_object('sensor.other.gnss', 'gnss_sensor', key_value, pose, attach, random_pos)
                 elif sensor == 'imu':
                     response = spawn_object('sensor.other.imu', 'imu_sensor', key_value, pose, attach, random_pos)

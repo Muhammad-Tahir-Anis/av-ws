@@ -5,6 +5,7 @@ from src.test_pkg.scripts.run_ego_vehicle.ego_location import EgoLocation
 from src.test_pkg.scripts.run_ego_vehicle.map_analysis import MapAnalysis
 # from logs import Log
 from carla_msgs.msg import CarlaEgoVehicleStatus
+from src.test_pkg.scripts.run_ego_vehicle.meter_vector import DrivingRope
 
 
 class Trajectory:
@@ -25,14 +26,17 @@ class Trajectory:
         # self.log = Log()
         self.road_ended = False
         self.ego_heading = None
+        self.meter_vector = DrivingRope()
 
     def update_trajectory(self, x, y):
         ego_status = self.get_ego_heading()
-        print(ego_status)
+        # print(ego_status, "status")
+        # print(x, y, "x,y")
         # self.log.x = x
         # self.log.y = y
         road_id, lane_id = self.route[self.path_index]
         self.throttle, self.steering, self.brake = self.follow_trajectory(x, y, road_id, lane_id)
+
         return self.throttle, self.steering, self.brake
 
     def get_ego_heading(self):
@@ -40,12 +44,16 @@ class Trajectory:
         # rospy.wait_for_message('/carla/ego_vehicle/vehicle_status', CarlaEgoVehicleStatus)
         return self.ego_heading
 
-    @classmethod
-    def callback(cls, data:CarlaEgoVehicleStatus):
-        print('_____________====_________,', data.orientation)
-        ego_heading = np.math.asin(2 * data.orientation.x * data.orientation.y + 2 * data.orientation.z * data.orientation.w)
-        print(ego_heading)
-        cls.ego_heading = ego_heading
+    def callback(self, data: CarlaEgoVehicleStatus):
+        # print('_____________====_________,', data.orientation)
+        ego_heading = np.math.asin(
+            2 * data.orientation.x * data.orientation.y + 2 * data.orientation.z * data.orientation.w)
+        # print(ego_heading)
+        # print(cls.ego_heading)
+        self.ego_heading = ego_heading
+        # print(self.ego_heading)
+        # print(self.steering)
+        # rospy.sleep(1)
         # rospy.spin()
 
     def follow_trajectory(self, x, y, road_id, lane_id):
@@ -54,6 +62,9 @@ class Trajectory:
         ego_location = EgoLocation(x, y)
 
         actual_roads = ego_location.get_location
+
+        # self.steering = self.meter_vector.get_steering_angle(x, y, self.ego_heading)
+
         is_road_present = False
         if len(actual_roads) == 1:
             if road_id == actual_roads[0][0]:
@@ -72,10 +83,12 @@ class Trajectory:
 
         t_range = list(ego_location.get_t_range(road_id, float(lane_id)))
         self.steering = self.keep_in_lane(t_range, self._t_axis)
+        # self.steering = self.meter_vector.get_steering_angle(x, y, self.ego_heading)
+        # print(self.steering, "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
         if self.road_ended:
             self.path_index += 1
             self.brake = 1
-            self.steering = 0
+            # self.steering = 0
             self.throttle = 0
             self.road_ended = False
         elif curvature != 0 and not self.road_ended:
@@ -95,20 +108,20 @@ class Trajectory:
 
         if t_axis > 0:
             t_range.reverse()
-            print(t_range)
-            print(t_range[0] - 1, t_range[1] + 2)
-            if (t_range[0] - 1) < t_axis:
-                return -1
-            elif (t_range[1] + 2) > t_axis:
-                return 1
+            # print(t_range)
+            # print(t_range[0] - 1, t_range[1] + 2)
+            if (t_range[0] - 1.70) < t_axis:
+                return -0.2
+            elif (t_range[1] + 1.70) > t_axis:
+                return 0.2
             else:
                 return 0
 
         else:
-            print(t_range[0] - 1, t_range[1] + 2)
-            if (t_range[0] - 1) < t_axis:
-                return 1
-            elif (t_range[1] + 2) > t_axis:
-                return -1
+            # print(t_range[0] - 1, t_range[1] + 2)
+            if (t_range[0] - 1.75) < t_axis:
+                return 0.2
+            elif (t_range[1] + 1.75) > t_axis:
+                return -0.2
             else:
                 return 0
