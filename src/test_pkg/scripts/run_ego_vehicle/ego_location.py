@@ -375,6 +375,31 @@ class EgoLocation:
         return is_driving_lane
 
     @classmethod
+    def get_all_driving_lanes(cls, road_id:str):
+        driving_lane = []
+        roads = opendrive.road_list
+        road = [road for road in roads if road_id == road.id][0]
+        right_lane_section = road.lanes.lanesection.right
+        left_lane_section = road.lanes.lanesection.left
+        if right_lane_section:
+            if right_lane_section.lane_list:
+                for lane in right_lane_section.lane_list:
+                    if lane.type == "driving":
+                        driving_lane.append(lane.id)
+            else:
+                if right_lane_section.lane.type == "driving":
+                    driving_lane.append(right_lane_section.lane.id)
+        if left_lane_section:
+            if left_lane_section.lane_list:
+                for lane in left_lane_section.lane_list:
+                    if lane.type == "driving":
+                        driving_lane.append(lane.id)
+            else:
+                if left_lane_section.lane.type == "driving":
+                    driving_lane.append(left_lane_section.lane.id)
+        return driving_lane
+
+    @classmethod
     def get_max_t(cls, max_lane, lanes):
         # t is an axis along the width of a road
         global max_t

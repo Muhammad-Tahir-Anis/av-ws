@@ -31,7 +31,7 @@ class Npc_1:
         rospy.init_node('publisher_node')
 
         rate = rospy.Rate(1)
-        spawn_vehicle = SpawnEgoVehicle(road_id, lane, "npc")
+        spawn_vehicle = SpawnEgoVehicle(int(road_id), str(lane), "npc")
         spawn_sensor = SpawnSensor(spawn_vehicle.ego_vehicle_id, "gnss")
 
         rospy.Subscriber('/carla/npc/gnss_sensor', NavSatFix, self.callback)

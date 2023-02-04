@@ -27,12 +27,13 @@ class lane_list:
                             final_shortest_path.append(list((current_road, starting_lane)))
                         elif roads.link.predecessor.elementtype == "road":
                             final_shortest_path.append(list((current_road, starting_lane)))
-                            if roads.lanes.lanesection.left.lane_list:
-                                for lane in roads.lanes.lanesection.left.lane_list:
-                                    if lane.id == starting_lane:
-                                        starting_lane = lane.link.predecessor.id
-                            elif roads.lanes.lanesection.left.lane:
-                                starting_lane = roads.lanes.lanesection.left.lane.link.predecessor.id
+                            if roads.lanes.lanesection.left:
+                                if roads.lanes.lanesection.left.lane_list:
+                                    for lane in roads.lanes.lanesection.left.lane_list:
+                                        if lane.id == starting_lane:
+                                            starting_lane = lane.link.predecessor.id
+                                elif roads.lanes.lanesection.left.lane:
+                                    starting_lane = roads.lanes.lanesection.left.lane.link.predecessor.id
                     elif starting_lane == "-2" or starting_lane == "-1" or starting_lane == "-4" or starting_lane == "-5":
                         next_road = roads.link.successor.elementid
                         if roads.link.successor.elementtype == "junction":
@@ -46,12 +47,14 @@ class lane_list:
                             final_shortest_path.append(list((current_road, starting_lane)))
                         elif roads.link.successor.elementtype == "road":
                             final_shortest_path.append(list((current_road, starting_lane)))
-                            if roads.lanes.lanesection.right.lane_list:
-                                for lane in roads.lanes.lanesection.right.lane_list:
-                                    if lane.id == starting_lane:
-                                        starting_lane = lane.link.successor.id
-                            elif roads.lanes.lanesection.right.lane:
-                                starting_lane = roads.lanes.lanesection.right.lane.link.successor.id
+                            print(roads.id)
+                            if roads.lanes.lanesection.right:
+                                if roads.lanes.lanesection.right.lane_list:
+                                    for lane in roads.lanes.lanesection.right.lane_list:
+                                        if lane.id == starting_lane:
+                                            starting_lane = lane.link.successor.id
+                                elif roads.lanes.lanesection.right.lane:
+                                    starting_lane = roads.lanes.lanesection.right.lane.link.successor.id
         return final_shortest_path
 
 

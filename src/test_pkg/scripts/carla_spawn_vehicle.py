@@ -21,7 +21,7 @@ class SpawnEgoVehicle:
             color = KeyValue("color", "255,255,255")
             key_value = [role_name, color]
             odr = OdrMap()
-            x, y, z, w = odr.spawn_at_road(road_id, lane)
+            x, y, z, w = odr.spawn_at_road(int(road_id), str(lane))
             point = Point(x, y, 10)
             quaternion = Quaternion(0, 0, z, w)
             pose = Pose(point, quaternion)

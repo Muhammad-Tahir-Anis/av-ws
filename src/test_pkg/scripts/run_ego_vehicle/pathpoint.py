@@ -26,9 +26,9 @@ class PathWayPoints:
         for road, lane in route:
             previous_road = route.index([road, lane]) - 1
             if previous_road < 0:
-                sections = road_info.get_road_info(road, None)
+                sections, successor = road_info.get_road_info(road, None)
             else:
-                sections = road_info.get_road_info(road, route[previous_road][0])
+                sections, successor = road_info.get_road_info(road, route[previous_road][0])
 
             if sections.ndim == 1:
                 x_list = []

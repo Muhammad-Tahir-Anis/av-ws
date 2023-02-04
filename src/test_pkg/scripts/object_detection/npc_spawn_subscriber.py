@@ -10,7 +10,7 @@ class NpcSubscriber:
 
 
 def main():
-    npc1 = Npc_1(10, "right")
+    npc1 = Npc_1(10, 'right')
     print("stopped")
     # try:
     #     rospy.spin()

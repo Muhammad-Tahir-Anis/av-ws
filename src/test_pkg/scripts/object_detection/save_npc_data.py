@@ -24,8 +24,8 @@ class NpcDataStorage:
             print("Error during unpickling object (Possibly unsupported):", ex)
 
 
-load_file = NpcDataStorage()
-data = load_file.load_object("data.pickle")
-
-print(data)
+# load_file = NpcDataStorage()
+# data = load_file.load_object("data.pickle")
+#
+# print(data)
 # print(isinstance(obj, MyClass))

@@ -63,8 +63,6 @@ class Trajectory:
 
         actual_roads = ego_location.get_location
 
-        # self.steering = self.meter_vector.get_steering_angle(x, y, self.ego_heading)
-
         is_road_present = False
         if len(actual_roads) == 1:
             if road_id == actual_roads[0][0]:
@@ -84,7 +82,6 @@ class Trajectory:
         t_range = list(ego_location.get_t_range(road_id, float(lane_id)))
         self.steering = self.keep_in_lane(t_range, self._t_axis)
         # self.steering = self.meter_vector.get_steering_angle(x, y, self.ego_heading)
-        # print(self.steering, "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
         if self.road_ended:
             self.path_index += 1
             self.brake = 1
@@ -92,7 +89,7 @@ class Trajectory:
             self.throttle = 0
             self.road_ended = False
         elif curvature != 0 and not self.road_ended:
-            self.throttle = 0.1
+            self.throttle = 0.2
             self.brake = 0
             # self.steering = -curvature * 2.23
         else:
@@ -100,7 +97,7 @@ class Trajectory:
             self.brake = 0
             # self.steering = 0
         # self.log.set_log()
-        print(self.throttle, self.steering, self.brake)
+        print('TSB', self.throttle, self.steering, self.brake)
         return self.throttle, self.steering, self.brake
 
     @classmethod

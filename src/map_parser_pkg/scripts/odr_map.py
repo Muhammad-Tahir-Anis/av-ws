@@ -78,12 +78,19 @@ class OdrMap:
             print(cls.driving_lane)
             for lane in lane_section_list:
                 if lane.id == str(cls.driving_lane):
-                    cls.lane_width = float(lane.width.a)
+                    if lane.width_list:
+                        cls.lane_width = float(lane.width_list[0].a)
+                    else:
+                        cls.lane_width = float(lane.width.a)
         else:
             if lane_section_list.type == "driving":
                 cls.driving_lanes.append(int(lane_section_list.id))
+            cls.driving_lane = int(max(cls.driving_lanes))
             if lane_section_list.id == str(cls.driving_lane):
-                cls.lane_width = float(lane_section_list.width.a)
+                if lane_section_list.width_list:
+                    cls.lane_width = float(lane_section_list.width_list[0].a)
+                else:
+                    cls.lane_width = float(lane_section_list.width.a)
         return cls.lane_width
 
     @classmethod

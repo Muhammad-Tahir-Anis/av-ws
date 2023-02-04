@@ -12,6 +12,7 @@ class RoadInfo:
 
     @classmethod
     def get_road_info(cls, road_id, previous_road_id):
+        print(road_id, previous_road_id)
         # print(previous_road_id)
         information_list = []
         road_id = str(road_id)
@@ -58,6 +59,7 @@ class RoadInfo:
                             # information_list.reverse()
                             # if information_list.ndim != 1:
                             #     information_list = np.flip(information_list,0)
+
                 elif element_type == 'junction':
                     element_id = previous_road.link.successor.elementid
                     junction = [junction for junction in junctions if junction.id == element_id][0]
@@ -69,6 +71,7 @@ class RoadInfo:
                         # information_list.reverse()
                         # if information_list.ndim != 1:
                         #     information_list = np.flip(information_list,0)
+
             else:
                 # list will always flip until successor is false
                 # if information_list.ndim != 1:
@@ -83,19 +86,27 @@ class RoadInfo:
                             # information_list.reverse()
                             # if information_list.ndim != 1:
                             #     information_list = np.flip(information_list,0)
+
                 elif element_type == 'junction':
                     element_id = previous_road.link.predecessor.elementid
                     junction = [junction for junction in junctions if junction.id == element_id][0]
                     connections = junction.connection_list
                     connection = [connection for connection in connections if
                                   connection.incomingroad == previous_road_id and connection.connectingroad == road_id][0]
+
                     if connection.contactpoint == 'start':
                         cls.successor = True
                         # information_list.reverse()
                         # if information_list.ndim != 1:
                         #     information_list = np.flip(information_list,0)
+
         # print(road_id, information_list)
-        return information_list
+        print(cls.successor)
+        return information_list, cls.successor
+
+    @classmethod
+    def reset(cls):
+        cls.successor = True
 
     @classmethod
     def get_t_range(cls, road_id: int, lane_id: int):
